@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Host
+Host: https://followers.blog
+
+# Sitemaps
+Sitemap: https://followers.blog/sitemap.xml
