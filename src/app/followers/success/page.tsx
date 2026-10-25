@@ -16,6 +16,7 @@ import {
   X,
   FileText,
 } from 'lucide-react';
+import { event } from '@/lib/meta-pixel';
 
 function FollowersSuccessContent() {
   const searchParams = useSearchParams();
@@ -51,6 +52,25 @@ function FollowersSuccessContent() {
   if (activeEmail) receiptQuery.set('email', activeEmail);
   if (activePhone) receiptQuery.set('phone', activePhone);
   const receiptUrl = `/receipt?${receiptQuery.toString()}`;
+
+  // Meta Pixel: Track 100% REAL Verified Purchase (Guard against duplicate firing on page refresh)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && orderId) {
+      const firedKey = `fb_purchase_fired_${orderId}`;
+      const alreadyFired = sessionStorage.getItem(firedKey);
+
+      if (!alreadyFired) {
+        event('Purchase', {
+          value: Number(activeAmount) || 49,
+          currency: 'INR',
+          content_name: 'Followers Growth Order',
+          content_type: 'product',
+          order_id: orderId,
+        });
+        sessionStorage.setItem(firedKey, 'true');
+      }
+    }
+  }, [orderId, activeAmount]);
 
   // Section 19 Requirement: SMM Processing Modal
   const [showTrafficModal, setShowTrafficModal] = useState(true);

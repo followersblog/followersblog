@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import MetaPixel from '@/components/MetaPixel';
 
 export const metadata: Metadata = {
   title: 'Followers.blog — Learn AI Website Building & Digital Skills',
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className="min-h-screen bg-white text-zinc-900 flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+        <MetaPixel />
         {children}
       </body>
     </html>

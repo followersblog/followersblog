@@ -14,6 +14,7 @@ import {
 } from '@/data/followers-services';
 import { SocialServicePackage } from '@/types';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
+import { event } from '@/lib/meta-pixel';
 import {
   Sparkles,
   ArrowRight,
@@ -119,6 +120,15 @@ export default function FollowersPage() {
     setSelectedPackageForModal(pkg);
     // Ensure script is ready in memory
     loadRazorpayScript();
+    // Meta Pixel: ViewContent event
+    event('ViewContent', {
+      content_name: pkg.name,
+      content_category: pkg.categoryId,
+      content_ids: [pkg.id],
+      content_type: 'product',
+      value: pkg.price,
+      currency: 'INR',
+    });
   };
 
   const handleProceedToPayment = async (e: React.FormEvent) => {
@@ -139,6 +149,17 @@ export default function FollowersPage() {
     }
 
     setIsSubmitting(true);
+
+    // Meta Pixel: InitiateCheckout event
+    event('InitiateCheckout', {
+      content_name: selectedPackageForModal.name,
+      content_category: selectedPackageForModal.categoryId,
+      content_ids: [selectedPackageForModal.id],
+      content_type: 'product',
+      value: selectedPackageForModal.price,
+      currency: 'INR',
+      num_items: 1,
+    });
 
     try {
       // 1. Ensure Razorpay script is loaded
