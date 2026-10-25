@@ -23,6 +23,7 @@ import {
   ChevronDown,
   Clock,
   Shield,
+  ShieldCheck,
   Zap,
   Lock,
   Flame,
@@ -139,7 +140,7 @@ export default function FollowersPage() {
       }
 
       const displayName = customerName.trim() || targetUsername.trim().replace(/^@/, '') || 'Creator';
-      const email = `${cleanPhone}@followers.blog`;
+      const email = customerEmail.trim() || `${cleanPhone}@followers.blog`;
 
       // 2. Call backend create-order (strictly compliant educational note for Razorpay)
       const response = await fetch('/api/create-order', {
@@ -256,49 +257,60 @@ export default function FollowersPage() {
   return (
     <div className="min-h-screen bg-white text-zinc-900 flex flex-col font-sans">
       {/* ==================================================================== */}
-      {/* 1. TOP FLASH SALE BANNER */}
+      {/* 1. TOP FLASH SALE BANNER (Luxury Dark Ticker) */}
       {/* ==================================================================== */}
-      <div className="bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white text-[11px] sm:text-xs font-bold py-2 px-3 text-center flex items-center justify-center gap-2 tracking-wide shadow-sm">
-        <span className="uppercase">⚡ Special Flash Sale | 70% Off All Packages • 100% Non-Drop & 30-Day Auto Refill •</span>
-        <span className="inline-flex items-center gap-1 bg-black/30 px-2 py-0.5 rounded-full font-mono text-[11px]">
-          <Clock className="w-3.5 h-3.5 text-yellow-300" />
-          {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
-        </span>
+      <div className="bg-gradient-to-r from-zinc-950 via-rose-950 to-zinc-950 text-white text-[11px] sm:text-xs font-semibold py-2 px-3 text-center border-b border-rose-900/40 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-2 flex-wrap">
+          <span className="inline-flex items-center gap-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wider">
+            <Flame className="w-3 h-3 text-rose-400 fill-rose-400 animate-pulse" />
+            70% Flash Sale
+          </span>
+          <span className="text-zinc-400 hidden sm:inline">•</span>
+          <span className="text-zinc-200 text-[10px] sm:text-xs">
+            100% Non-Drop • 30-Day Free Auto Refill
+          </span>
+          <span className="text-zinc-500 hidden sm:inline">•</span>
+          <span className="inline-flex items-center gap-1 bg-black/60 border border-white/10 px-2 py-0.5 rounded-full font-mono text-[11px] text-amber-300 font-bold shadow-xs">
+            <Clock className="w-3 h-3 text-amber-300" />
+            <span>Ends in {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}</span>
+          </span>
+        </div>
       </div>
 
       {/* ==================================================================== */}
-      {/* 2. BRAND HEADER WITH TELEGRAM SUPPORT BUTTON */}
+      {/* 2. BRAND HEADER WITH SLEEK TELEGRAM PILL */}
       {/* ==================================================================== */}
-      <header className="border-b border-zinc-100 bg-white sticky top-0 z-40 shadow-xs">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/followers" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center p-0.5 border border-zinc-200/80 shadow-xs overflow-hidden">
+      <header className="border-b border-zinc-100 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-xs">
+        <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
+          {/* Brand Logo & Compact Typography */}
+          <Link href="/followers" className="flex items-center gap-2 group shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-50 to-white flex items-center justify-center p-1 border border-zinc-200/80 shadow-xs group-hover:scale-105 transition-transform overflow-hidden">
               <img 
                 src="/logo.png" 
                 alt="Followers.blog Logo" 
                 className="w-full h-full object-contain" 
               />
             </div>
-            <div>
-              <div className="flex items-center gap-1">
-                <span className="text-xl font-black tracking-tight text-zinc-950">
-                  FOLLOWERS<span className="text-pink-600">.BLOG</span>
-                </span>
+            <div className="flex flex-col">
+              <div className="text-base sm:text-lg font-black tracking-tight text-zinc-950 leading-none">
+                FOLLOWERS<span className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">.BLOG</span>
               </div>
-              <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider -mt-0.5">
-                #1 Premium Social Growth & AI Hub
-              </p>
+              <span className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 whitespace-nowrap">
+                #1 Verified Creator Growth Hub
+              </span>
             </div>
           </Link>
 
+          {/* Telegram Support Button: Modern Single-line Pill with Live Online Pulse */}
           <a
             href={telegramLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-sky-500 hover:bg-sky-600 shadow-sm shadow-sky-500/30 transition-all hover:scale-105"
+            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-600 hover:to-blue-700 shadow-sm shadow-sky-500/25 transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap shrink-0"
           >
-            <Send className="w-3.5 h-3.5 fill-white" />
-            <span>Telegram Support</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <Send className="w-3.5 h-3.5 fill-white shrink-0" />
+            <span className="leading-none">Telegram Support</span>
           </a>
         </div>
       </header>
@@ -493,7 +505,7 @@ export default function FollowersPage() {
 
                 <button
                   onClick={() => handleBuyNow(pkg)}
-                  className="w-full py-4 px-6 rounded-2xl font-black text-sm tracking-wide text-zinc-950 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-400 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                  className="btn-reflection w-full py-4 px-6 rounded-2xl font-black text-sm tracking-wide text-zinc-950 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-400 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"
                 >
                   <span>CLAIM VVIP STATUS NOW</span>
                   <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -571,7 +583,7 @@ export default function FollowersPage() {
 
               <button
                 onClick={() => handleBuyNow(pkg)}
-                className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] ${btnColor}`}
+                className={`btn-reflection w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] ${btnColor}`}
               >
                 <span>{isUnban ? 'RECOVER ACCOUNT NOW' : 'BUY NOW'}</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
@@ -681,16 +693,33 @@ export default function FollowersPage() {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="text-center mb-4">
-              <span className="text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full bg-pink-100 text-pink-700">
+            <div className="text-center mb-3">
+              <span className="text-[10px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full bg-pink-100 text-pink-700 border border-pink-200">
                 {selectedPackageForModal.badge || 'CONFIRM ORDER'}
               </span>
-              <h3 className="text-xl font-black text-zinc-950 mt-1">
+              <h3 className="text-xl sm:text-2xl font-black text-zinc-950 mt-1">
                 {selectedPackageForModal.name}
               </h3>
-              <div className="text-2xl font-black text-pink-600 mt-1">
+              <div className="text-2xl sm:text-3xl font-black text-pink-600 mt-0.5">
                 ₹{selectedPackageForModal.price}{' '}
-                <span className="text-xs text-zinc-400 line-through">₹{selectedPackageForModal.originalPrice}</span>
+                <span className="text-xs text-zinc-400 line-through font-normal">₹{selectedPackageForModal.originalPrice}</span>
+              </div>
+            </div>
+
+            {/* High-Converting Speed & Guarantee Card */}
+            <div className="bg-gradient-to-br from-emerald-500/10 via-rose-500/5 to-blue-500/10 border border-emerald-500/25 rounded-2xl p-3.5 my-3.5 space-y-2 text-left shadow-xs">
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-900">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
+                <Zap className="w-4 h-4 text-emerald-600 fill-emerald-500 shrink-0" />
+                <span>Payment ke baad instant 60 seconds me auto-start!</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-semibold text-zinc-800">
+                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                <span>100% Safe • Password ki bilkul zarurat nahi hai</span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-semibold text-zinc-700">
+                <CheckCircle2 className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                <span>100% Non-Drop Guaranteed • 30-Day Auto Refill Protection</span>
               </div>
             </div>
 
@@ -715,7 +744,7 @@ export default function FollowersPage() {
                   className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
                 />
                 <p className="text-[10px] text-zinc-400 mt-1">
-                  🔒 Password ki bilkul zaroorat nahi hai. Sirf public username ya link dijiye.
+                  🔒 Password ki bilkul zaroorat nahi hai. Sirf public link ya username.
                 </p>
               </div>
 
@@ -738,6 +767,22 @@ export default function FollowersPage() {
               </div>
 
               <div>
+                <label className="block text-xs font-bold text-zinc-800 mb-1">
+                  Email Address (For Tax Receipt & Dispute Proof)
+                </label>
+                <input
+                  type="email"
+                  placeholder="e.g. name@gmail.com (Optional)"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
+                />
+                <p className="text-[10px] text-zinc-400 mt-1">
+                  📄 Official computerized Tax Invoice aapke is email par dispatch hogi.
+                </p>
+              </div>
+
+              <div>
                 <label className="block text-xs font-medium text-zinc-600 mb-1">
                   Full Name (Optional)
                 </label>
@@ -753,14 +798,15 @@ export default function FollowersPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white bg-gradient-to-r from-pink-500 via-rose-600 to-pink-600 hover:from-pink-600 hover:to-rose-700 shadow-md shadow-pink-500/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                className="btn-reflection w-full py-4 px-6 rounded-2xl font-black text-sm tracking-wide text-white bg-gradient-to-r from-pink-500 via-rose-600 to-pink-600 hover:from-pink-600 hover:to-rose-700 shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.98]"
               >
                 {isSubmitting ? (
                   <span>Connecting Secure Gateway...</span>
                 ) : (
                   <>
-                    <span>⚡ Pay ₹{selectedPackageForModal.price} via UPI / QR / Card</span>
-                    <ArrowRight className="w-4 h-4 stroke-[3]" />
+                    <Zap className="w-4 h-4 fill-white shrink-0" />
+                    <span>Pay ₹{selectedPackageForModal.price} • Instant 60s Start</span>
+                    <ArrowRight className="w-4 h-4 stroke-[3] shrink-0" />
                   </>
                 )}
               </button>
@@ -768,9 +814,9 @@ export default function FollowersPage() {
               <div className="flex items-center justify-center gap-2.5 text-[10px] text-zinc-400 font-medium pt-1">
                 <span>🛡️ 256-Bit SSL</span>
                 <span>•</span>
-                <span>GPay / PhonePe / Paytm</span>
+                <span>GPay / PhonePe / Paytm / UPI</span>
                 <span>•</span>
-                <span>Instant Start</span>
+                <span>Instant Auto-Dispatch</span>
               </div>
             </form>
           </div>
