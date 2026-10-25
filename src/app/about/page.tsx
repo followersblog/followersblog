@@ -17,13 +17,13 @@ export default function AboutPage() {
               About Followers.blog
             </h1>
             <p className="text-sm text-zinc-600 mt-2">
-              Empowering next-generation digital creators, freelancers, and businesses with modern AI website development skills and social growth infrastructure.
+              Empowering next-generation digital creators, freelancers, and businesses with modern AI website development skills and digital marketing knowledge.
             </p>
           </div>
 
           <div className="space-y-6 text-sm text-zinc-600 leading-relaxed">
             <p>
-              Founded in 2026, <strong>Followers.blog</strong> was built on a simple vision: web development should no longer take months of complex coding syntax. With modern autonomous AI tooling and rapid full-stack frameworks like Next.js and Supabase, anyone can bring their digital ideas to life in hours.
+              Founded in 2026, <strong>Followers.blog</strong> was built on a simple vision: web development and digital marketing should no longer take months of complex coding syntax. With modern autonomous AI tooling and rapid full-stack frameworks like Next.js and Supabase, anyone can bring their digital ideas to life in hours.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
@@ -39,7 +39,7 @@ export default function AboutPage() {
                 <Rocket className="w-6 h-6 text-indigo-600 mb-2" />
                 <h3 className="font-bold text-zinc-900 text-sm mb-1">Creator Acceleration</h3>
                 <p className="text-xs text-zinc-500">
-                  High-retention social growth packages designed to help creators gain initial traction safely.
+                  Curated digital marketing playbooks and prompt bundles designed to help creators gain online traction.
                 </p>
               </div>
 
@@ -47,14 +47,14 @@ export default function AboutPage() {
                 <ShieldCheck className="w-6 h-6 text-emerald-600 mb-2" />
                 <h3 className="font-bold text-zinc-900 text-sm mb-1">Transparency & Trust</h3>
                 <p className="text-xs text-zinc-500">
-                  Zero fake countdowns, clear honest pricing, and dedicated customer support via Telegram & Email.
+                  Zero fake countdowns, clear honest pricing, and dedicated customer support via email desk.
                 </p>
               </div>
             </div>
 
             <h2 className="text-lg font-bold text-zinc-950">Our Commitment</h2>
             <p>
-              Whether you are an aspiring freelancer looking to deliver high-ticket websites to clients, a student looking to master modern generative AI coding, or a creator growing their channel reach, Followers.blog provides the exact tools, templates, and community to accelerate your journey.
+              Whether you are an aspiring freelancer looking to deliver high-ticket websites to clients, a student looking to master modern generative AI coding, or a creator building your brand, Followers.blog provides the exact tools, templates, and community to accelerate your journey.
             </p>
           </div>
         </div>

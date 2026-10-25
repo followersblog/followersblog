@@ -33,19 +33,16 @@ export default function RefundPolicyPage() {
               </li>
             </ul>
 
-            <h2 className="text-lg font-bold text-zinc-950">2. Social Media Services Refund Policy</h2>
+            <h2 className="text-lg font-bold text-zinc-950">2. Digital Marketing Strategy & Creator Asset Bundles</h2>
             <p>
-              For our creator growth services (Instagram, Facebook, YouTube, Telegram):
+              For our digital creator toolkits, marketing strategy guides, and downloadable template packs:
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>
-                <strong>Non-Delivery Guarantee:</strong> If an order is not delivered within the maximum delivery window of 120 hours, a full or pro-rata refund will be issued to your original payment method.
+                <strong>Non-Delivery Guarantee:</strong> If your purchased digital assets or strategy report is not delivered to your student dashboard or registered email within 72 hours, a full 100% refund will be issued.
               </li>
               <li>
-                <strong>30-Day Auto Refill:</strong> Packages marked with a 30-Day refill guarantee are actively monitored. If drop-offs occur within 30 days of completion, our system provides free refills upon request.
-              </li>
-              <li>
-                <strong>Incorrect Target Information:</strong> Refunds cannot be issued if a customer provides an invalid, private, or incorrect social profile URL.
+                <strong>Content Quality Guarantee:</strong> If the digital materials received do not match the specified syllabus outline, our support desk provides free revisions and replacement modules.
               </li>
             </ul>
 
@@ -56,7 +53,7 @@ export default function RefundPolicyPage() {
 
             <h2 className="text-lg font-bold text-zinc-950">4. How to Request a Refund</h2>
             <p>
-              To submit a refund or cancellation request, please email our support desk at <strong>support@followers.blog</strong> or message our verified Telegram support channel with your <strong>Order ID</strong> and reason for cancellation.
+              To submit a refund or cancellation request, please email our support desk at <strong>support@followers.blog</strong> with your <strong>Order ID</strong> and registered email address.
             </p>
           </section>
         </div>

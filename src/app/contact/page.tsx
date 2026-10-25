@@ -106,7 +106,7 @@ export default function ContactPage() {
                   <label className="block font-bold text-zinc-800 mb-1">Order ID (If Applicable)</label>
                   <input
                     type="text"
-                    placeholder="e.g. CRS-102931 or SMM-482019"
+                    placeholder="e.g. CRS-102931 or MED-482019"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-xs focus:outline-hidden focus:border-blue-500"
                   />
                 </div>
