@@ -48,7 +48,7 @@ export default function RefundPolicyPage() {
 
             <h2 className="text-lg font-bold text-zinc-950">3. Refund Processing Timelines</h2>
             <p>
-              Approved refunds are initiated immediately and credited back to the original source account (UPI, Debit/Credit Card, NetBanking) via our payment gateway partner Cashfree within <strong>3 to 7 business days</strong>.
+              Approved refunds are initiated immediately and credited back to the original source account (UPI, Debit/Credit Card, NetBanking) via our authorized payment partners (Cashfree / Razorpay) within <strong>3 to 7 business days</strong>.
             </p>
 
             <h2 className="text-lg font-bold text-zinc-950">4. How to Request a Refund</h2>

@@ -64,9 +64,9 @@ export default function ContactPage() {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-zinc-900">Registered Office Desk</div>
-                    <div className="text-zinc-600">Plot 42, Sector 18, Commercial Tower</div>
-                    <div className="text-zinc-500 text-xs">Gurugram, Haryana - 122008, India</div>
+                    <div className="font-bold text-zinc-900">Registered Office Address</div>
+                    <div className="text-zinc-600">237-3 Mayakund, Rishikesh</div>
+                    <div className="text-zinc-500 text-xs">Dehradun, Uttarakhand - 249201, India</div>
                   </div>
                 </div>
 

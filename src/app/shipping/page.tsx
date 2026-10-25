@@ -46,7 +46,7 @@ export default function ShippingDeliveryPage() {
             <div>
               <h2 className="text-lg font-bold text-zinc-950 mb-2">2. Delivery Confirmation & Tax Invoice</h2>
               <p>
-                Immediately after successful payment processing by our payment gateway partner Cashfree, an official computer-generated Tax Invoice and order confirmation is sent to your registered email address. You can also view and print your receipt directly from our student portal.
+                Immediately after successful payment processing by our authorized payment gateway partners (Cashfree / Razorpay), an official computer-generated Tax Invoice and order confirmation is sent to your registered email address. You can also view and print your receipt directly from our student portal.
               </p>
             </div>
 
@@ -67,6 +67,7 @@ export default function ShippingDeliveryPage() {
               <p>
                 For any queries regarding delivery timelines or student portal credentials, contact: <br />
                 <strong>Email:</strong> support@followers.blog <br />
+                <strong>Registered Office:</strong> 237-3 Mayakund, Rishikesh, Dehradun, Uttarakhand - 249201, India <br />
                 <strong>Operating Desk:</strong> Monday – Sunday, 9:00 AM – 11:00 PM IST
               </p>
             </div>

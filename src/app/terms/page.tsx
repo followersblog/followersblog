@@ -51,7 +51,8 @@ export default function TermsPage() {
             <p>
               For legal inquiries or clarifications regarding these Terms, please contact: <br />
               <strong>Email:</strong> support@followers.blog <br />
-              <strong>Official Website:</strong> https://followers.blog
+              <strong>Official Website:</strong> https://follower.blog <br />
+              <strong>Registered Address:</strong> 237-3 Mayakund, Rishikesh, Dehradun, Uttarakhand - 249201, India
             </p>
           </section>
         </div>
