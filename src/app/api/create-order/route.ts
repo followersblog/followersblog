@@ -24,16 +24,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Convert to paise if passed in standard INR (e.g. 1499 -> 149900)
-    let amountInPaise = Math.round(Number(amount));
-    if (amountInPaise < 100) {
-      // If amount was passed in rupees, convert to paise
-      amountInPaise = Math.round(Number(amount) * 100);
-    }
+    // Convert INR to Paise (e.g. ₹49 -> 4900 paise, ₹1499 -> 149900 paise)
+    const numericAmount = Number(amount);
+    const amountInPaise = Math.round(numericAmount * 100);
 
     if (amountInPaise < 100) {
       return NextResponse.json(
-        { error: 'Minimum amount must be at least 100 paise (₹1)' },
+        { error: 'Minimum amount must be at least ₹1 (100 paise)' },
         { status: 400 }
       );
     }
@@ -96,8 +93,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('Razorpay Create Order Error:', error);
+    const errDesc = error?.error?.description || error?.description || error?.message || 'Failed to create Razorpay order';
     return NextResponse.json(
-      { error: error?.message || 'Failed to create Razorpay order' },
+      { error: errDesc },
       { status: error?.statusCode || 500 }
     );
   }
