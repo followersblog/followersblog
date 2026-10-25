@@ -26,6 +26,16 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
   }
+
+  /* Remove cheap browser-default blue focus outline on all inputs */
+  input, textarea, select {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+  input:focus, input:focus-visible, input:active {
+    outline: none !important;
+    box-shadow: none !important;
+  }
 }
 
 /* Custom glowing & pulse animations */

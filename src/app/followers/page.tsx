@@ -110,8 +110,15 @@ export default function FollowersPage() {
 
   const telegramLink = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT_URL || 'https://t.me/FollowersBlogSupport';
 
+  // Preload Razorpay checkout script immediately on page load for lightning-fast 1-click checkout
+  useEffect(() => {
+    loadRazorpayScript();
+  }, []);
+
   const handleBuyNow = (pkg: SocialServicePackage) => {
     setSelectedPackageForModal(pkg);
+    // Ensure script is ready in memory
+    loadRazorpayScript();
   };
 
   const handleProceedToPayment = async (e: React.FormEvent) => {
@@ -772,7 +779,7 @@ export default function FollowersPage() {
                   <label className="block text-xs font-bold text-zinc-800 mb-1">
                     Target Profile URL / Username <span className="text-rose-500">*</span>
                   </label>
-                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-100 focus-within:bg-white transition-all overflow-hidden shadow-xs">
+                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-200 focus-within:bg-white transition-all overflow-hidden shadow-xs">
                     <div className="pl-3.5 pr-1.5 text-zinc-400 font-bold text-sm shrink-0 select-none">
                       @
                     </div>
@@ -782,7 +789,7 @@ export default function FollowersPage() {
                       placeholder="username ya link paste karein"
                       value={targetUsername}
                       onChange={(e) => setTargetUsername(e.target.value)}
-                      className="w-full pr-3.5 py-2.5 bg-transparent text-sm focus:outline-hidden text-zinc-900 placeholder:text-zinc-400"
+                      className="w-full pr-3.5 py-2.5 bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 border-none outline-none focus:outline-none focus:ring-0 ring-0"
                     />
                   </div>
                   <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
@@ -795,7 +802,7 @@ export default function FollowersPage() {
                   <label className="block text-xs font-bold text-zinc-800 mb-1">
                     WhatsApp Mobile Number <span className="text-rose-500">*</span>
                   </label>
-                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-100 focus-within:bg-white transition-all overflow-hidden shadow-xs">
+                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-200 focus-within:bg-white transition-all overflow-hidden shadow-xs">
                     <div className="px-3 py-2.5 bg-zinc-100 border-r border-zinc-200 text-xs font-bold text-zinc-700 flex items-center gap-1.5 shrink-0 select-none">
                       <span>🇮🇳</span>
                       <span>+91</span>
@@ -807,7 +814,7 @@ export default function FollowersPage() {
                       placeholder="10-digit WhatsApp number"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ''))}
-                      className="w-full px-3.5 py-2.5 bg-transparent text-sm font-medium tracking-wide text-zinc-900 placeholder:text-zinc-400 focus:outline-hidden"
+                      className="w-full px-3.5 py-2.5 bg-transparent text-sm font-medium tracking-wide text-zinc-900 placeholder:text-zinc-400 border-none outline-none focus:outline-none focus:ring-0 ring-0"
                     />
                   </div>
                   <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
@@ -820,7 +827,7 @@ export default function FollowersPage() {
                   <label className="block text-xs font-bold text-zinc-800 mb-1">
                     Email Address <span className="text-[11px] text-zinc-400 font-normal">(Optional for Tax Invoice)</span>
                   </label>
-                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-100 focus-within:bg-white transition-all overflow-hidden shadow-xs">
+                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-200 focus-within:bg-white transition-all overflow-hidden shadow-xs">
                     <div className="pl-3.5 pr-2 text-zinc-400 shrink-0 select-none">
                       <Mail className="w-4 h-4 text-zinc-400" />
                     </div>
@@ -829,7 +836,7 @@ export default function FollowersPage() {
                       placeholder="e.g. name@gmail.com"
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full pr-3.5 py-2.5 bg-transparent text-sm focus:outline-hidden text-zinc-900 placeholder:text-zinc-400"
+                      className="w-full pr-3.5 py-2.5 bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 border-none outline-none focus:outline-none focus:ring-0 ring-0"
                     />
                   </div>
                   <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">

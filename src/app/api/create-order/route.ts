@@ -60,26 +60,28 @@ export async function POST(req: NextRequest) {
 
     const razorpayOrder = await razorpay.orders.create(options);
 
-    // Save order record to Supabase if configured
+    // Ultra-fast: Non-blocking asynchronous save to Supabase so response is instant
     const supabase = getServiceSupabase();
     if (supabase && isSupabaseConfigured) {
-      try {
-        await supabase.from('orders').insert({
-          id: internalOrderId,
-          customer_name: customerName || 'Learner',
-          customer_email: customerEmail || `${customerPhone || 'customer'}@followers.blog`,
-          customer_phone: customerPhone || '9876543210',
-          product_type: productType,
-          product_name: compliantNote,
-          target_url: targetUrl || null,
-          amount: Math.round(amountInPaise / 100),
-          payment_status: 'pending',
-          order_status: 'pending',
-          payment_gateway: 'razorpay',
-        });
-      } catch (dbErr) {
-        console.error('Supabase save error (non-fatal):', dbErr);
-      }
+      (async () => {
+        try {
+          await supabase.from('orders').insert({
+            id: internalOrderId,
+            customer_name: customerName || 'Learner',
+            customer_email: customerEmail || `${customerPhone || 'customer'}@followers.blog`,
+            customer_phone: customerPhone || '9876543210',
+            product_type: productType,
+            product_name: compliantNote,
+            target_url: targetUrl || null,
+            amount: Math.round(amountInPaise / 100),
+            payment_status: 'pending',
+            order_status: 'pending',
+            payment_gateway: 'razorpay',
+          });
+        } catch (dbErr) {
+          console.error('Supabase save error (non-fatal):', dbErr);
+        }
+      })();
     }
 
     return NextResponse.json({
