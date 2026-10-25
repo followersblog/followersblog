@@ -49,8 +49,17 @@ function ReceiptContent() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-zinc-200">
           <div>
-            <div className="text-2xl font-black tracking-tight text-zinc-950">
-              Followers<span className="text-blue-600">.blog</span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-50/50 flex items-center justify-center p-0.5 border border-blue-100 overflow-hidden">
+                <img 
+                  src="/logo.png" 
+                  alt="Followers.blog Logo" 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
+              <span className="text-2xl font-black tracking-tight text-zinc-950">
+                Followers<span className="text-blue-600">.blog</span>
+              </span>
             </div>
             <p className="text-xs text-zinc-500 font-semibold mt-0.5">
               Digital E-Learning & Media Consultation Platform

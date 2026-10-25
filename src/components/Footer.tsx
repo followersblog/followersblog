@@ -10,8 +10,12 @@ export default function Footer() {
           {/* Brand Info */}
           <div className="md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
-                <Sparkles className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-blue-50/50 flex items-center justify-center p-1 border border-blue-100 shadow-xs overflow-hidden">
+                <img 
+                  src="/logo.png" 
+                  alt="Followers.blog Logo" 
+                  className="w-full h-full object-contain" 
+                />
               </div>
               <span className="font-extrabold text-xl tracking-tight text-zinc-900">
                 Followers<span className="text-blue-600">.blog</span>

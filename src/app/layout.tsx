@@ -21,7 +21,12 @@ export const metadata: Metadata = {
     description: '3-hour practical live workshop to build modern websites with AI.',
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/icon.png',
+    apple: '/apple-icon.png',
   },
 };
 

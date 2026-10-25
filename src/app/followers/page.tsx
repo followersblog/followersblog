@@ -157,15 +157,18 @@ export default function FollowersPage() {
       <header className="border-b border-zinc-100 bg-white sticky top-0 z-40 shadow-xs">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/followers" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 flex items-center justify-center text-white shadow-xs">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center p-0.5 border border-zinc-200/80 shadow-xs overflow-hidden">
+              <img 
+                src="/logo.png" 
+                alt="Followers.blog Logo" 
+                className="w-full h-full object-contain" 
+              />
             </div>
             <div>
               <div className="flex items-center gap-1">
                 <span className="text-xl font-black tracking-tight text-zinc-950">
                   FOLLOWERS<span className="text-pink-600">.BLOG</span>
                 </span>
-                <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1 rounded">IN</span>
               </div>
               <p className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider -mt-0.5">
                 #1 Premium Social Growth & AI Hub
@@ -647,6 +650,13 @@ export default function FollowersPage() {
       <footer className="mt-auto py-8 bg-zinc-900 text-zinc-400 text-xs text-center border-t border-zinc-800">
         <div className="max-w-2xl mx-auto px-4 space-y-3">
           <div className="flex items-center justify-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center p-0.5 overflow-hidden">
+              <img 
+                src="/logo.png" 
+                alt="Followers.blog Logo" 
+                className="w-full h-full object-contain" 
+              />
+            </div>
             <span className="font-extrabold text-white text-base">Followers.blog</span>
           </div>
           <p className="text-[11px] text-zinc-500">

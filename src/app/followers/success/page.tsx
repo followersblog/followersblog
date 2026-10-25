@@ -192,9 +192,18 @@ function FollowersSuccessContent() {
 export default function FollowersSuccessPage() {
   return (
     <div className="min-h-screen bg-zinc-50 font-sans">
-      <header className="border-b border-zinc-200 bg-white py-4 px-6 text-center">
-        <Link href="/followers" className="font-black text-lg text-zinc-950">
-          Followers<span className="text-pink-600">.blog</span>
+      <header className="border-b border-zinc-200 bg-white py-3 px-6 flex items-center justify-center">
+        <Link href="/followers" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center p-0.5 border border-zinc-200 shadow-xs overflow-hidden">
+            <img 
+              src="/logo.png" 
+              alt="Followers.blog Logo" 
+              className="w-full h-full object-contain" 
+            />
+          </div>
+          <span className="font-black text-lg text-zinc-950">
+            Followers<span className="text-pink-600">.blog</span>
+          </span>
         </Link>
       </header>
 

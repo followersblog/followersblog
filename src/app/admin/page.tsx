@@ -283,9 +283,14 @@ export default function AdminDashboardPage() {
             <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
               Restricted Area
             </span>
-            <h1 className="text-2xl font-black text-white mt-2">
-              Followers<span className="text-blue-500">.blog</span>
-            </h1>
+            <div className="flex items-center justify-center gap-2.5 mt-2">
+              <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center p-0.5 border border-zinc-700 overflow-hidden">
+                <img src="/logo.png" alt="Followers.blog Logo" className="w-full h-full object-contain" />
+              </div>
+              <h1 className="text-2xl font-black text-white">
+                Followers<span className="text-blue-500">.blog</span>
+              </h1>
+            </div>
             <p className="text-xs text-zinc-400 mt-1">
               Admin Portal Security Gateway. Authentication required.
             </p>
@@ -343,8 +348,8 @@ export default function AdminDashboardPage() {
       <aside className="w-64 bg-zinc-900 text-zinc-300 hidden md:flex flex-col shrink-0">
         <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
-              FB
+            <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center p-0.5 border border-zinc-700 overflow-hidden">
+              <img src="/logo.png" alt="Followers.blog Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="font-extrabold text-white text-base">followers.blog</div>

@@ -13,8 +13,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-sky-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-blue-50/50 flex items-center justify-center p-1 border border-blue-100 group-hover:scale-105 transition-transform overflow-hidden">
+              <img 
+                src="/logo.png" 
+                alt="Followers.blog Logo" 
+                className="w-full h-full object-contain" 
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-zinc-900 group-hover:text-blue-600 transition-colors">
