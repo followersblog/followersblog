@@ -108,7 +108,7 @@ function FollowersCheckoutContent() {
 
       // 3. Open Razorpay Checkout Modal
       const options = {
-        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_Ts840pCB0WvHBf',
         amount: data.amount,
         currency: data.currency || 'INR',
         name: 'Followers.blog',
