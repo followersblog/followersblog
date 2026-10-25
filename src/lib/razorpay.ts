@@ -2,8 +2,8 @@ import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
 export const getRazorpayInstance = () => {
-  const key_id = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_Ts840pCB0WvHBf';
-  const key_secret = process.env.RAZORPAY_KEY_SECRET || 'AsMpIkXR0BqR4tTmu2Eypsg7';
+  const key_id = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC';
+  const key_secret = process.env.RAZORPAY_KEY_SECRET || 'fhZvPTLKlNBcS7hgQBSNizWB';
 
   return new Razorpay({
     key_id,
@@ -19,7 +19,7 @@ export const verifyRazorpaySignature = (
   paymentId: string,
   signature: string
 ): boolean => {
-  const secret = process.env.RAZORPAY_KEY_SECRET || 'AsMpIkXR0BqR4tTmu2Eypsg7';
+  const secret = process.env.RAZORPAY_KEY_SECRET || 'fhZvPTLKlNBcS7hgQBSNizWB';
   if (!secret) return false;
 
   const generatedSignature = crypto

@@ -165,7 +165,7 @@ export default function FollowersPage() {
 
       // 3. Open Razorpay Checkout Modal directly with prefilled contact details
       const options = {
-        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_Ts840pCB0WvHBf',
+        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
         amount: data.amount,
         currency: data.currency || 'INR',
         name: 'Followers.blog',
