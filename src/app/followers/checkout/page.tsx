@@ -69,10 +69,19 @@ function FollowersCheckoutContent() {
       return;
     }
 
-    if (!targetUrl.trim() || !customerName.trim() || !customerPhone.trim()) {
-      setErrorMessage('Please fill in Target URL, Name, and Phone number.');
+    if (!targetUrl.trim()) {
+      setErrorMessage('Please fill in Target URL / Username.');
       return;
     }
+
+    const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
+    if (cleanPhone.length < 10) {
+      setErrorMessage('Please enter a valid 10-digit mobile number.');
+      return;
+    }
+
+    const displayName = customerName.trim() || targetUrl.trim().replace(/^@/, '') || 'Creator';
+    const email = customerEmail.trim() || `${cleanPhone}@followers.blog`;
 
     setIsProcessing(true);
     setErrorMessage('');
@@ -93,9 +102,9 @@ function FollowersCheckoutContent() {
           currency: 'INR',
           productType: 'service',
           productId: selectedPkg.id,
-          customerName,
-          customerEmail: customerEmail || `${customerPhone}@followers.blog`,
-          customerPhone,
+          customerName: displayName,
+          customerEmail: email,
+          customerPhone: cleanPhone,
           targetUrl,
         }),
       });
@@ -116,9 +125,9 @@ function FollowersCheckoutContent() {
         image: '/logo.png',
         order_id: data.order_id,
         prefill: {
-          name: customerName,
-          email: customerEmail || `${customerPhone}@followers.blog`,
-          contact: customerPhone,
+          name: displayName,
+          email: email,
+          contact: cleanPhone,
         },
         notes: {
           service: 'Digital Creator Strategy Class',

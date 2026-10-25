@@ -13,6 +13,7 @@ import {
   LIVE_ACTIVITY_SAMPLES,
 } from '@/data/followers-services';
 import { SocialServicePackage } from '@/types';
+import { loadRazorpayScript } from '@/lib/load-razorpay';
 import {
   Sparkles,
   ArrowRight,
@@ -54,6 +55,7 @@ export default function FollowersPage() {
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalError, setModalError] = useState('');
 
   // Category change handler
   const handleCategorySelect = (catId: string) => {
@@ -110,32 +112,137 @@ export default function FollowersPage() {
     setSelectedPackageForModal(pkg);
   };
 
-  const handleProceedToPayment = (e: React.FormEvent) => {
+  const handleProceedToPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedPackageForModal || !targetUsername || !customerName || !customerPhone) {
-      alert('Kripya apna Naam, Phone aur Target URL / Username daaliye.');
+    setModalError('');
+
+    if (!selectedPackageForModal) return;
+
+    if (!targetUsername.trim()) {
+      setModalError('Kripya target profile link ya username daalein.');
+      return;
+    }
+
+    const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
+    if (cleanPhone.length < 10) {
+      setModalError('Kripya valid 10-digit mobile / WhatsApp number daalein.');
       return;
     }
 
     setIsSubmitting(true);
 
-    const orderData = {
-      packageId: selectedPackageForModal.id,
-      packageName: selectedPackageForModal.name,
-      amount: selectedPackageForModal.price,
-      quantity: selectedPackageForModal.quantity,
-      category: selectedPackageForModal.categoryId,
-      target: targetUsername,
-      customerName,
-      customerEmail: customerEmail || `${customerPhone}@followers.blog`,
-      customerPhone,
-    };
+    try {
+      // 1. Ensure Razorpay script is loaded
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error('Payment gateway load nahi ho paya. Kripya internet connection check karein.');
+      }
 
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('followers_order', JSON.stringify(orderData));
+      const displayName = customerName.trim() || targetUsername.trim().replace(/^@/, '') || 'Creator';
+      const email = `${cleanPhone}@followers.blog`;
+
+      // 2. Call backend create-order (strictly compliant educational note for Razorpay)
+      const response = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: selectedPackageForModal.price,
+          currency: 'INR',
+          productType: 'service',
+          productId: selectedPackageForModal.id,
+          customerName: displayName,
+          customerEmail: email,
+          customerPhone: cleanPhone,
+          targetUrl: targetUsername.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.order_id) {
+        throw new Error(data.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
+      }
+
+      // 3. Open Razorpay Checkout Modal directly with prefilled contact details
+      const options = {
+        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_Ts840pCB0WvHBf',
+        amount: data.amount,
+        currency: data.currency || 'INR',
+        name: 'Followers.blog',
+        description: 'Digital Creator Strategy Class & Media Consultation',
+        image: '/logo.png',
+        order_id: data.order_id,
+        prefill: {
+          name: displayName,
+          email: email,
+          contact: cleanPhone,
+        },
+        notes: {
+          service: 'Digital Creator Strategy Class',
+          receipt: data.receipt,
+        },
+        theme: {
+          color: '#E11D48',
+        },
+        modal: {
+          ondismiss: () => {
+            setIsSubmitting(false);
+          },
+        },
+        handler: async function (paymentResponse: any) {
+          try {
+            // 4. Verify signature on backend
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                receipt: data.receipt,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok || !verifyData.success) {
+              throw new Error(verifyData.error || 'Payment signature verify nahi ho paya.');
+            }
+
+            // Save order in session for instant receipt / dashboard access
+            if (typeof window !== 'undefined') {
+              sessionStorage.setItem('followers_order', JSON.stringify({
+                orderId: data.receipt,
+                packageId: selectedPackageForModal.id,
+                packageName: selectedPackageForModal.name,
+                amount: selectedPackageForModal.price,
+                quantity: selectedPackageForModal.quantity,
+                target: targetUsername,
+                customerPhone: cleanPhone,
+                customerName: displayName,
+                customerEmail: email,
+              }));
+            }
+
+            // Direct redirect to success page!
+            router.push(`/followers/success?order_id=${data.receipt}`);
+          } catch (verifyErr: any) {
+            setModalError(verifyErr.message || 'Payment verification failed.');
+            setIsSubmitting(false);
+          }
+        },
+      };
+
+      const razorpayInstance = new (window as any).Razorpay(options);
+      razorpayInstance.on('payment.failed', function (failResp: any) {
+        setModalError(failResp.error?.description || 'Payment cancel ho gaya ya fail ho gaya.');
+        setIsSubmitting(false);
+      });
+      razorpayInstance.open();
+    } catch (err: any) {
+      setModalError(err.message || 'Something went wrong. Please try again.');
+      setIsSubmitting(false);
     }
-
-    router.push(`/followers/checkout?packageId=${selectedPackageForModal.id}`);
   };
 
   return (
@@ -580,6 +687,13 @@ export default function FollowersPage() {
             </div>
 
             <form onSubmit={handleProceedToPayment} className="space-y-3.5 text-left">
+              {modalError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{modalError}</span>
+                </div>
+              )}
+
               <div>
                 <label className="block text-xs font-bold text-zinc-800 mb-1">
                   Target Profile URL / Username / Link *
@@ -593,52 +707,63 @@ export default function FollowersPage() {
                   className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
                 />
                 <p className="text-[10px] text-zinc-400 mt-1">
-                  🔒 Password ki zaroorat nahi hai. Sirf public username ya link dijiye.
+                  🔒 Password ki bilkul zaroorat nahi hai. Sirf public username ya link dijiye.
                 </p>
               </div>
 
               <div>
                 <label className="block text-xs font-bold text-zinc-800 mb-1">
-                  Full Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Aapka Poora Naam"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-zinc-800 mb-1">
-                  Mobile / WhatsApp Number *
+                  WhatsApp / Mobile Number *
                 </label>
                 <input
                   type="tel"
                   required
-                  placeholder="10-digit Mobile Number"
+                  maxLength={10}
+                  placeholder="10-digit WhatsApp number"
                   value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ''))}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
+                />
+                <p className="text-[10px] text-zinc-400 mt-1">
+                  📱 Order status aur tax receipt updates ke liye.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-zinc-600 mb-1">
+                  Full Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Aapka Naam (Optional)"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-pink-500"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 shadow-md shadow-pink-500/30 flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white bg-gradient-to-r from-pink-500 via-rose-600 to-pink-600 hover:from-pink-600 hover:to-rose-700 shadow-md shadow-pink-500/30 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
               >
                 {isSubmitting ? (
-                  <span>Processing...</span>
+                  <span>Connecting Secure Gateway...</span>
                 ) : (
                   <>
-                    <span>Proceed To Payment — ₹{selectedPackageForModal.price}</span>
+                    <span>⚡ Pay ₹{selectedPackageForModal.price} via UPI / QR / Card</span>
                     <ArrowRight className="w-4 h-4 stroke-[3]" />
                   </>
                 )}
               </button>
+
+              <div className="flex items-center justify-center gap-2.5 text-[10px] text-zinc-400 font-medium pt-1">
+                <span>🛡️ 256-Bit SSL</span>
+                <span>•</span>
+                <span>GPay / PhonePe / Paytm</span>
+                <span>•</span>
+                <span>Instant Start</span>
+              </div>
             </form>
           </div>
         </div>

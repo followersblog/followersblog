@@ -56,7 +56,8 @@ export default function CourseCheckoutPage() {
       return;
     }
 
-    if (phone.length < 10) {
+    const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+    if (cleanPhone.length < 10) {
       setErrorMessage('Please enter a valid 10-digit mobile number.');
       return;
     }
@@ -88,7 +89,7 @@ export default function CourseCheckoutPage() {
           productName: COURSE_DETAILS.name,
           customerName: fullName,
           customerEmail: email,
-          customerPhone: phone,
+          customerPhone: cleanPhone,
           addons: chosenAddonsList,
         }),
       });
@@ -111,7 +112,7 @@ export default function CourseCheckoutPage() {
         prefill: {
           name: fullName,
           email: email,
-          contact: phone,
+          contact: cleanPhone,
         },
         notes: {
           course: 'AI Website Building',
