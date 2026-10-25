@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -20,6 +20,37 @@ import {
 function FollowersSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id') || 'SMM-2026-ACTIVE';
+  const paramAmount = searchParams.get('amount') || '';
+  const paramName = searchParams.get('name') || '';
+  const paramEmail = searchParams.get('email') || '';
+  const paramPhone = searchParams.get('phone') || '';
+
+  const [sessionOrder, setSessionOrder] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('followers_order');
+      if (saved) {
+        try {
+          setSessionOrder(JSON.parse(saved));
+        } catch (e) {}
+      }
+    }
+  }, []);
+
+  const activeAmount = paramAmount || (sessionOrder?.amount !== undefined ? String(sessionOrder.amount) : '1');
+  const activeName = paramName || sessionOrder?.customerName || 'Valued Customer';
+  const activeEmail = paramEmail || sessionOrder?.customerEmail || '';
+  const activePhone = paramPhone || sessionOrder?.customerPhone || '';
+
+  // Dynamic receipt URL with exact amount paid
+  const receiptQuery = new URLSearchParams();
+  receiptQuery.set('order_id', orderId);
+  receiptQuery.set('amount', activeAmount);
+  if (activeName) receiptQuery.set('name', activeName);
+  if (activeEmail) receiptQuery.set('email', activeEmail);
+  if (activePhone) receiptQuery.set('phone', activePhone);
+  const receiptUrl = `/receipt?${receiptQuery.toString()}`;
 
   // Section 19 Requirement: SMM Processing Modal
   const [showTrafficModal, setShowTrafficModal] = useState(true);
@@ -165,24 +196,18 @@ function FollowersSuccessContent() {
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         <Link
-          href={`/receipt?order_id=${orderId}`}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-zinc-800 bg-white border border-zinc-300 hover:bg-zinc-50 transition-all shadow-xs"
+          href={receiptUrl}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-zinc-800 bg-white border border-zinc-300 hover:bg-zinc-50 transition-all shadow-xs"
         >
           <FileText className="w-4 h-4 text-blue-600" />
           <span>Tax Invoice & Receipt</span>
         </Link>
         <Link
-          href="/dashboard"
+          href="/followers"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-xs sm:text-sm text-white bg-zinc-950 hover:bg-zinc-800 transition-all shadow-md"
         >
-          <span>Track in My Dashboard</span>
+          <span>Explore More Services</span>
           <ArrowRight className="w-4 h-4" />
-        </Link>
-        <Link
-          href="/followers"
-          className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors"
-        >
-          Explore More Services
         </Link>
       </div>
     </div>

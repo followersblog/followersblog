@@ -50,13 +50,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.redirect(`${baseUrl}/followers?payment_status=invalid_signature`, 303);
     }
 
-    // Try to get receipt / internal order id from Razorpay order
+    // Try to get receipt / internal order id & details from Razorpay order
     let receipt = razorpay_order_id;
+    let orderAmount = '';
+    let customerName = '';
+    let customerEmail = '';
+    let customerPhone = '';
+
     try {
       const razorpay = getRazorpayInstance();
       const rzpOrder = await razorpay.orders.fetch(razorpay_order_id);
-      if (rzpOrder && rzpOrder.receipt) {
-        receipt = rzpOrder.receipt;
+      if (rzpOrder) {
+        if (rzpOrder.receipt) receipt = rzpOrder.receipt;
+        if (rzpOrder.amount) orderAmount = String(Math.round(Number(rzpOrder.amount) / 100));
+        if (rzpOrder.notes) {
+          customerName = (rzpOrder.notes.customer_name as string) || '';
+          customerEmail = (rzpOrder.notes.customer_email as string) || '';
+          customerPhone = (rzpOrder.notes.customer_phone as string) || '';
+        }
       }
     } catch (fetchErr) {
       console.warn('Could not fetch razorpay order details:', fetchErr);
@@ -86,9 +97,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // REDIRECT DIRECTLY TO THE SMM SUCCESS PAGE!
+    // REDIRECT DIRECTLY TO THE SMM SUCCESS PAGE WITH ACCURATE PARAMS!
+    const redirectParams = new URLSearchParams();
+    redirectParams.set('order_id', receipt);
+    redirectParams.set('payment_id', razorpay_payment_id);
+    if (orderAmount) redirectParams.set('amount', orderAmount);
+    if (customerName) redirectParams.set('name', customerName);
+    if (customerEmail) redirectParams.set('email', customerEmail);
+    if (customerPhone) redirectParams.set('phone', customerPhone);
+
     return NextResponse.redirect(
-      `${baseUrl}/followers/success?order_id=${encodeURIComponent(receipt)}&payment_id=${encodeURIComponent(razorpay_payment_id)}`,
+      `${baseUrl}/followers/success?${redirectParams.toString()}`,
       303
     );
   } catch (err: any) {

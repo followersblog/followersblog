@@ -223,7 +223,7 @@ export default function FollowersPage() {
               throw new Error(verifyData.error || 'Payment signature verify nahi ho paya.');
             }
 
-            // Save order in session for instant receipt / dashboard access
+            // Save order in session for instant receipt access
             if (typeof window !== 'undefined') {
               sessionStorage.setItem('followers_order', JSON.stringify({
                 orderId: data.receipt,
@@ -236,10 +236,15 @@ export default function FollowersPage() {
                 customerName: displayName,
                 customerEmail: email,
               }));
-              // Force direct browser navigation so modal unmounts cleanly
-              window.location.href = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}`;
+            }
+
+            // Direct redirect to success page with full order details!
+            const successUrl = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}&amount=${encodeURIComponent(String(selectedPackageForModal.price))}&name=${encodeURIComponent(displayName)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(cleanPhone)}`;
+
+            if (typeof window !== 'undefined') {
+              window.location.href = successUrl;
             } else {
-              router.push(`/followers/success?order_id=${data.receipt}`);
+              router.push(successUrl);
             }
           } catch (verifyErr: any) {
             setModalError(verifyErr.message || 'Payment verification failed.');

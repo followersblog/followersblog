@@ -35,8 +35,8 @@ export default function AdminDashboardPage() {
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [authError, setAuthError] = useState<string>('');
 
-  // Default secure admin passcode (can also match ADMIN_SECRET_KEY in .env)
-  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASS || 'followers2026admin';
+  // Default secure admin passcode
+  const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASS || 'followers@7055';
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

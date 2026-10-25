@@ -119,17 +119,11 @@ function CourseSuccessContent() {
       {/* Action CTA */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         <Link
-          href="/dashboard"
+          href="/"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm text-white bg-zinc-900 hover:bg-zinc-800 shadow-md transition-all"
         >
-          <span>Go to My Dashboard</span>
+          <span>Back to Home</span>
           <ArrowRight className="w-4 h-4" />
-        </Link>
-        <Link
-          href="/"
-          className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-semibold text-sm text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors"
-        >
-          Back to Home
         </Link>
       </div>
     </div>

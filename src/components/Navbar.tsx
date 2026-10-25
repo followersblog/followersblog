@@ -51,13 +51,6 @@ export default function Navbar() {
             >
               FAQ
             </Link>
-            <Link 
-              href="/dashboard" 
-              className="text-sm font-semibold text-zinc-700 hover:text-blue-600 transition-colors flex items-center gap-1"
-            >
-              <User className="w-4 h-4 text-zinc-400" />
-              Dashboard
-            </Link>
           </nav>
 
           {/* Right CTA */}
@@ -117,14 +110,6 @@ export default function Navbar() {
             className="block px-3 py-2 rounded-lg text-base font-semibold text-zinc-800 hover:bg-blue-50 hover:text-blue-600"
           >
             Frequently Asked Questions
-          </Link>
-          <Link
-            href="/dashboard"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-base font-semibold text-zinc-800 hover:bg-zinc-100"
-          >
-            <User className="w-4 h-4 text-zinc-500" />
-            My Dashboard
           </Link>
           <div className="pt-2">
             <Link

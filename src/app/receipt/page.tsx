@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Printer, ShieldCheck, CheckCircle2, FileText, ArrowLeft } from 'lucide-react';
@@ -8,11 +8,42 @@ import { Printer, ShieldCheck, CheckCircle2, FileText, ArrowLeft } from 'lucide-
 function ReceiptContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id') || 'MED-849102-AI7Z';
-  const name = searchParams.get('name') || 'Valued Customer';
-  const email = searchParams.get('email') || 'customer@followers.blog';
-  const phone = searchParams.get('phone') || '+91 98XXXXXXXX';
-  const amount = searchParams.get('amount') || '299';
+  const paramName = searchParams.get('name') || '';
+  const paramEmail = searchParams.get('email') || '';
+  const paramPhone = searchParams.get('phone') || '';
+  const paramAmount = searchParams.get('amount') || '';
   const date = searchParams.get('date') || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const [orderState, setOrderState] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    amount: string;
+  }>({
+    name: paramName || 'Valued Customer',
+    email: paramEmail || 'customer@followers.blog',
+    phone: paramPhone || '+91 98XXXXXXXX',
+    amount: paramAmount || '1',
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('followers_order');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setOrderState((prev) => ({
+            name: paramName || parsed.customerName || prev.name,
+            email: paramEmail || parsed.customerEmail || prev.email,
+            phone: paramPhone || (parsed.customerPhone ? `+91 ${parsed.customerPhone}` : prev.phone),
+            amount: paramAmount || (parsed.amount !== undefined ? String(parsed.amount) : prev.amount),
+          }));
+        } catch (e) {}
+      }
+    }
+  }, [paramName, paramEmail, paramPhone, paramAmount]);
+
+  const { name, email, phone, amount } = orderState;
 
   // Compliant naming: Course/Consultation instead of SMM
   const isCourse = orderId.startsWith('CRS');
@@ -29,11 +60,11 @@ function ReceiptContent() {
       {/* Action Bar (Hidden when printing) */}
       <div className="flex items-center justify-between mb-6 print:hidden">
         <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-zinc-900"
+          href="/followers"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 hover:text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-3.5 py-2 rounded-xl transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Dashboard</span>
+          <span>Back to Followers Hub</span>
         </Link>
         <button
           onClick={() => window.print()}
@@ -94,7 +125,7 @@ function ReceiptContent() {
               Payment & Dispatch Info
             </div>
             <div className="text-zinc-700"><strong>Date of Issue:</strong> {date}</div>
-            <div className="text-zinc-700"><strong>Payment Gateway:</strong> Cashfree Payments (Verified 256-Bit SSL)</div>
+            <div className="text-zinc-700"><strong>Payment Gateway:</strong> Razorpay Payments (Verified 256-Bit SSL)</div>
             <div className="text-zinc-700"><strong>Delivery Mode:</strong> Electronic / Digital Access Dispatched</div>
           </div>
         </div>

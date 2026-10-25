@@ -46,11 +46,6 @@ export default function Footer() {
                   AI Website Building Course
                 </Link>
               </li>
-              <li>
-                <Link href="/dashboard" className="hover:text-blue-600 transition-colors">
-                  Student Portal
-                </Link>
-              </li>
             </ul>
           </div>
 
