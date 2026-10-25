@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SOCIAL_PACKAGES } from '@/data/followers-services';
 import { SocialServicePackage } from '@/types';
+import { loadRazorpayScript } from '@/lib/load-razorpay';
 import {
   Sparkles,
   ArrowRight,
@@ -74,36 +75,98 @@ function FollowersCheckoutContent() {
     }
 
     setIsProcessing(true);
+    setErrorMessage('');
 
     try {
-      const response = await fetch('/api/checkout/create-order', {
+      // 1. Ensure Razorpay checkout.js script is loaded
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error('Razorpay payment gateway failed to load. Please check your connection.');
+      }
+
+      // 2. Call backend create-order (with compliant note)
+      const response = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          amount: selectedPkg.price,
+          currency: 'INR',
           productType: 'service',
           productId: selectedPkg.id,
-          productName: selectedPkg.name,
-          category: selectedPkg.categoryId,
-          quantity: selectedPkg.quantity,
           customerName,
           customerEmail: customerEmail || `${customerPhone}@followers.blog`,
           customerPhone,
           targetUrl,
-          amount: selectedPkg.price,
         }),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to process order.');
+      if (!response.ok || !data.order_id) {
+        throw new Error(data.error || 'Failed to initiate payment.');
       }
 
-      if (data.paymentSessionId && data.isCashfreeLive) {
-        window.location.href = data.paymentUrl || `/followers/success?order_id=${data.orderId}`;
-      } else {
-        router.push(`/followers/success?order_id=${data.orderId}`);
-      }
+      // 3. Open Razorpay Checkout Modal
+      const options = {
+        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency || 'INR',
+        name: 'Followers.blog',
+        description: 'Digital Creator Strategy Class & Media Consultation',
+        image: '/logo.png',
+        order_id: data.order_id,
+        prefill: {
+          name: customerName,
+          email: customerEmail || `${customerPhone}@followers.blog`,
+          contact: customerPhone,
+        },
+        notes: {
+          service: 'Digital Creator Strategy Class',
+          receipt: data.receipt,
+        },
+        theme: {
+          color: '#E11D48',
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+          },
+        },
+        handler: async function (paymentResponse: any) {
+          try {
+            // 4. Verify signature on backend
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                receipt: data.receipt,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok || !verifyData.success) {
+              throw new Error(verifyData.error || 'Payment signature verification failed.');
+            }
+
+            // Redirect to success page
+            router.push(`/followers/success?order_id=${data.receipt}`);
+          } catch (verifyErr: any) {
+            setErrorMessage(verifyErr.message || 'Payment verification failed. Please contact support.');
+            setIsProcessing(false);
+          }
+        },
+      };
+
+      const razorpayInstance = new (window as any).Razorpay(options);
+      razorpayInstance.on('payment.failed', function (failResp: any) {
+        setErrorMessage(failResp.error?.description || 'Payment failed. Please try again.');
+        setIsProcessing(false);
+      });
+      razorpayInstance.open();
     } catch (err: any) {
       setErrorMessage(err.message || 'Something went wrong. Please try again.');
       setIsProcessing(false);

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { COURSE_DETAILS, COURSE_ADDONS } from '@/data/courses';
+import { loadRazorpayScript } from '@/lib/load-razorpay';
 import {
   Sparkles,
   ShieldCheck,
@@ -61,6 +62,7 @@ export default function CourseCheckoutPage() {
     }
 
     setIsProcessing(true);
+    setErrorMessage('');
 
     try {
       const chosenAddonsList = selectedAddons.map((id) => {
@@ -68,35 +70,96 @@ export default function CourseCheckoutPage() {
         return { id: item.id, name: item.name, price: item.price };
       });
 
-      const response = await fetch('/api/checkout/create-order', {
+      // 1. Ensure Razorpay checkout.js script is loaded
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error('Razorpay payment gateway failed to load. Please check your internet connection.');
+      }
+
+      // 2. Create Razorpay order via backend endpoint
+      const response = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          amount: finalTotal,
+          currency: 'INR',
           productType: 'course',
           productId: COURSE_DETAILS.id,
           productName: COURSE_DETAILS.name,
           customerName: fullName,
           customerEmail: email,
           customerPhone: phone,
-          amount: finalTotal,
           addons: chosenAddonsList,
         }),
       });
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to initiate checkout.');
+      if (!response.ok || !data.order_id) {
+        throw new Error(data.error || 'Failed to initiate payment.');
       }
 
-      // If Cashfree payment session exists and live SDK is integrated:
-      if (data.paymentSessionId && data.isCashfreeLive) {
-        // Cashfree JS SDK Checkout
-        window.location.href = data.paymentUrl || `/course/success?order_id=${data.orderId}`;
-      } else {
-        // Seamless fallback / sandbox test confirmation
-        router.push(`/course/success?order_id=${data.orderId}`);
-      }
+      // 3. Open Razorpay Checkout Modal
+      const options = {
+        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency || 'INR',
+        name: 'Followers.blog',
+        description: 'AI Website Building — 3 Hour Complete Practical Class',
+        image: '/logo.png',
+        order_id: data.order_id,
+        prefill: {
+          name: fullName,
+          email: email,
+          contact: phone,
+        },
+        notes: {
+          course: 'AI Website Building',
+          receipt: data.receipt,
+        },
+        theme: {
+          color: '#2563EB',
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+          },
+        },
+        handler: async function (paymentResponse: any) {
+          try {
+            // 4. Verify signature on backend
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                receipt: data.receipt,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok || !verifyData.success) {
+              throw new Error(verifyData.error || 'Payment signature verification failed.');
+            }
+
+            // Redirect to success page
+            router.push(`/course/success?order_id=${data.receipt}`);
+          } catch (verifyErr: any) {
+            setErrorMessage(verifyErr.message || 'Payment verification failed. Please contact support.');
+            setIsProcessing(false);
+          }
+        },
+      };
+
+      const razorpayInstance = new (window as any).Razorpay(options);
+      razorpayInstance.on('payment.failed', function (failResp: any) {
+        setErrorMessage(failResp.error?.description || 'Payment failed. Please try again.');
+        setIsProcessing(false);
+      });
+      razorpayInstance.open();
     } catch (err: any) {
       console.error(err);
       setErrorMessage(err.message || 'Something went wrong. Please try again or contact support.');
