@@ -115,6 +115,8 @@ function FollowersCheckoutContent() {
         throw new Error(data.error || 'Failed to initiate payment.');
       }
 
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://followers.blog';
+
       // 3. Open Razorpay Checkout Modal
       const options = {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
@@ -124,6 +126,8 @@ function FollowersCheckoutContent() {
         description: 'Digital Creator Strategy Class & Media Consultation',
         image: '/logo.png',
         order_id: data.order_id,
+        callback_url: `${origin}/api/razorpay-callback`,
+        redirect: true,
         prefill: {
           name: displayName,
           email: email,
@@ -167,7 +171,11 @@ function FollowersCheckoutContent() {
             }
 
             // Redirect to success page
-            router.push(`/followers/success?order_id=${data.receipt}`);
+            if (typeof window !== 'undefined') {
+              window.location.href = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}`;
+            } else {
+              router.push(`/followers/success?order_id=${data.receipt}`);
+            }
           } catch (verifyErr: any) {
             setErrorMessage(verifyErr.message || 'Payment verification failed. Please contact support.');
             setIsProcessing(false);

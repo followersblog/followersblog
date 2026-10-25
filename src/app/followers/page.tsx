@@ -168,6 +168,8 @@ export default function FollowersPage() {
       const cleanDigits = customerPhone.replace(/\D/g, '').slice(-10);
       const formattedContact = `+91${cleanDigits}`;
 
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://followers.blog';
+
       // 3. Open Razorpay Checkout Modal directly with prefilled contact details
       const options = {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
@@ -177,6 +179,8 @@ export default function FollowersPage() {
         description: 'Digital Creator Strategy Class & Media Consultation',
         image: '/logo.png',
         order_id: data.order_id,
+        callback_url: `${origin}/api/razorpay-callback`,
+        redirect: true,
         prefill: {
           name: displayName,
           email: email,
@@ -232,10 +236,11 @@ export default function FollowersPage() {
                 customerName: displayName,
                 customerEmail: email,
               }));
+              // Force direct browser navigation so modal unmounts cleanly
+              window.location.href = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}`;
+            } else {
+              router.push(`/followers/success?order_id=${data.receipt}`);
             }
-
-            // Direct redirect to success page!
-            router.push(`/followers/success?order_id=${data.receipt}`);
           } catch (verifyErr: any) {
             setModalError(verifyErr.message || 'Payment verification failed.');
             setIsSubmitting(false);
@@ -762,8 +767,8 @@ export default function FollowersPage() {
                   <label className="block text-xs font-bold text-zinc-800 mb-1">
                     Target Profile URL / Username <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400 font-bold text-sm">
+                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-100 focus-within:bg-white transition-all overflow-hidden shadow-xs">
+                    <div className="pl-3.5 pr-1.5 text-zinc-400 font-bold text-sm shrink-0 select-none">
                       @
                     </div>
                     <input
@@ -772,7 +777,7 @@ export default function FollowersPage() {
                       placeholder="username ya link paste karein"
                       value={targetUsername}
                       onChange={(e) => setTargetUsername(e.target.value)}
-                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-100 bg-zinc-50/60 hover:bg-white transition-colors"
+                      className="w-full pr-3.5 py-2.5 bg-transparent text-sm focus:outline-hidden text-zinc-900 placeholder:text-zinc-400"
                     />
                   </div>
                   <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
@@ -785,11 +790,10 @@ export default function FollowersPage() {
                   <label className="block text-xs font-bold text-zinc-800 mb-1">
                     WhatsApp Mobile Number <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                      <span className="text-xs font-bold text-zinc-600 bg-zinc-200/80 px-1.5 py-0.5 rounded">
-                        🇮🇳 +91
-                      </span>
+                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-100 focus-within:bg-white transition-all overflow-hidden shadow-xs">
+                    <div className="px-3 py-2.5 bg-zinc-100 border-r border-zinc-200 text-xs font-bold text-zinc-700 flex items-center gap-1.5 shrink-0 select-none">
+                      <span>🇮🇳</span>
+                      <span>+91</span>
                     </div>
                     <input
                       type="tel"
@@ -798,7 +802,7 @@ export default function FollowersPage() {
                       placeholder="10-digit WhatsApp number"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ''))}
-                      className="w-full pl-18 pr-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-100 bg-zinc-50/60 hover:bg-white transition-colors font-medium tracking-wide"
+                      className="w-full px-3.5 py-2.5 bg-transparent text-sm font-medium tracking-wide text-zinc-900 placeholder:text-zinc-400 focus:outline-hidden"
                     />
                   </div>
                   <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
@@ -811,8 +815,8 @@ export default function FollowersPage() {
                   <label className="block text-xs font-bold text-zinc-800 mb-1">
                     Email Address <span className="text-[11px] text-zinc-400 font-normal">(Optional for Tax Invoice)</span>
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+                  <div className="flex items-center rounded-xl border border-zinc-300 bg-zinc-50/60 focus-within:border-pink-500 focus-within:ring-2 focus-within:ring-pink-100 focus-within:bg-white transition-all overflow-hidden shadow-xs">
+                    <div className="pl-3.5 pr-2 text-zinc-400 shrink-0 select-none">
                       <Mail className="w-4 h-4 text-zinc-400" />
                     </div>
                     <input
@@ -820,7 +824,7 @@ export default function FollowersPage() {
                       placeholder="e.g. name@gmail.com"
                       value={customerEmail}
                       onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-100 bg-zinc-50/60 hover:bg-white transition-colors"
+                      className="w-full pr-3.5 py-2.5 bg-transparent text-sm focus:outline-hidden text-zinc-900 placeholder:text-zinc-400"
                     />
                   </div>
                   <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
