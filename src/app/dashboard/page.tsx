@@ -41,16 +41,15 @@ export default function UserDashboardPage() {
       accessLink: 'https://meet.google.com/followers-blog-live-class',
     },
     {
-      id: 'SMM-183921-TG20',
-      productName: '20k Telegram Members 🇮🇳',
-      productType: 'service',
-      target: '@crypto_trading_hub',
-      quantity: '20,000',
-      amount: 299,
+      id: 'MED-183921-STRAT',
+      productName: 'Digital Creator Strategy Class & Media Consultation',
+      productType: 'consultation',
+      target: 'Digital Strategy Playbook',
+      amount: 499,
       paymentStatus: 'success',
-      orderStatus: 'processing',
+      orderStatus: 'completed',
       date: 'Yesterday',
-      expectedWindow: '24–120 Hours',
+      accessLink: 'https://followers.blog/receipt?order_id=MED-183921-STRAT&amount=499',
     },
   ]);
 
@@ -208,15 +207,15 @@ export default function UserDashboardPage() {
                     activeTab === 'courses' ? 'bg-white text-blue-700 shadow-xs' : 'text-zinc-600 hover:text-zinc-900'
                   }`}
                 >
-                  Courses
+                  Courses & Workshops
                 </button>
                 <button
                   onClick={() => setActiveTab('services')}
                   className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                    activeTab === 'services' ? 'bg-white text-pink-700 shadow-xs' : 'text-zinc-600 hover:text-zinc-900'
+                    activeTab === 'services' ? 'bg-white text-indigo-700 shadow-xs' : 'text-zinc-600 hover:text-zinc-900'
                   }`}
                 >
-                  SMM Services
+                  Creator Assets & Consultation
                 </button>
               </div>
 
@@ -224,7 +223,7 @@ export default function UserDashboardPage() {
                 <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                 <input
                   type="text"
-                  placeholder="Search order ID or service..."
+                  placeholder="Search order ID or curriculum..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-blue-500"
@@ -236,7 +235,7 @@ export default function UserDashboardPage() {
             <div className="divide-y divide-zinc-100">
               {filteredOrders.length === 0 ? (
                 <div className="p-12 text-center text-zinc-500 text-xs">
-                  Koi order nahi mila. Naya purchase karne ke liye Homepage ya SMM section visit karein.
+                  No orders found. Visit the Homepage to explore our practical AI workshops and digital guides.
                 </div>
               ) : (
                 filteredOrders.map((order) => (
@@ -304,7 +303,7 @@ export default function UserDashboardPage() {
                           </a>
                         )}
 
-                        {order.productType === 'service' && (
+                        {order.productType !== 'course' && (
                           <a
                             href={telegramLink}
                             target="_blank"
@@ -312,7 +311,7 @@ export default function UserDashboardPage() {
                             className="px-3 py-2 rounded-xl text-xs font-bold text-sky-700 bg-sky-50 hover:bg-sky-100 transition-colors flex items-center gap-1"
                           >
                             <Send className="w-3 h-3" />
-                            <span>Track</span>
+                            <span>Support</span>
                           </a>
                         )}
                       </div>

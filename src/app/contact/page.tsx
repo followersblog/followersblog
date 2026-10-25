@@ -60,6 +60,17 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-zinc-900">Registered Office Desk</div>
+                    <div className="text-zinc-600">Plot 42, Sector 18, Commercial Tower</div>
+                    <div className="text-zinc-500 text-xs">Gurugram, Haryana - 122008, India</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                     <Clock className="w-5 h-5" />
                   </div>

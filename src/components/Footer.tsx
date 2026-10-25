@@ -85,6 +85,11 @@ export default function Footer() {
                   About Us
                 </Link>
               </li>
+              <li>
+                <Link href="/shipping" className="hover:text-blue-600 transition-colors">
+                  Shipping & Delivery Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
