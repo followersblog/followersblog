@@ -1,0 +1,274 @@
+'use client';
+
+import React, { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { SOCIAL_PACKAGES } from '@/data/followers-services';
+import { SocialServicePackage } from '@/types';
+import {
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  Send,
+  Lock,
+  AlertCircle,
+  Clock,
+  CheckCircle2,
+} from 'lucide-react';
+
+function FollowersCheckoutContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const packageIdParam = searchParams.get('packageId');
+
+  const [selectedPkg, setSelectedPkg] = useState<SocialServicePackage | null>(null);
+  const [targetUrl, setTargetUrl] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Load from sessionStorage if available or query param
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('followers_order');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setTargetUrl(parsed.target || '');
+          setCustomerName(parsed.customerName || '');
+          setCustomerPhone(parsed.customerPhone || '');
+          setCustomerEmail(parsed.customerEmail || '');
+          const match = SOCIAL_PACKAGES.find((p) => p.id === parsed.packageId);
+          if (match) {
+            setSelectedPkg(match);
+            return;
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    if (packageIdParam) {
+      const match = SOCIAL_PACKAGES.find((p) => p.id === packageIdParam);
+      if (match) setSelectedPkg(match);
+    } else {
+      setSelectedPkg(SOCIAL_PACKAGES[0]);
+    }
+  }, [packageIdParam]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    if (!selectedPkg) {
+      setErrorMessage('Please select a service package.');
+      return;
+    }
+
+    if (!targetUrl.trim() || !customerName.trim() || !customerPhone.trim()) {
+      setErrorMessage('Please fill in Target URL, Name, and Phone number.');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const response = await fetch('/api/checkout/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productType: 'service',
+          productId: selectedPkg.id,
+          productName: selectedPkg.name,
+          category: selectedPkg.categoryId,
+          quantity: selectedPkg.quantity,
+          customerName,
+          customerEmail: customerEmail || `${customerPhone}@followers.blog`,
+          customerPhone,
+          targetUrl,
+          amount: selectedPkg.price,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to process order.');
+      }
+
+      if (data.paymentSessionId && data.isCashfreeLive) {
+        window.location.href = data.paymentUrl || `/followers/success?order_id=${data.orderId}`;
+      } else {
+        router.push(`/followers/success?order_id=${data.orderId}`);
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Something went wrong. Please try again.');
+      setIsProcessing(false);
+    }
+  };
+
+  if (!selectedPkg) {
+    return <div className="text-center py-20">Loading package details...</div>;
+  }
+
+  const telegramLink = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT_URL || 'https://t.me/FollowersBlogSupport';
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <Link href="/followers" className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-pink-600 mb-3">
+          ← Back to All Services
+        </Link>
+        <h1 className="text-2xl sm:text-3xl font-black text-zinc-950">
+          Complete Your Service Order
+        </h1>
+        <p className="text-xs text-zinc-500 mt-1">
+          Fast automated processing. 100% account safe delivery.
+        </p>
+      </div>
+
+      {errorMessage && (
+        <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
+
+      {/* Package Summary Box */}
+      <div className="bg-white rounded-3xl border-2 border-pink-500/80 p-6 mb-6 shadow-xs text-center relative">
+        <span className="text-[10px] font-black uppercase tracking-wider px-3 py-0.5 rounded-full bg-pink-100 text-pink-700">
+          {selectedPkg.badge || 'SELECTED SERVICE'}
+        </span>
+        <h2 className="text-xl font-black text-zinc-950 mt-1">
+          {selectedPkg.name}
+        </h2>
+        <div className="text-3xl font-black text-pink-600 my-2">
+          ₹{selectedPkg.price}{' '}
+          <span className="text-xs text-zinc-400 line-through font-normal">₹{selectedPkg.originalPrice}</span>
+        </div>
+        <p className="text-xs text-zinc-600 max-w-sm mx-auto">
+          {selectedPkg.description}
+        </p>
+      </div>
+
+      {/* Order Form */}
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-zinc-200 p-6 sm:p-8 shadow-xs space-y-4">
+        <div>
+          <label className="block text-xs font-bold text-zinc-900 mb-1">
+            Target Profile URL / Username / Channel Link *
+          </label>
+          <input
+            type="text"
+            required
+            placeholder="e.g. https://instagram.com/your_handle ya @username"
+            value={targetUrl}
+            onChange={(e) => setTargetUrl(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
+          />
+          <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
+            <Lock className="w-3 h-3 text-emerald-600" />
+            <span>Profile public honi chahiye. Password ki bilkul zaroorat nahi hai.</span>
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-zinc-900 mb-1">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            required
+            placeholder="Aapka Naam"
+            value={customerName}
+            onChange={(e) => setCustomerName(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-zinc-900 mb-1">
+            Mobile / WhatsApp Number *
+          </label>
+          <input
+            type="tel"
+            required
+            placeholder="10-digit WhatsApp Number"
+            value={customerPhone}
+            onChange={(e) => setCustomerPhone(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-zinc-900 mb-1">
+            Email Address (For Receipt & Tracking)
+          </label>
+          <input
+            type="email"
+            placeholder="receipt@followers.blog"
+            value={customerEmail}
+            onChange={(e) => setCustomerEmail(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
+          />
+        </div>
+
+        {/* Processing Alert notice */}
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
+          <div className="font-bold flex items-center gap-1.5">
+            <Clock className="w-4 h-4 text-amber-700" />
+            <span>Estimated Processing Time: 24–120 Hours</span>
+          </div>
+          <p className="text-[11px] leading-relaxed text-amber-800">
+            High traffic ke dauran queue system follow hota hai taaki accounts par natural pace maintain rahe aur 100% non-drop delivery ho.
+          </p>
+        </div>
+
+        {/* Pay Button */}
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={isProcessing}
+            className="w-full py-4 px-6 rounded-2xl font-black text-sm tracking-wide text-white bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 shadow-md shadow-pink-500/30 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75"
+          >
+            {isProcessing ? (
+              <span>Connecting Secure Payment Gateway...</span>
+            ) : (
+              <>
+                <Lock className="w-4 h-4" />
+                <span>Pay Securely — ₹{selectedPkg.price}</span>
+                <ArrowRight className="w-4 h-4 stroke-[3]" />
+              </>
+            )}
+          </button>
+        </div>
+
+        <div className="pt-2 flex items-center justify-center gap-2 text-xs text-zinc-500">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <span>256-Bit SSL Encrypted & Verified Payment</span>
+        </div>
+      </form>
+
+      {/* Support box */}
+      <div className="mt-6 text-center text-xs text-zinc-500 flex items-center justify-center gap-2">
+        <span>Kisi problem ke liye:</span>
+        <a href={telegramLink} target="_blank" rel="noopener noreferrer" className="font-bold text-sky-600 hover:underline flex items-center gap-1">
+          <Send className="w-3 h-3 fill-sky-600" /> Telegram Support
+        </a>
+      </div>
+    </div>
+  );
+}
+
+export default function FollowersCheckoutPage() {
+  return (
+    <div className="min-h-screen bg-zinc-50 font-sans">
+      <Suspense fallback={<div className="text-center py-20">Loading checkout...</div>}>
+        <FollowersCheckoutContent />
+      </Suspense>
+    </div>
+  );
+}
