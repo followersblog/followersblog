@@ -30,6 +30,7 @@ import {
   AlertCircle,
   X,
   Crown,
+  Mail,
 } from 'lucide-react';
 
 export default function FollowersPage() {
@@ -255,61 +256,67 @@ export default function FollowersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-white text-zinc-900 flex flex-col font-sans overflow-x-hidden w-full max-w-[100vw]">
       {/* ==================================================================== */}
-      {/* 1. TOP FLASH SALE BANNER (Luxury Dark Ticker) */}
+      {/* 1. TOP FLASH SALE BANNER (Original Vibrant Gradient in 1-Line Ticker) */}
       {/* ==================================================================== */}
-      <div className="bg-gradient-to-r from-zinc-950 via-rose-950 to-zinc-950 text-white text-[11px] sm:text-xs font-semibold py-2 px-3 text-center border-b border-rose-900/40 relative overflow-hidden">
-        <div className="max-w-4xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-bold text-[10px] uppercase tracking-wider">
-            <Flame className="w-3 h-3 text-rose-400 fill-rose-400 animate-pulse" />
-            70% Flash Sale
-          </span>
-          <span className="text-zinc-400 hidden sm:inline">•</span>
-          <span className="text-zinc-200 text-[10px] sm:text-xs">
-            100% Non-Drop • 30-Day Free Auto Refill
-          </span>
-          <span className="text-zinc-500 hidden sm:inline">•</span>
-          <span className="inline-flex items-center gap-1 bg-black/60 border border-white/10 px-2 py-0.5 rounded-full font-mono text-[11px] text-amber-300 font-bold shadow-xs">
-            <Clock className="w-3 h-3 text-amber-300" />
-            <span>Ends in {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}</span>
-          </span>
+      <div className="bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white font-bold text-[11px] sm:text-xs py-2 shadow-sm overflow-hidden select-none border-b border-rose-500/30">
+        <div className="animate-marquee-ticker flex items-center gap-8 whitespace-nowrap">
+          {[0, 1].map((idx) => (
+            <div key={idx} className="flex items-center gap-3 sm:gap-4 shrink-0">
+              <span className="inline-flex items-center gap-1 bg-black/30 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-extrabold text-amber-300">
+                <Flame className="w-3 h-3 text-amber-300 fill-amber-300 animate-pulse" />
+                70% Flash Sale
+              </span>
+              <span>•</span>
+              <span className="font-extrabold">100% Non-Drop Guaranteed & 30-Day Free Auto Refill</span>
+              <span>•</span>
+              <span className="inline-flex items-center gap-1 bg-black/40 px-2.5 py-0.5 rounded-full font-mono text-[11px] text-yellow-200 shadow-xs">
+                <Clock className="w-3 h-3 text-yellow-300" />
+                <span>Ends in {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}</span>
+              </span>
+              <span>•</span>
+              <span>⚡ Instant 60-Second Process Auto-Start</span>
+              <span>•</span>
+              <span>🔒 100% Safe (No Password Needed)</span>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* ==================================================================== */}
       {/* 2. BRAND HEADER WITH SLEEK TELEGRAM PILL */}
       {/* ==================================================================== */}
-      <header className="border-b border-zinc-100 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-xs">
-        <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-2">
+      <header className="border-b border-zinc-100 bg-white/95 backdrop-blur-md sticky top-0 z-40 shadow-xs w-full overflow-hidden">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-2">
           {/* Brand Logo & Compact Typography */}
-          <Link href="/followers" className="flex items-center gap-2 group shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-50 to-white flex items-center justify-center p-1 border border-zinc-200/80 shadow-xs group-hover:scale-105 transition-transform overflow-hidden">
+          <Link href="/followers" className="flex items-center gap-1.5 sm:gap-2 group shrink min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-50 to-white flex items-center justify-center p-1 border border-zinc-200/80 shadow-xs group-hover:scale-105 transition-transform overflow-hidden shrink-0">
               <img 
                 src="/logo.png" 
                 alt="Followers.blog Logo" 
                 className="w-full h-full object-contain" 
               />
             </div>
-            <div className="flex flex-col">
-              <div className="text-base sm:text-lg font-black tracking-tight text-zinc-950 leading-none">
+            <div className="flex flex-col min-w-0">
+              <div className="text-sm sm:text-lg font-black tracking-tight text-zinc-950 leading-tight truncate">
                 FOLLOWERS<span className="bg-gradient-to-r from-pink-600 to-rose-600 bg-clip-text text-transparent">.BLOG</span>
               </div>
-              <span className="text-[9px] text-zinc-400 font-semibold uppercase tracking-wider mt-0.5 whitespace-nowrap">
-                #1 Verified Creator Growth Hub
+              <span className="text-[8px] sm:text-[9px] text-zinc-400 font-semibold uppercase tracking-wider truncate">
+                #1 Creator Growth Hub
               </span>
             </div>
           </Link>
 
-          {/* Telegram Support Button: Modern Single-line Pill with Live Online Pulse */}
+          {/* Telegram Support Button: Modern Compact Pill with Live Online Pulse */}
           <a
             href={telegramLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-600 hover:to-blue-700 shadow-sm shadow-sky-500/25 transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-bold text-white bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-600 hover:to-blue-700 shadow-sm shadow-sky-500/25 transition-all hover:scale-[1.02] active:scale-95 whitespace-nowrap shrink-0"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <Send className="w-3.5 h-3.5 fill-white shrink-0" />
+            <Send className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-white shrink-0" />
             <span className="leading-none">Telegram Support</span>
           </a>
         </div>
@@ -681,142 +688,175 @@ export default function FollowersPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* 8. QUICK ORDER POPUP MODAL */}
+      {/* 8. QUICK ORDER POPUP MODAL (Ultra-Premium Fintech Sheet) */}
       {/* ==================================================================== */}
       {selectedPackageForModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-zinc-200 relative animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setSelectedPackageForModal(null)}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 p-1 rounded-full hover:bg-zinc-100"
-            >
-              <X className="w-5 h-5" />
-            </button>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/65 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full shadow-2xl border border-zinc-200/80 relative flex flex-col max-h-[92vh] overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+            {/* Mobile drag handle pill */}
+            <div className="w-10 h-1 bg-zinc-300 rounded-full mx-auto mt-2.5 sm:hidden shrink-0" />
 
-            <div className="text-center mb-3">
-              <span className="text-[10px] font-black uppercase tracking-wider px-3.5 py-0.5 rounded-full bg-pink-100 text-pink-700 border border-pink-200">
-                {selectedPackageForModal.badge || 'CONFIRM ORDER'}
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-zinc-950 mt-1">
-                {selectedPackageForModal.name}
-              </h3>
-              <div className="text-2xl sm:text-3xl font-black text-pink-600 mt-0.5">
-                ₹{selectedPackageForModal.price}{' '}
-                <span className="text-xs text-zinc-400 line-through font-normal">₹{selectedPackageForModal.originalPrice}</span>
-              </div>
-            </div>
-
-            {/* High-Converting Speed & Guarantee Card */}
-            <div className="bg-gradient-to-br from-emerald-500/10 via-rose-500/5 to-blue-500/10 border border-emerald-500/25 rounded-2xl p-3.5 my-3.5 space-y-2 text-left shadow-xs">
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-900">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
-                <Zap className="w-4 h-4 text-emerald-600 fill-emerald-500 shrink-0" />
-                <span>Payment ke baad instant 60 seconds me auto-start!</span>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-zinc-800">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <span>100% Safe • Password ki bilkul zarurat nahi hai</span>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] font-semibold text-zinc-700">
-                <CheckCircle2 className="w-3.5 h-3.5 text-rose-500 shrink-0" />
-                <span>100% Non-Drop Guaranteed • 30-Day Auto Refill Protection</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleProceedToPayment} className="space-y-3.5 text-left">
-              {modalError && (
-                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{modalError}</span>
+            {/* Header: Package summary & close button */}
+            <div className="px-5 pt-3 pb-3 border-b border-zinc-100 flex items-center justify-between gap-3 shrink-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 text-white flex items-center justify-center font-black text-sm shadow-sm shrink-0">
+                  ⚡
                 </div>
-              )}
-
-              <div>
-                <label className="block text-xs font-bold text-zinc-800 mb-1">
-                  Target Profile URL / Username / Link *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. @your_username ya post/reel link"
-                  value={targetUsername}
-                  onChange={(e) => setTargetUsername(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
-                />
-                <p className="text-[10px] text-zinc-400 mt-1">
-                  🔒 Password ki bilkul zaroorat nahi hai. Sirf public link ya username.
-                </p>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-pink-100 text-pink-700">
+                    {selectedPackageForModal.badge || 'CONFIRM ORDER'}
+                  </span>
+                  <h3 className="text-sm sm:text-base font-black text-zinc-950 truncate mt-0.5">
+                    {selectedPackageForModal.name}
+                  </h3>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-zinc-800 mb-1">
-                  WhatsApp / Mobile Number *
-                </label>
-                <input
-                  type="tel"
-                  required
-                  maxLength={10}
-                  placeholder="10-digit WhatsApp number"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ''))}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
-                />
-                <p className="text-[10px] text-zinc-400 mt-1">
-                  📱 Order status aur tax receipt updates ke liye.
-                </p>
+              <div className="flex items-center gap-2 shrink-0">
+                <div className="text-right">
+                  <div className="text-xl sm:text-2xl font-black text-pink-600 leading-none">
+                    ₹{selectedPackageForModal.price}
+                  </div>
+                  <div className="text-[10px] text-zinc-400 line-through mt-0.5">
+                    ₹{selectedPackageForModal.originalPrice}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPackageForModal(null)}
+                  className="text-zinc-400 hover:text-zinc-700 p-1.5 rounded-full hover:bg-zinc-100 transition-colors ml-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-bold text-zinc-800 mb-1">
-                  Email Address (For Tax Receipt & Dispute Proof)
-                </label>
-                <input
-                  type="email"
-                  placeholder="e.g. name@gmail.com (Optional)"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
-                />
-                <p className="text-[10px] text-zinc-400 mt-1">
-                  📄 Official computerized Tax Invoice aapke is email par dispatch hogi.
-                </p>
+            {/* 3-Pill Trust Bar (High credibility, compact height) */}
+            <div className="grid grid-cols-3 gap-1 px-4 py-2 bg-emerald-50/70 border-b border-emerald-100 text-center shrink-0">
+              <div className="flex items-center justify-center gap-1 text-[11px] font-bold text-emerald-800">
+                <Zap className="w-3.5 h-3.5 text-emerald-600 fill-emerald-500 shrink-0" />
+                <span>60s Auto-Start</span>
               </div>
-
-              <div>
-                <label className="block text-xs font-medium text-zinc-600 mb-1">
-                  Full Name (Optional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Aapka Naam (Optional)"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-pink-500"
-                />
+              <div className="flex items-center justify-center gap-1 text-[11px] font-bold text-zinc-700 border-x border-emerald-200/60">
+                <Lock className="w-3 h-3 text-zinc-600 shrink-0" />
+                <span>No Password</span>
               </div>
+              <div className="flex items-center justify-center gap-1 text-[11px] font-bold text-zinc-700">
+                <ShieldCheck className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                <span>100% Non-Drop</span>
+              </div>
+            </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="btn-reflection w-full py-4 px-6 rounded-2xl font-black text-sm tracking-wide text-white bg-gradient-to-r from-pink-500 via-rose-600 to-pink-600 hover:from-pink-600 hover:to-rose-700 shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.98]"
-              >
-                {isSubmitting ? (
-                  <span>Connecting Secure Gateway...</span>
-                ) : (
-                  <>
-                    <Zap className="w-4 h-4 fill-white shrink-0" />
-                    <span>Pay ₹{selectedPackageForModal.price} • Instant 60s Start</span>
-                    <ArrowRight className="w-4 h-4 stroke-[3] shrink-0" />
-                  </>
+            {/* Form Fields: Scrollable Area */}
+            <form onSubmit={handleProceedToPayment} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="p-4 sm:p-5 overflow-y-auto space-y-3.5 flex-1">
+                {modalError && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{modalError}</span>
+                  </div>
                 )}
-              </button>
 
-              <div className="flex items-center justify-center gap-2.5 text-[10px] text-zinc-400 font-medium pt-1">
-                <span>🛡️ 256-Bit SSL</span>
-                <span>•</span>
-                <span>GPay / PhonePe / Paytm / UPI</span>
-                <span>•</span>
-                <span>Instant Auto-Dispatch</span>
+                {/* 1. Target Profile Link / Username */}
+                <div>
+                  <label className="block text-xs font-bold text-zinc-800 mb-1">
+                    Target Profile URL / Username <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400 font-bold text-sm">
+                      @
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      placeholder="username ya link paste karein"
+                      value={targetUsername}
+                      onChange={(e) => setTargetUsername(e.target.value)}
+                      className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-100 bg-zinc-50/60 hover:bg-white transition-colors"
+                    />
+                  </div>
+                  <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
+                    <span>🔒</span> Public account only • Password bilkul nahi chahiye
+                  </p>
+                </div>
+
+                {/* 2. WhatsApp Mobile Number */}
+                <div>
+                  <label className="block text-xs font-bold text-zinc-800 mb-1">
+                    WhatsApp Mobile Number <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                      <span className="text-xs font-bold text-zinc-600 bg-zinc-200/80 px-1.5 py-0.5 rounded">
+                        🇮🇳 +91
+                      </span>
+                    </div>
+                    <input
+                      type="tel"
+                      required
+                      maxLength={10}
+                      placeholder="10-digit WhatsApp number"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ''))}
+                      className="w-full pl-18 pr-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-100 bg-zinc-50/60 hover:bg-white transition-colors font-medium tracking-wide"
+                    />
+                  </div>
+                  <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
+                    <span>📱</span> Order delivery update aur tracking status ke liye
+                  </p>
+                </div>
+
+                {/* 3. Email (Dispute proof & Tax Invoice) */}
+                <div>
+                  <label className="block text-xs font-bold text-zinc-800 mb-1">
+                    Email Address <span className="text-[11px] text-zinc-400 font-normal">(Optional for Tax Invoice)</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+                      <Mail className="w-4 h-4 text-zinc-400" />
+                    </div>
+                    <input
+                      type="email"
+                      placeholder="e.g. name@gmail.com"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-100 bg-zinc-50/60 hover:bg-white transition-colors"
+                    />
+                  </div>
+                  <p className="text-[10px] text-zinc-400 mt-1 flex items-center gap-1">
+                    <span>📄</span> Computerized GST tax receipt is email par dispatch hogi
+                  </p>
+                </div>
+              </div>
+
+              {/* Bottom Sticky Action Footer */}
+              <div className="p-4 bg-zinc-50 border-t border-zinc-100 shrink-0">
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn-reflection w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white bg-gradient-to-r from-pink-500 via-rose-600 to-pink-600 hover:from-pink-600 hover:to-rose-700 shadow-lg shadow-pink-500/25 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.98]"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Connecting Secure Gateway...
+                    </span>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 fill-white shrink-0" />
+                      <span>Pay ₹{selectedPackageForModal.price} • Instant 60s Start</span>
+                      <ArrowRight className="w-4 h-4 stroke-[3] shrink-0" />
+                    </>
+                  )}
+                </button>
+
+                <div className="flex items-center justify-center gap-2 text-[10px] text-zinc-400 font-medium pt-2">
+                  <span>🛡️ 256-Bit SSL</span>
+                  <span>•</span>
+                  <span>GPay / PhonePe / Paytm / UPI</span>
+                  <span>•</span>
+                  <span>100% Safe</span>
+                </div>
               </div>
             </form>
           </div>
@@ -859,7 +899,7 @@ export default function FollowersPage() {
       {/* 10. FIXED FLOATING LIVE ACTIVITY TOAST (BOTTOM-LEFT) */}
       {/* ==================================================================== */}
       {showActivity && (
-        <div className="fixed bottom-4 left-4 z-50 max-w-xs sm:max-w-sm p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-zinc-200/90 shadow-2xl flex items-center gap-3 text-left animate-in fade-in slide-in-from-bottom-3 duration-300">
+        <div className="fixed bottom-4 left-3 right-3 sm:right-auto sm:left-4 z-40 max-w-xs sm:max-w-sm p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-zinc-200/90 shadow-2xl flex items-center gap-3 text-left animate-in fade-in slide-in-from-bottom-3 duration-300 pointer-events-none">
           <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-sm shadow-xs">
             🛍️
           </div>
