@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SOCIAL_PACKAGES } from '@/data/followers-services';
@@ -29,6 +29,50 @@ function FollowersCheckoutContent() {
   const [customerEmail, setCustomerEmail] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const preloadedOrderRef = useRef<{
+    pkgId: string;
+    promise: Promise<any>;
+  } | null>(null);
+
+  const startPreloadingOrder = (pkg: SocialServicePackage) => {
+    try {
+      const orderPromise = fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: pkg.price,
+          currency: 'INR',
+          productType: 'service',
+          productId: pkg.id,
+          customerName: 'Creator',
+          customerEmail: 'creator@followers.blog',
+          customerPhone: '9876543210',
+          targetUrl: 'checkout_preload',
+        }),
+      })
+        .then(async (res) => {
+          if (!res.ok) return null;
+          return res.json();
+        })
+        .catch(() => null);
+
+      preloadedOrderRef.current = {
+        pkgId: pkg.id,
+        promise: orderPromise,
+      };
+    } catch (e) {
+      // Non-fatal
+    }
+  };
+
+  // Preload script & order when selected package is ready
+  useEffect(() => {
+    loadRazorpayScript();
+    if (selectedPkg) {
+      startPreloadingOrder(selectedPkg);
+    }
+  }, [selectedPkg?.id]);
 
   // Load from sessionStorage if available or query param
   useEffect(() => {
@@ -93,26 +137,49 @@ function FollowersCheckoutContent() {
         throw new Error('Razorpay payment gateway failed to load. Please check your connection.');
       }
 
-      // 2. Call backend create-order (with compliant note)
-      const response = await fetch('/api/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: selectedPkg.price,
-          currency: 'INR',
-          productType: 'service',
-          productId: selectedPkg.id,
-          customerName: displayName,
-          customerEmail: email,
-          customerPhone: cleanPhone,
-          targetUrl,
-        }),
-      });
+      // 2. Use background pre-generated order (0ms latency) if ready
+      let data: any = null;
+      if (
+        preloadedOrderRef.current &&
+        preloadedOrderRef.current.pkgId === selectedPkg.id
+      ) {
+        data = await preloadedOrderRef.current.promise;
+      }
 
-      const data = await response.json();
+      // If preload wasn't ready or failed, request on demand
+      if (!data || !data.order_id) {
+        const response = await fetch('/api/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: selectedPkg.price,
+            currency: 'INR',
+            productType: 'service',
+            productId: selectedPkg.id,
+            customerName: displayName,
+            customerEmail: email,
+            customerPhone: cleanPhone,
+            targetUrl,
+          }),
+        });
+        data = await response.json();
+      } else {
+        // Fast non-blocking update to sync customer details into Supabase
+        fetch('/api/update-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            receipt: data.receipt,
+            customerName: displayName,
+            customerEmail: email,
+            customerPhone: cleanPhone,
+            targetUrl,
+          }),
+        }).catch(() => {});
+      }
 
-      if (!response.ok || !data.order_id) {
-        throw new Error(data.error || 'Failed to initiate payment.');
+      if (!data || !data.order_id) {
+        throw new Error(data?.error || 'Failed to initiate payment.');
       }
 
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://followers.blog';
@@ -189,6 +256,9 @@ function FollowersCheckoutContent() {
         setIsProcessing(false);
       });
       razorpayInstance.open();
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 1000);
     } catch (err: any) {
       setErrorMessage(err.message || 'Something went wrong. Please try again.');
       setIsProcessing(false);

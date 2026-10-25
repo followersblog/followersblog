@@ -73,10 +73,31 @@ export async function POST(req: NextRequest) {
       console.warn('Could not fetch razorpay order details:', fetchErr);
     }
 
-    // Update Supabase if configured
+    // Update Supabase if configured & enrich customer details if needed
     const supabase = getServiceSupabase();
     if (supabase && isSupabaseConfigured) {
       try {
+        const { data: existingOrder } = await supabase
+          .from('orders')
+          .select('customer_name, customer_email, customer_phone, amount, target_url')
+          .eq('id', receipt)
+          .single();
+
+        if (existingOrder) {
+          if (!customerName && existingOrder.customer_name && existingOrder.customer_name !== 'Creator' && existingOrder.customer_name !== 'Learner') {
+            customerName = existingOrder.customer_name;
+          }
+          if (!customerEmail && existingOrder.customer_email && !existingOrder.customer_email.includes('@followers.blog')) {
+            customerEmail = existingOrder.customer_email;
+          }
+          if (!customerPhone && existingOrder.customer_phone && existingOrder.customer_phone !== '9876543210') {
+            customerPhone = existingOrder.customer_phone;
+          }
+          if (!orderAmount && existingOrder.amount) {
+            orderAmount = String(existingOrder.amount);
+          }
+        }
+
         await supabase
           .from('orders')
           .update({

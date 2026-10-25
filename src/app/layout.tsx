@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import MetaPixel from '@/components/MetaPixel';
 
@@ -38,7 +39,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://api.razorpay.com" />
+        <link rel="dns-prefetch" href="https://api.razorpay.com" />
+        <link rel="preconnect" href="https://checkout.razorpay.com" />
+        <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
+      </head>
       <body className="min-h-screen bg-white text-zinc-900 flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
         <MetaPixel />
         {children}
       </body>
