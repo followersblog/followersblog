@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   SOCIAL_CATEGORIES,
+  INSTAGRAM_SUBCATEGORIES,
   YOUTUBE_SUBCATEGORIES,
   SOCIAL_PACKAGES,
   TESTIMONIALS,
@@ -26,17 +27,18 @@ import {
   Flame,
   AlertCircle,
   X,
+  Crown,
 } from 'lucide-react';
 
 export default function FollowersPage() {
   const router = useRouter();
 
-  // Active Category state
-  const [selectedCategory, setSelectedCategory] = useState<string>('youtube');
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string>('views');
+  // Active Category state (Default Instagram as requested)
+  const [selectedCategory, setSelectedCategory] = useState<string>('instagram');
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string>('followers');
 
-  // Flash Sale Timer countdown (e.g. 12:12)
-  const [timeLeft, setTimeLeft] = useState({ minutes: 12, seconds: 12 });
+  // Flash Sale Timer countdown (e.g. 14:21)
+  const [timeLeft, setTimeLeft] = useState({ minutes: 14, seconds: 21 });
 
   // Floating live activity notification
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
@@ -52,6 +54,16 @@ export default function FollowersPage() {
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Category change handler
+  const handleCategorySelect = (catId: string) => {
+    setSelectedCategory(catId);
+    if (catId === 'instagram') {
+      setSelectedSubCategory('followers');
+    } else if (catId === 'youtube') {
+      setSelectedSubCategory('views');
+    }
+  };
 
   // Timer countdown effect
   useEffect(() => {
@@ -76,13 +88,16 @@ export default function FollowersPage() {
         setCurrentActivityIndex((prev) => (prev + 1) % LIVE_ACTIVITY_SAMPLES.length);
         setShowActivity(true);
       }, 500);
-    }, 6000);
+    }, 5000);
     return () => clearInterval(activityTimer);
   }, []);
 
   // Filter packages based on active category & subcategory
   const filteredPackages = SOCIAL_PACKAGES.filter((pkg) => {
     if (pkg.categoryId !== selectedCategory) return false;
+    if (selectedCategory === 'instagram' && pkg.subCategoryId !== selectedSubCategory) {
+      return false;
+    }
     if (selectedCategory === 'youtube' && pkg.subCategoryId !== selectedSubCategory) {
       return false;
     }
@@ -104,7 +119,6 @@ export default function FollowersPage() {
 
     setIsSubmitting(true);
 
-    // Save order data in sessionStorage for checkout and proceed
     const orderData = {
       packageId: selectedPackageForModal.id,
       packageName: selectedPackageForModal.name,
@@ -127,10 +141,10 @@ export default function FollowersPage() {
   return (
     <div className="min-h-screen bg-white text-zinc-900 flex flex-col font-sans">
       {/* ==================================================================== */}
-      {/* 1. TOP FLASH SALE BANNER (Exact style from screenshots) */}
+      {/* 1. TOP FLASH SALE BANNER */}
       {/* ==================================================================== */}
       <div className="bg-gradient-to-r from-rose-600 via-pink-600 to-rose-700 text-white text-[11px] sm:text-xs font-bold py-2 px-3 text-center flex items-center justify-center gap-2 tracking-wide shadow-sm">
-        <span className="uppercase">Special Flash Sale | 70% Off All Packages • 100% Non-Drop & 30-Day Auto Refill •</span>
+        <span className="uppercase">⚡ Special Flash Sale | 70% Off All Packages • 100% Non-Drop & 30-Day Auto Refill •</span>
         <span className="inline-flex items-center gap-1 bg-black/30 px-2 py-0.5 rounded-full font-mono text-[11px]">
           <Clock className="w-3.5 h-3.5 text-yellow-300" />
           {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
@@ -142,7 +156,6 @@ export default function FollowersPage() {
       {/* ==================================================================== */}
       <header className="border-b border-zinc-100 bg-white sticky top-0 z-40 shadow-xs">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Brand */}
           <Link href="/" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 flex items-center justify-center text-white shadow-xs">
               <Sparkles className="w-5 h-5" />
@@ -160,7 +173,6 @@ export default function FollowersPage() {
             </div>
           </Link>
 
-          {/* Telegram Support Button (Exact style from screenshots) */}
           <a
             href={telegramLink}
             target="_blank"
@@ -180,7 +192,7 @@ export default function FollowersPage() {
         <div className="grid grid-cols-2 gap-2.5">
           {/* Instagram */}
           <button
-            onClick={() => setSelectedCategory('instagram')}
+            onClick={() => handleCategorySelect('instagram')}
             className={`py-3 px-3 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border transition-all ${
               selectedCategory === 'instagram'
                 ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white border-transparent shadow-md shadow-pink-500/25'
@@ -193,10 +205,10 @@ export default function FollowersPage() {
 
           {/* Insta ID Unban */}
           <button
-            onClick={() => setSelectedCategory('unban')}
+            onClick={() => handleCategorySelect('unban')}
             className={`py-3 px-3 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border transition-all ${
               selectedCategory === 'unban'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-transparent shadow-md shadow-amber-500/25'
+                ? 'bg-purple-600 text-white border-transparent shadow-md shadow-purple-600/25'
                 : 'bg-white text-zinc-700 border-zinc-200 hover:border-zinc-300'
             }`}
           >
@@ -206,7 +218,7 @@ export default function FollowersPage() {
 
           {/* YouTube */}
           <button
-            onClick={() => setSelectedCategory('youtube')}
+            onClick={() => handleCategorySelect('youtube')}
             className={`py-3 px-3 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border transition-all ${
               selectedCategory === 'youtube'
                 ? 'bg-red-600 text-white border-transparent shadow-md shadow-red-600/25'
@@ -219,7 +231,7 @@ export default function FollowersPage() {
 
           {/* Facebook */}
           <button
-            onClick={() => setSelectedCategory('facebook')}
+            onClick={() => handleCategorySelect('facebook')}
             className={`py-3 px-3 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border transition-all ${
               selectedCategory === 'facebook'
                 ? 'bg-blue-600 text-white border-transparent shadow-md shadow-blue-600/25'
@@ -234,7 +246,7 @@ export default function FollowersPage() {
         {/* Telegram (Wide Pill Below) */}
         <div className="mt-2.5">
           <button
-            onClick={() => setSelectedCategory('telegram')}
+            onClick={() => handleCategorySelect('telegram')}
             className={`w-full py-3 px-4 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 border transition-all ${
               selectedCategory === 'telegram'
                 ? 'bg-sky-500 text-white border-transparent shadow-md shadow-sky-500/25'
@@ -248,134 +260,163 @@ export default function FollowersPage() {
       </div>
 
       {/* ==================================================================== */}
-      {/* 4. WELCOME CARD & SUB-TABS (Per Category) */}
+      {/* 4. SUB-TABS (Followers, Likes, Views / Subscribers, Watch Time, etc.) */}
       {/* ==================================================================== */}
-      <div className="max-w-2xl mx-auto px-4 py-3 w-full">
-        <div className="bg-white rounded-2xl border border-zinc-200 p-5 text-center shadow-xs">
-          {selectedCategory === 'youtube' && (
-            <>
-              <h2 className="text-lg font-extrabold text-zinc-950 flex items-center justify-center gap-2">
-                Welcome to YouTube Growth 🚀
-              </h2>
-              <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto leading-relaxed">
-                Buy YouTube services instantly. Indian subscribers, watch time, views & likes with safe delivery. Creator-friendly services for channel growth.
-              </p>
+      <div className="max-w-2xl mx-auto px-4 py-2 w-full">
+        {/* Instagram Sub-tabs */}
+        {selectedCategory === 'instagram' && (
+          <div className="grid grid-cols-3 gap-2 p-1.5 bg-zinc-100 rounded-2xl border border-zinc-200">
+            {INSTAGRAM_SUBCATEGORIES.map((sub) => {
+              const isActive = selectedSubCategory === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  onClick={() => setSelectedSubCategory(sub.id)}
+                  className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-sm shadow-pink-500/30'
+                      : 'text-zinc-600 hover:text-zinc-900'
+                  }`}
+                >
+                  <span>{sub.icon}</span>
+                  <span>{sub.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-              {/* YouTube Sub-Tabs (Subscribers, Watch Time, Views, Likes) */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4 pt-3 border-t border-zinc-100">
-                {YOUTUBE_SUBCATEGORIES.map((sub) => {
-                  const isActive = selectedSubCategory === sub.id;
-                  return (
-                    <button
-                      key={sub.id}
-                      onClick={() => setSelectedSubCategory(sub.id)}
-                      className={`py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                        isActive
-                          ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-sm shadow-pink-500/30'
-                          : 'bg-zinc-50 text-zinc-700 hover:bg-zinc-100'
-                      }`}
-                    >
-                      <span>{sub.icon}</span>
-                      <span>{sub.name}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          )}
+        {/* YouTube Sub-tabs */}
+        {selectedCategory === 'youtube' && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1.5 bg-zinc-100 rounded-2xl border border-zinc-200">
+            {YOUTUBE_SUBCATEGORIES.map((sub) => {
+              const isActive = selectedSubCategory === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  onClick={() => setSelectedSubCategory(sub.id)}
+                  className={`py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-pink-500 to-rose-600 text-white shadow-sm shadow-pink-500/30'
+                      : 'text-zinc-600 hover:text-zinc-900'
+                  }`}
+                >
+                  <span>{sub.icon}</span>
+                  <span>{sub.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-          {selectedCategory === 'facebook' && (
-            <>
-              <h2 className="text-lg font-extrabold text-zinc-950 flex items-center justify-center gap-2">
-                Facebook Services 👥
-              </h2>
-              <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto leading-relaxed">
-                Grow your Facebook Page with Indian likes and followers. Choose a package below for quick safe delivery and reliable service.
-              </p>
-              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-100">
-                <span>👍</span> Page Likes & Followers
-              </div>
-            </>
-          )}
-
-          {selectedCategory === 'telegram' && (
-            <>
-              <h2 className="text-lg font-extrabold text-zinc-950 flex items-center justify-center gap-2">
-                Telegram Services 📱
-              </h2>
-              <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto leading-relaxed">
-                Grow your Telegram channel or group with Indian members. Choose a package below for quick safe delivery and reliable service.
-              </p>
-              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-50 text-sky-700 text-xs font-bold border border-sky-100">
-                <span>👥</span> Indian Members
-              </div>
-            </>
-          )}
-
-          {selectedCategory === 'instagram' && (
-            <>
-              <h2 className="text-lg font-extrabold text-zinc-950 flex items-center justify-center gap-2">
-                Instagram Growth Hub 📸
-              </h2>
-              <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto leading-relaxed">
-                High quality Indian active profile followers with natural drip-feed delivery. Non-drop and 30-day auto refill guaranteed.
-              </p>
-              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pink-50 text-pink-700 text-xs font-bold border border-pink-100">
-                <span>⚡</span> Non-Drop Active Followers
-              </div>
-            </>
-          )}
-
-          {selectedCategory === 'unban' && (
-            <>
-              <h2 className="text-lg font-extrabold text-zinc-950 flex items-center justify-center gap-2">
-                Instagram ID Unban & Recovery Hub 🛡️
-              </h2>
-              <p className="text-xs text-zinc-500 mt-1 max-w-md mx-auto leading-relaxed">
-                21 din se suspended ya disabled account? Hum official Meta compliance and ticket escalation appeals file karte hain. 95%+ success rate.
-              </p>
-              <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-xs font-bold border border-amber-100">
-                <span>🔥</span> Priority Fast-Track Case Escalation
-              </div>
-            </>
-          )}
-        </div>
+        {/* Insta ID Unban Top Header Banner */}
+        {selectedCategory === 'unban' && (
+          <div className="bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-white rounded-3xl p-6 text-center border-2 border-purple-500/50 shadow-md">
+            <span className="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-amber-400 text-zinc-950 inline-block mb-3">
+              🔒 100% Guaranteed Account Recovery
+            </span>
+            <h2 className="text-xl font-black text-white">
+              🔒 Instagram ID Unban & Recovery
+            </h2>
+            <p className="text-xs text-zinc-300 mt-2 max-w-md mx-auto leading-relaxed">
+              Got your Instagram account disabled, suspended or banned? Don't worry! We offer a 100% account recovery service with complete trust, safety, and rapid turnaround time.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ==================================================================== */}
-      {/* 5. SERVICE PACKAGE CARDS (Exact match to screenshot cards) */}
+      {/* 5. SERVICE PACKAGE CARDS (Matches Screenshot Designs & VVIP Dark Cards) */}
       {/* ==================================================================== */}
       <div className="max-w-2xl mx-auto px-4 py-4 w-full space-y-6">
         {filteredPackages.map((pkg, idx) => {
+          const isVvip = pkg.badge?.includes('VVIP') || pkg.id.includes('vvip');
+          const isUnban = pkg.categoryId === 'unban';
+
+          // VVIP Dark Luxury Card from screenshots (Image 2, Image 3, Image 4)
+          if (isVvip) {
+            return (
+              <div
+                key={pkg.id}
+                className="relative bg-gradient-to-b from-zinc-950 via-zinc-900 to-black rounded-3xl border-2 border-amber-400/80 p-6 sm:p-7 shadow-xl text-center text-white"
+              >
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-4 py-0.5 rounded-full bg-amber-400 text-zinc-950 shadow-xs flex items-center gap-1">
+                    <Crown className="w-3 h-3 fill-zinc-950" />
+                    <span>{pkg.badge}</span>
+                  </span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-black text-white mt-2">
+                  {pkg.name}
+                </h3>
+
+                <div className="my-3 flex items-center justify-center gap-2">
+                  <span className="text-4xl sm:text-5xl font-black text-amber-400 tracking-tight">
+                    ₹{pkg.price}
+                  </span>
+                  <span className="text-xs text-zinc-500 line-through font-semibold">
+                    ₹{pkg.originalPrice}
+                  </span>
+                </div>
+
+                <p className="text-xs text-zinc-300 max-w-sm mx-auto leading-relaxed mb-4">
+                  {pkg.description}
+                </p>
+
+                <div className="space-y-2 max-w-xs mx-auto mb-6 text-left">
+                  {pkg.features.map((feat, fIdx) => (
+                    <div key={fIdx} className="flex items-center gap-2 text-xs font-semibold text-zinc-200">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span>{feat}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => handleBuyNow(pkg)}
+                  className="w-full py-4 px-6 rounded-2xl font-black text-sm tracking-wide text-zinc-950 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-400 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                >
+                  <span>CLAIM VVIP STATUS NOW</span>
+                  <ArrowRight className="w-4 h-4 stroke-[3]" />
+                </button>
+              </div>
+            );
+          }
+
           // Dynamic badge colors from screenshot
           let badgeBg = 'bg-amber-400 text-zinc-950';
           let borderOutline = 'border-amber-400';
-          if (pkg.badge === 'POPULAR') {
-            badgeBg = 'bg-emerald-500 text-white';
-            borderOutline = 'border-emerald-500';
-          } else if (pkg.badge === 'HOT') {
-            badgeBg = 'bg-amber-500 text-white';
-            borderOutline = 'border-sky-400';
-          } else if (pkg.badge === 'BEST DEAL') {
-            badgeBg = 'bg-amber-500 text-white';
-            borderOutline = 'border-rose-500';
-          } else if (pkg.badge === 'OFFER') {
+          let btnColor = 'bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 shadow-pink-500/30';
+
+          if (pkg.badge?.includes('POPULAR') || pkg.badge?.includes('1k Indian')) {
             badgeBg = 'bg-amber-400 text-zinc-950';
+            borderOutline = 'border-amber-400';
+          } else if (pkg.badge?.includes('VALUE') || pkg.badge?.includes('VIRAL')) {
+            badgeBg = 'bg-rose-600 text-white';
             borderOutline = 'border-rose-500';
+          } else if (pkg.badge?.includes('TRENDING') || pkg.badge?.includes('SECURE')) {
+            badgeBg = 'bg-purple-600 text-white';
+            borderOutline = 'border-purple-400';
+          } else if (pkg.badge?.includes('INFLUENCER') || pkg.buttonColor === 'blue') {
+            badgeBg = 'bg-blue-600 text-white';
+            borderOutline = 'border-blue-500';
+            btnColor = 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30';
+          } else if (pkg.badge?.includes('MEGA')) {
+            badgeBg = 'bg-zinc-900 text-white';
+            borderOutline = 'border-zinc-800';
           }
 
-          // Button gradient styling
-          const isBlueBtn = pkg.buttonColor === 'blue';
-          const btnClasses = isBlueBtn
-            ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30'
-            : 'bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 shadow-pink-500/30';
+          if (isUnban) {
+            btnColor = 'bg-purple-600 hover:bg-purple-700 shadow-purple-500/30';
+            borderOutline = 'border-purple-300';
+          }
 
           return (
             <div
               key={pkg.id}
               className={`relative bg-white rounded-3xl border-2 ${borderOutline} p-6 sm:p-7 shadow-sm hover:shadow-md transition-shadow text-center`}
             >
-              {/* Badge Centered on Top Border */}
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span
                   className={`text-[10px] font-black uppercase tracking-wider px-4 py-0.5 rounded-full shadow-xs ${badgeBg}`}
@@ -384,14 +425,12 @@ export default function FollowersPage() {
                 </span>
               </div>
 
-              {/* Package Name */}
               <h3 className="text-xl sm:text-2xl font-black text-zinc-950 mt-1">
                 {pkg.name}
               </h3>
 
-              {/* Price Row */}
               <div className="my-3 flex items-center justify-center gap-2">
-                <span className="text-4xl sm:text-5xl font-black text-pink-600 tracking-tight">
+                <span className={`text-4xl sm:text-5xl font-black tracking-tight ${isUnban ? 'text-purple-600' : 'text-pink-600'}`}>
                   ₹{pkg.price}
                 </span>
                 <span className="text-xs text-zinc-400 line-through font-semibold">
@@ -399,12 +438,10 @@ export default function FollowersPage() {
                 </span>
               </div>
 
-              {/* Description */}
               <p className="text-xs text-zinc-600 max-w-sm mx-auto leading-relaxed mb-4">
                 {pkg.description}
               </p>
 
-              {/* Features List */}
               <div className="space-y-1.5 max-w-xs mx-auto mb-6 text-left">
                 {pkg.features.map((feat, fIdx) => (
                   <div key={fIdx} className="flex items-center gap-2 text-xs font-semibold text-zinc-800">
@@ -414,9 +451,9 @@ export default function FollowersPage() {
                 ))}
               </div>
 
-              {/* Floating Live Activity Toast on specific card (matches screenshot) */}
+              {/* Live Activity Toast */}
               {idx === 0 && showActivity && (
-                <div className="my-3 mx-auto max-w-xs p-2 rounded-xl bg-white border border-zinc-200 shadow-sm flex items-center gap-2.5 text-left animate-in fade-in slide-in-from-bottom-1 duration-300">
+                <div className="my-3 mx-auto max-w-xs p-2 rounded-xl bg-white border border-zinc-200 shadow-sm flex items-center gap-2.5 text-left animate-in fade-in duration-300">
                   <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-xs">
                     🛍️
                   </div>
@@ -431,12 +468,11 @@ export default function FollowersPage() {
                 </div>
               )}
 
-              {/* Action Button */}
               <button
                 onClick={() => handleBuyNow(pkg)}
-                className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] ${btnClasses}`}
+                className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] ${btnColor}`}
               >
-                <span>BUY NOW</span>
+                <span>{isUnban ? 'RECOVER ACCOUNT NOW' : 'BUY NOW'}</span>
                 <ArrowRight className="w-4 h-4 stroke-[3]" />
               </button>
             </div>
@@ -445,7 +481,7 @@ export default function FollowersPage() {
       </div>
 
       {/* ==================================================================== */}
-      {/* 6. VERIFIED BUYER TESTIMONIALS (From Screenshots) */}
+      {/* 6. VERIFIED BUYER TESTIMONIALS */}
       {/* ==================================================================== */}
       <section className="py-12 bg-zinc-50/60 border-t border-zinc-200">
         <div className="max-w-2xl mx-auto px-4 text-center">
@@ -492,7 +528,7 @@ export default function FollowersPage() {
       </section>
 
       {/* ==================================================================== */}
-      {/* 7. FREQUENTLY ASKED QUESTIONS (From Screenshots) */}
+      {/* 7. FREQUENTLY ASKED QUESTIONS */}
       {/* ==================================================================== */}
       <section className="py-12 bg-white border-t border-zinc-100">
         <div className="max-w-2xl mx-auto px-4">
@@ -565,7 +601,7 @@ export default function FollowersPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. @your_username ya post/channel link"
+                  placeholder="e.g. @your_username ya post/reel link"
                   value={targetUsername}
                   onChange={(e) => setTargetUsername(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
@@ -603,20 +639,6 @@ export default function FollowersPage() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-zinc-800 mb-1">
-                  Email Address (Optional)
-                </label>
-                <input
-                  type="email"
-                  placeholder="Order receipt ke liye"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-sm focus:outline-hidden focus:border-pink-500 focus:ring-2 focus:ring-pink-200"
-                />
-              </div>
-
-              {/* Order Notice */}
               <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] leading-tight">
                 ⚡ High traffic ke dauran delivery 24-120 hours ke andar safely complete ho jati hai. 100% non-drop guaranteed.
               </div>
@@ -641,7 +663,7 @@ export default function FollowersPage() {
       )}
 
       {/* ==================================================================== */}
-      {/* 9. BOTTOM BAR / FOOTER FOR /followers */}
+      {/* 9. FOOTER */}
       {/* ==================================================================== */}
       <footer className="mt-auto py-8 bg-zinc-900 text-zinc-400 text-xs text-center border-t border-zinc-800">
         <div className="max-w-2xl mx-auto px-4 space-y-3">
