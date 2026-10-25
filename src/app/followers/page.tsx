@@ -163,6 +163,9 @@ export default function FollowersPage() {
         throw new Error(data.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
       }
 
+      const cleanDigits = customerPhone.replace(/\D/g, '').slice(-10);
+      const formattedContact = `+91${cleanDigits}`;
+
       // 3. Open Razorpay Checkout Modal directly with prefilled contact details
       const options = {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
@@ -175,7 +178,12 @@ export default function FollowersPage() {
         prefill: {
           name: displayName,
           email: email,
-          contact: cleanPhone,
+          contact: formattedContact,
+        },
+        readonly: {
+          contact: true,
+          email: true,
+          name: true,
         },
         notes: {
           service: 'Digital Creator Strategy Class',

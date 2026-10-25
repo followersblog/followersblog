@@ -127,7 +127,12 @@ function FollowersCheckoutContent() {
         prefill: {
           name: displayName,
           email: email,
-          contact: cleanPhone,
+          contact: `+91${cleanPhone}`,
+        },
+        readonly: {
+          contact: true,
+          email: true,
+          name: true,
         },
         notes: {
           service: 'Digital Creator Strategy Class',

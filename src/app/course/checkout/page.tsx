@@ -112,7 +112,12 @@ export default function CourseCheckoutPage() {
         prefill: {
           name: fullName,
           email: email,
-          contact: cleanPhone,
+          contact: `+91${cleanPhone}`,
+        },
+        readonly: {
+          contact: true,
+          email: true,
+          name: true,
         },
         notes: {
           course: 'AI Website Building',
