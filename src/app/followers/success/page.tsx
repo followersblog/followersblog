@@ -185,7 +185,7 @@ export default function FollowersSuccessPage() {
   return (
     <div className="min-h-screen bg-zinc-50 font-sans">
       <header className="border-b border-zinc-200 bg-white py-4 px-6 text-center">
-        <Link href="/" className="font-black text-lg text-zinc-950">
+        <Link href="/followers" className="font-black text-lg text-zinc-950">
           Followers<span className="text-pink-600">.blog</span>
         </Link>
       </header>

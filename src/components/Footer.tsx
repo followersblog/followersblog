@@ -43,18 +43,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/followers" className="hover:text-pink-600 transition-colors font-medium">
-                  Social Growth Services (/followers)
-                </Link>
-              </li>
-              <li>
                 <Link href="/dashboard" className="hover:text-blue-600 transition-colors">
-                  Student & Customer Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link href="/admin" className="hover:text-zinc-900 transition-colors text-zinc-400">
-                  Admin Portal
+                  Student Portal
                 </Link>
               </li>
             </ul>

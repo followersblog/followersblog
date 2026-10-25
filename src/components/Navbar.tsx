@@ -39,17 +39,7 @@ export default function Navbar() {
               className="text-sm font-semibold text-zinc-700 hover:text-blue-600 transition-colors flex items-center gap-1.5"
             >
               <BookOpen className="w-4 h-4 text-blue-500" />
-              Course
-            </Link>
-            <Link 
-              href="/followers" 
-              className="text-sm font-semibold text-zinc-700 hover:text-pink-600 transition-colors flex items-center gap-1.5 group"
-            >
-              <TrendingUp className="w-4 h-4 text-pink-500 group-hover:scale-110 transition-transform" />
-              SMM Services
-              <span className="bg-pink-100 text-pink-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase">
-                Hot
-              </span>
+              Course Curriculum
             </Link>
             <Link 
               href="/#faq" 
@@ -116,19 +106,6 @@ export default function Navbar() {
               AI Website Building Course
             </span>
             <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">₹1499</span>
-          </Link>
-          <Link
-            href="/followers"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between px-3 py-2 rounded-lg text-base font-semibold text-zinc-800 hover:bg-pink-50 hover:text-pink-600"
-          >
-            <span className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-pink-500" />
-              SMM Growth Services
-            </span>
-            <span className="text-[10px] font-bold text-pink-700 bg-pink-100 px-2 py-0.5 rounded-full uppercase">
-              Instant
-            </span>
           </Link>
           <Link
             href="/#faq"

@@ -156,7 +156,7 @@ export default function FollowersPage() {
       {/* ==================================================================== */}
       <header className="border-b border-zinc-100 bg-white sticky top-0 z-40 shadow-xs">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/followers" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-600 flex items-center justify-center text-white shadow-xs">
               <Sparkles className="w-5 h-5" />
             </div>
@@ -451,23 +451,6 @@ export default function FollowersPage() {
                 ))}
               </div>
 
-              {/* Live Activity Toast */}
-              {idx === 0 && showActivity && (
-                <div className="my-3 mx-auto max-w-xs p-2 rounded-xl bg-white border border-zinc-200 shadow-sm flex items-center gap-2.5 text-left animate-in fade-in duration-300">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-xs">
-                    🛍️
-                  </div>
-                  <div className="text-[11px] leading-tight">
-                    <div className="font-bold text-zinc-900">
-                      {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].name} from {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].city}
-                    </div>
-                    <div className="text-zinc-500 text-[10px]">
-                      bought {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].package} • {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].time}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               <button
                 onClick={() => handleBuyNow(pkg)}
                 className={`w-full py-3.5 px-6 rounded-2xl font-black text-sm tracking-wide text-white flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] ${btnColor}`}
@@ -639,10 +622,6 @@ export default function FollowersPage() {
                 />
               </div>
 
-              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-[11px] leading-tight">
-                ⚡ High traffic ke dauran delivery 24-120 hours ke andar safely complete ho jati hai. 100% non-drop guaranteed.
-              </div>
-
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -674,7 +653,6 @@ export default function FollowersPage() {
             Automated social growth infrastructure and creator acceleration services.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold pt-1">
-            <Link href="/" className="hover:text-white">AI Course</Link>
             <Link href="/terms" className="hover:text-white">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
             <Link href="/refund" className="hover:text-white">Refund Policy</Link>
@@ -687,6 +665,25 @@ export default function FollowersPage() {
           </p>
         </div>
       </footer>
+
+      {/* ==================================================================== */}
+      {/* 10. FIXED FLOATING LIVE ACTIVITY TOAST (BOTTOM-LEFT) */}
+      {/* ==================================================================== */}
+      {showActivity && (
+        <div className="fixed bottom-4 left-4 z-50 max-w-xs sm:max-w-sm p-3 rounded-2xl bg-white/95 backdrop-blur-md border border-zinc-200/90 shadow-2xl flex items-center gap-3 text-left animate-in fade-in slide-in-from-bottom-3 duration-300">
+          <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-sm shadow-xs">
+            🛍️
+          </div>
+          <div className="text-[11px] leading-tight">
+            <div className="font-bold text-zinc-900">
+              {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].name} from {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].city}
+            </div>
+            <div className="text-zinc-500 text-[10px] mt-0.5">
+              bought {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].package} • {LIVE_ACTIVITY_SAMPLES[currentActivityIndex].time}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

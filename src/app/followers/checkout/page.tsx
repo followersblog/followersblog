@@ -216,17 +216,6 @@ function FollowersCheckoutContent() {
           />
         </div>
 
-        {/* Processing Alert notice */}
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
-          <div className="font-bold flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-amber-700" />
-            <span>Estimated Processing Time: 24–120 Hours</span>
-          </div>
-          <p className="text-[11px] leading-relaxed text-amber-800">
-            High traffic ke dauran queue system follow hota hai taaki accounts par natural pace maintain rahe aur 100% non-drop delivery ho.
-          </p>
-        </div>
-
         {/* Pay Button */}
         <div className="pt-2">
           <button
