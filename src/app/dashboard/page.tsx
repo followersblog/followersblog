@@ -18,6 +18,7 @@ import {
   BookOpen,
   Send,
   AlertCircle,
+  FileText,
 } from 'lucide-react';
 
 export default function UserDashboardPage() {
@@ -283,6 +284,14 @@ export default function UserDashboardPage() {
                             )}
                           </div>
                         </div>
+
+                        <Link
+                          href={`/receipt?order_id=${order.id}&name=Customer&amount=${order.amount}`}
+                          className="px-3 py-2 rounded-xl text-xs font-bold text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors flex items-center gap-1"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-zinc-500" />
+                          <span>Receipt</span>
+                        </Link>
 
                         {order.productType === 'course' && (
                           <a

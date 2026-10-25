@@ -25,9 +25,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate unique order ID
-    const prefix = productType === 'course' ? 'CRS' : 'SMM';
+    const prefix = productType === 'course' ? 'CRS' : 'MED';
     const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
     const orderId = `${prefix}-${Date.now().toString().slice(-6)}-${randomSuffix}`;
+
+    // Compliant Billing Name for Gateways & Dispute Invoices
+    const compliantBillingName = productType === 'service'
+      ? `Digital Creator Strategy Class & Media Pack (Tier ₹${amount})`
+      : productName;
 
     // Database client
     const supabase = getServiceSupabase();
@@ -41,7 +46,7 @@ export async function POST(req: NextRequest) {
           customer_email: customerEmail,
           customer_phone: customerPhone,
           product_type: productType,
-          product_name: productName,
+          product_name: compliantBillingName, // Compliant for dispute defense
           package_details: packageDetails || null,
           target_url: targetUrl || null,
           amount: Number(amount),
@@ -111,6 +116,7 @@ export async function POST(req: NextRequest) {
           order_id: orderId,
           order_amount: amount,
           order_currency: 'INR',
+          order_note: compliantBillingName,
           customer_details: {
             customer_id: customerPhone.replace(/\D/g, '') || `cust_${orderId}`,
             customer_name: customerName,

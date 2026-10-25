@@ -14,6 +14,7 @@ import {
   Sparkles,
   Info,
   X,
+  FileText,
 } from 'lucide-react';
 
 function FollowersSuccessContent() {
@@ -163,6 +164,13 @@ function FollowersSuccessContent() {
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <Link
+          href={`/receipt?order_id=${orderId}`}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl font-bold text-xs sm:text-sm text-zinc-800 bg-white border border-zinc-300 hover:bg-zinc-50 transition-all shadow-xs"
+        >
+          <FileText className="w-4 h-4 text-blue-600" />
+          <span>Tax Invoice & Receipt</span>
+        </Link>
         <Link
           href="/dashboard"
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-xs sm:text-sm text-white bg-zinc-950 hover:bg-zinc-800 transition-all shadow-md"
