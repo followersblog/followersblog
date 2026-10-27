@@ -12,6 +12,7 @@ function ReceiptContent() {
   const paramEmail = searchParams.get('email') || '';
   const paramPhone = searchParams.get('phone') || '';
   const paramAmount = searchParams.get('amount') || '';
+  const paramPaymentId = searchParams.get('payment_id') || '';
   const date = searchParams.get('date') || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
   const [orderState, setOrderState] = useState<{
@@ -126,6 +127,9 @@ function ReceiptContent() {
             </div>
             <div className="text-zinc-700"><strong>Date of Issue:</strong> {date}</div>
             <div className="text-zinc-700"><strong>Payment Gateway:</strong> Razorpay Payments (Verified 256-Bit SSL)</div>
+            {paramPaymentId && (
+              <div className="text-zinc-700 font-mono text-[11px]"><strong>Razorpay Ref:</strong> {paramPaymentId}</div>
+            )}
             <div className="text-zinc-700"><strong>Delivery Mode:</strong> Electronic / Digital Access Dispatched</div>
           </div>
         </div>

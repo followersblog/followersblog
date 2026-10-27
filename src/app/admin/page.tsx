@@ -25,6 +25,9 @@ import {
   AlertTriangle,
   HelpCircle,
   ExternalLink,
+  RefreshCw,
+  Copy,
+  Check,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -38,6 +41,34 @@ export default function AdminDashboardPage() {
   // Default secure admin passcode
   const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASS || 'followers@7055';
 
+  // Live Orders state
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState<boolean>(false);
+  const [fetchError, setFetchError] = useState<string>('');
+  const [copiedDefenseId, setCopiedDefenseId] = useState<string | null>(null);
+
+  const fetchLiveOrders = async () => {
+    setIsLoadingOrders(true);
+    setFetchError('');
+    try {
+      const res = await fetch('/api/admin/orders', {
+        headers: {
+          'x-admin-key': ADMIN_PASSWORD,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.orders) {
+        setOrders(data.orders);
+      } else {
+        setFetchError(data.error || 'Failed to fetch live orders');
+      }
+    } catch (err: any) {
+      setFetchError(err.message || 'Error connecting to orders API');
+    } finally {
+      setIsLoadingOrders(false);
+    }
+  };
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedAuth = sessionStorage.getItem('followers_admin_auth');
@@ -47,12 +78,19 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchLiveOrders();
+    }
+  }, [isAuthenticated]);
+
   const handleAdminLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       sessionStorage.setItem('followers_admin_auth', 'true');
       setAuthError('');
+      fetchLiveOrders();
     } else {
       setAuthError('Galat Password! Kripya sahi Admin Passcode daaliye.');
     }
@@ -76,99 +114,6 @@ export default function AdminDashboardPage() {
   const [newProofNote, setNewProofNote] = useState('');
   const [proofType, setProofType] = useState('screenshot');
   const [proofRef, setProofRef] = useState('');
-
-  // Orders list with Dispute Tracking
-  const [orders, setOrders] = useState<any[]>([
-    {
-      id: 'MED-183921-TG20',
-      customerName: 'Amit Verma',
-      customerEmail: 'amit.verma@example.com',
-      customerPhone: '+91 9876543210',
-      productType: 'service',
-      serviceName: '20k Telegram Members 🇮🇳',
-      compliantBillingName: 'Digital Creator Strategy Class & Media Pack (Tier ₹299)',
-      category: 'Telegram',
-      quantity: '20,000',
-      target: 'https://t.me/crypto_trading_hub',
-      amount: 299,
-      paymentStatus: 'success',
-      orderStatus: 'processing',
-      disputeStatus: 'under_review', // 'none' | 'under_review' | 'won' | 'lost'
-      disputeReason: 'Customer bank reported unrecognized charge. Compliant receipt ready.',
-      createdAt: '2026-10-25 09:30 AM',
-      timeline: [
-        { time: '09:30 AM', title: 'Order Placed', desc: 'Customer agreed to Terms of Service & digital delivery' },
-        { time: '09:31 AM', title: 'Payment Captured', desc: '₹299 paid via Cashfree Gateway' },
-        { time: '10:00 AM', title: 'Asset Delivery Dispatched', desc: 'Media strategy queue assigned' },
-      ],
-      notes: [
-        { by: 'Admin', note: 'Customer Telegram verified. Evidence screenshot captured.', time: '10:05 AM' }
-      ],
-      evidence: [
-        { type: 'screenshot', ref: 'initial_count_432.png', note: 'Starting subscriber counter verified (432)', time: '10:01 AM' }
-      ],
-      communication: [
-        { message: 'Digital Tax Invoice Dispatched', status: 'Delivered', time: '09:31 AM' },
-        { message: 'Class & Strategy Access Notice', status: 'Delivered', time: '10:02 AM' },
-      ],
-    },
-    {
-      id: 'CRS-749102-AI9X',
-      customerName: 'Rahul Sharma',
-      customerEmail: 'rahul.s@example.com',
-      customerPhone: '+91 9811223344',
-      productType: 'course',
-      serviceName: 'AI Website Building — 3 Hour Practical Class',
-      compliantBillingName: 'AI Website Building — 3 Hour Live Practical Class',
-      amount: 1499,
-      paymentStatus: 'success',
-      orderStatus: 'completed',
-      disputeStatus: 'none',
-      createdAt: '2026-10-25 11:15 AM',
-      timeline: [
-        { time: '11:15 AM', title: 'Course Enrolled', desc: '₹1499 paid via Cashfree' },
-        { time: '11:16 AM', title: 'Webinar Joining Credentials', desc: 'Google Meet link & prompts sent' },
-      ],
-      notes: [
-        { by: 'System', note: 'Classroom access granted for upcoming live batch.', time: '11:16 AM' }
-      ],
-      evidence: [],
-      communication: [
-        { message: 'Class Enrolment & Calendar Invite', status: 'Delivered', time: '11:16 AM' }
-      ],
-    },
-    {
-      id: 'MED-992014-FB10',
-      customerName: 'Sunita Mehra',
-      customerEmail: 'sunita.m@example.com',
-      customerPhone: '+91 9988776655',
-      productType: 'service',
-      serviceName: '10k Facebook Likes + Followers 🇮🇳',
-      compliantBillingName: 'Digital Creator Strategy Class & Media Pack (Tier ₹250)',
-      category: 'Facebook',
-      quantity: '10,000',
-      target: 'https://facebook.com/mehra_boutique',
-      amount: 250,
-      paymentStatus: 'success',
-      orderStatus: 'completed',
-      disputeStatus: 'none',
-      createdAt: '2026-10-24 03:00 PM',
-      timeline: [
-        { time: '03:00 PM', title: 'Order Placed', desc: 'Page verified' },
-        { time: '03:01 PM', title: 'Payment Captured', desc: '₹250 verified' },
-        { time: '08:30 PM', title: 'Delivery Completed', desc: '10,150 delivered successfully' },
-      ],
-      notes: [
-        { by: 'Admin', note: 'Final audit complete. Non-drop verified.', time: '08:35 PM' }
-      ],
-      evidence: [
-        { type: 'screenshot', ref: 'final_delivery_fb_proof.png', note: 'Final follower counter screenshot', time: '08:32 PM' }
-      ],
-      communication: [
-        { message: 'Tax Invoice & Strategy Delivered', status: 'Delivered', time: '03:01 PM' },
-      ],
-    },
-  ]);
 
   // Toggle order dispute status
   const handleToggleDispute = (orderId: string, newStatus: string) => {
@@ -254,18 +199,21 @@ export default function AdminDashboardPage() {
     if (searchFilter.trim()) {
       const q = searchFilter.toLowerCase();
       return (
-        o.id.toLowerCase().includes(q) ||
-        o.customerName.toLowerCase().includes(q) ||
-        o.customerEmail.toLowerCase().includes(q) ||
-        o.customerPhone.toLowerCase().includes(q) ||
+        (o.id && o.id.toLowerCase().includes(q)) ||
+        (o.paymentId && o.paymentId.toLowerCase().includes(q)) ||
+        (o.target && o.target.toLowerCase().includes(q)) ||
+        (o.customerName && o.customerName.toLowerCase().includes(q)) ||
+        (o.customerEmail && o.customerEmail.toLowerCase().includes(q)) ||
+        (o.customerPhone && o.customerPhone.toLowerCase().includes(q)) ||
         String(o.amount).includes(q) ||
-        o.serviceName.toLowerCase().includes(q)
+        (o.serviceName && o.serviceName.toLowerCase().includes(q))
       );
     }
     return true;
   });
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.amount, 0);
+  const capturedOrders = orders.filter((o) => o.paymentStatus === 'success');
+  const totalRevenue = capturedOrders.reduce((sum, o) => sum + (Number(o.amount) || 0), 0);
   const activeDisputesCount = orders.filter((o) => o.disputeStatus === 'under_review').length;
 
   // ==========================================================================
@@ -433,11 +381,21 @@ export default function AdminDashboardPage() {
               {selectedOrderForDetail ? `Order Audit: ${selectedOrderForDetail.id}` : `${activeSection} Management`}
             </h1>
             <p className="text-xs text-zinc-500">
-              Merchant: <strong className="text-zinc-800">followers.blog</strong>
+              Merchant: <strong className="text-zinc-800">followers.blog</strong> • Live Gateway & Database Sync
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={fetchLiveOrders}
+              disabled={isLoadingOrders}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors cursor-pointer disabled:opacity-50"
+              title="Refresh and sync live payments from Razorpay"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-blue-600 ${isLoadingOrders ? 'animate-spin' : ''}`} />
+              <span>{isLoadingOrders ? 'Syncing...' : 'Sync Live Orders'}</span>
+            </button>
+
             <button
               onClick={handleAdminLogout}
               className="md:hidden p-2 rounded-lg bg-zinc-100 text-zinc-600"
@@ -451,6 +409,21 @@ export default function AdminDashboardPage() {
         </header>
 
         <main className="p-6 overflow-y-auto flex-1">
+          {fetchError && (
+            <div className="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center justify-between max-w-6xl mx-auto">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{fetchError}</span>
+              </div>
+              <button
+                onClick={fetchLiveOrders}
+                className="underline font-bold text-rose-800"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
           {/* ================================================================ */}
           {/* DETAIL VIEW: ORDER AUDIT, DELIVERY PROOF & DISPUTE PACK */}
           {/* ================================================================ */}
@@ -459,7 +432,7 @@ export default function AdminDashboardPage() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <button
                   onClick={() => setSelectedOrderForDetail(null)}
-                  className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                  className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   ← Back to Orders List
                 </button>
@@ -467,7 +440,7 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center gap-2">
                   {/* Direct Link to Compliant Dispute Tax Invoice */}
                   <Link
-                    href={`/receipt?order_id=${selectedOrderForDetail.id}&name=${encodeURIComponent(selectedOrderForDetail.customerName)}&email=${encodeURIComponent(selectedOrderForDetail.customerEmail)}&phone=${encodeURIComponent(selectedOrderForDetail.customerPhone)}&amount=${selectedOrderForDetail.amount}`}
+                    href={`/receipt?order_id=${selectedOrderForDetail.id}&payment_id=${selectedOrderForDetail.paymentId || ''}&name=${encodeURIComponent(selectedOrderForDetail.customerName)}&email=${encodeURIComponent(selectedOrderForDetail.customerEmail)}&phone=${encodeURIComponent(selectedOrderForDetail.customerPhone)}&amount=${selectedOrderForDetail.amount}`}
                     target="_blank"
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xs"
                   >
@@ -477,7 +450,7 @@ export default function AdminDashboardPage() {
 
                   <button
                     onClick={() => window.print()}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-zinc-700 bg-white border border-zinc-300 hover:bg-zinc-50"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-zinc-700 bg-white border border-zinc-300 hover:bg-zinc-50 cursor-pointer"
                   >
                     <Printer className="w-3.5 h-3.5" />
                     <span>Print Order Dossier</span>
@@ -493,29 +466,66 @@ export default function AdminDashboardPage() {
                     <div className="text-xs">
                       <div className="font-bold text-amber-950">Active Gateway Dispute Claim</div>
                       <p className="text-amber-800 mt-0.5">
-                        {selectedOrderForDetail.disputeReason}
+                        {selectedOrderForDetail.disputeReason || 'Bank reported charge inquiry. Compliant receipt ready.'}
                       </p>
                       <div className="text-[11px] text-amber-900 mt-1 font-semibold">
-                        💡 Action: Upar blue button se <strong>"Generate Compliant Tax Invoice (PDF)"</strong> download karke Cashfree Dispute Desk me submit karein.
+                        💡 Action: Upar blue button se <strong>"Generate Compliant Tax Invoice (PDF)"</strong> download karke Razorpay Dispute Desk me submit karein.
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => handleToggleDispute(selectedOrderForDetail.id, 'won')}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer"
                     >
                       Mark Won ✓
                     </button>
                     <button
                       onClick={() => handleToggleDispute(selectedOrderForDetail.id, 'none')}
-                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-zinc-200 text-zinc-700 hover:bg-zinc-300"
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold bg-zinc-200 text-zinc-700 hover:bg-zinc-300 cursor-pointer"
                     >
                       Resolve
                     </button>
                   </div>
                 </div>
               )}
+
+              {/* 1-CLICK DISPUTE DEFENSE GENERATOR */}
+              <div className="bg-amber-50/70 p-5 rounded-2xl border border-amber-300/80 shadow-xs space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-amber-800" />
+                    <span className="text-xs font-black text-amber-950 uppercase tracking-wider">
+                      Razorpay Dispute Defense Statement (Ready to Submit)
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const defenseText = `Merchant: Followers.blog\nOrder Receipt: ${selectedOrderForDetail.id}\nRazorpay Payment ID: ${selectedOrderForDetail.paymentId || 'N/A'}\nCustomer: ${selectedOrderForDetail.customerName} (${selectedOrderForDetail.customerPhone || ''} / ${selectedOrderForDetail.customerEmail || ''})\nAmount Paid: INR ${selectedOrderForDetail.amount}.00\nDate: ${selectedOrderForDetail.createdAt}\n\nOFFICIAL MERCHANT RESPONSE:\nThe customer purchased access to "${selectedOrderForDetail.compliantBillingName || selectedOrderForDetail.serviceName}". This digital curriculum and creator consultation asset was delivered electronically to the customer. Prior to payment checkout, the customer agreed to our Terms of Service & digital non-tangible fulfillment policy. The official Tax Invoice certifying digital dispatch is attached. We request the bank/gateway dispute desk to dismiss this claim as services were rendered.`;
+                      navigator.clipboard.writeText(defenseText);
+                      setCopiedDefenseId(selectedOrderForDetail.id);
+                      setTimeout(() => setCopiedDefenseId(null), 2500);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-xs cursor-pointer"
+                  >
+                    {copiedDefenseId === selectedOrderForDetail.id ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-white" />
+                        <span>Copied to Clipboard!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>Copy Dispute Response Text</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <div className="text-[11px] text-amber-900 leading-relaxed bg-white/90 p-3.5 rounded-xl border border-amber-200/80 font-mono">
+                  Order: <strong>{selectedOrderForDetail.id}</strong> • Payment ID: <strong>{selectedOrderForDetail.paymentId || 'N/A'}</strong><br />
+                  “The customer purchased access to <strong>{selectedOrderForDetail.compliantBillingName || selectedOrderForDetail.serviceName}</strong>. This digital curriculum & creator consultation asset was electronically fulfilled in accordance with our terms agreed upon prior to checkout. Formal Tax Invoice certifying electronic fulfillment is attached for review.”
+                </div>
+              </div>
 
               {/* Order Info Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -538,7 +548,7 @@ export default function AdminDashboardPage() {
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs">
                   <div className="text-xs font-bold text-zinc-400 uppercase">Fulfillment & Dispute State</div>
                   <div className="text-xs font-mono font-semibold text-zinc-900 mt-1 break-all">
-                    {selectedOrderForDetail.target || 'N/A (Course Access)'}
+                    {selectedOrderForDetail.target ? `@${selectedOrderForDetail.target}` : 'N/A (Course Access)'}
                   </div>
                   <div className="mt-2 flex items-center gap-2">
                     <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
@@ -757,31 +767,57 @@ export default function AdminDashboardPage() {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-500 font-bold uppercase tracking-wider text-[10px]">
                       <tr>
-                        <th className="p-4">Order ID</th>
+                        <th className="p-4">Order & Gateway Ref</th>
                         <th className="p-4">Customer Details</th>
                         <th className="p-4">Gateway Product (Tax Name)</th>
-                        <th className="p-4">Amount</th>
+                        <th className="p-4">Amount & Status</th>
                         <th className="p-4">Dispute Status</th>
                         <th className="p-4 text-right">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-100">
-                      {filtered.length === 0 ? (
+                      {isLoadingOrders && orders.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="p-8 text-center text-zinc-400">
+                          <td colSpan={6} className="p-12 text-center text-zinc-500">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                              <RefreshCw className="w-5 h-5 text-blue-600 animate-spin" />
+                              <span className="font-semibold text-xs">Syncing real captured payments from Razorpay & Database...</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : filtered.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="p-10 text-center text-zinc-400">
                             Koi matching order nahi mila. Kripya check karein.
                           </td>
                         </tr>
                       ) : (
                         filtered.map((order) => (
-                          <tr key={order.id} className="hover:bg-zinc-50/70 transition-colors">
-                            <td className="p-4 font-mono font-bold text-zinc-900">
-                              {order.id}
+                          <tr key={order.paymentId || order.id} className="hover:bg-zinc-50/70 transition-colors">
+                            <td className="p-4">
+                              <div className="font-mono font-bold text-zinc-900 text-xs">
+                                {order.id}
+                              </div>
+                              {order.paymentId && (
+                                <div className="text-[11px] font-mono text-blue-600 mt-0.5">
+                                  {order.paymentId}
+                                </div>
+                              )}
+                              <div className="text-[10px] text-zinc-400 mt-0.5">
+                                {order.createdAt}
+                              </div>
                             </td>
                             <td className="p-4">
                               <div className="font-bold text-zinc-950">{order.customerName}</div>
-                              <div className="text-[11px] text-zinc-400">{order.customerEmail}</div>
-                              <div className="text-[11px] font-mono text-zinc-500">{order.customerPhone}</div>
+                              <div className="text-[11px] font-mono text-zinc-700">{order.customerPhone}</div>
+                              {order.customerEmail && (
+                                <div className="text-[10px] text-zinc-400 truncate max-w-[160px]">{order.customerEmail}</div>
+                              )}
+                              {order.target && (
+                                <span className="inline-block mt-1 text-[10px] font-bold text-pink-700 bg-pink-50 px-1.5 py-0.5 rounded border border-pink-200">
+                                  @{order.target.replace(/^@/, '')}
+                                </span>
+                              )}
                             </td>
                             <td className="p-4">
                               <div className="font-semibold text-blue-700">
@@ -791,8 +827,14 @@ export default function AdminDashboardPage() {
                                 Original: {order.serviceName}
                               </div>
                             </td>
-                            <td className="p-4 font-bold text-zinc-950">
-                              ₹{order.amount}
+                            <td className="p-4">
+                              <div className="font-black text-sm text-zinc-950">
+                                ₹{order.amount}
+                              </div>
+                              <div className="text-[10px] text-emerald-600 font-bold uppercase mt-0.5 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                {order.paymentStatus || 'CAPTURED'} ({order.method || 'UPI'})
+                              </div>
                             </td>
                             <td className="p-4">
                               {order.disputeStatus === 'under_review' ? (
@@ -812,16 +854,17 @@ export default function AdminDashboardPage() {
                             </td>
                             <td className="p-4 text-right space-x-2">
                               <Link
-                                href={`/receipt?order_id=${order.id}&name=${encodeURIComponent(order.customerName)}&email=${encodeURIComponent(order.customerEmail)}&phone=${encodeURIComponent(order.customerPhone)}&amount=${order.amount}`}
+                                href={`/receipt?order_id=${order.id}&payment_id=${order.paymentId || ''}&name=${encodeURIComponent(order.customerName)}&email=${encodeURIComponent(order.customerEmail)}&phone=${encodeURIComponent(order.customerPhone)}&amount=${order.amount}`}
                                 target="_blank"
                                 className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors inline-flex items-center gap-1"
+                                title="Open Official Tax Invoice PDF"
                               >
                                 <FileText className="w-3 h-3 text-blue-600" />
                                 <span>Invoice</span>
                               </Link>
                               <button
                                 onClick={() => setSelectedOrderForDetail(order)}
-                                className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+                                className="px-3 py-1.5 rounded-lg text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer"
                               >
                                 Audit & Evidence →
                               </button>
