@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   let orderData: any = null;
 
   if (cashfreeAppId && cashfreeSecret && !cashfreeAppId.includes('TEST_APP_ID')) {
-    const isProd = process.env.CASHFREE_ENV === 'PROD';
+    const isProd = (process.env.CASHFREE_ENV || 'PROD') === 'PROD';
     const cfBaseUrl = isProd
       ? `https://api.cashfree.com/pg/orders/${orderId}`
       : `https://sandbox.cashfree.com/pg/orders/${orderId}`;

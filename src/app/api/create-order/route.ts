@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       Boolean(cashfreeAppId && cashfreeSecret && !cashfreeAppId.includes('TEST_APP_ID'));
 
     if (useCashfree) {
-      const isProd = process.env.CASHFREE_ENV === 'PROD';
+      const isProd = (process.env.CASHFREE_ENV || 'PROD') === 'PROD';
       const baseUrl = isProd
         ? 'https://api.cashfree.com/pg/orders'
         : 'https://sandbox.cashfree.com/pg/orders';
@@ -137,6 +137,7 @@ export async function POST(req: NextRequest) {
         currency: 'INR',
         receipt: internalOrderId,
         source: sourceParam,
+        environment: isProd ? 'production' : 'sandbox',
       });
     }
 

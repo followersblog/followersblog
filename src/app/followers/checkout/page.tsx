@@ -182,7 +182,7 @@ function FollowersCheckoutContent() {
         const Cashfree = await loadCashfreeScript();
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
-            mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'PROD' ? 'production' : 'sandbox',
+            mode: data.environment || 'production',
           });
           cashfree.checkout({
             paymentSessionId: data.payment_session_id,

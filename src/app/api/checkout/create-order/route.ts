@@ -96,12 +96,12 @@ export async function POST(req: NextRequest) {
       Boolean(cashfreeAppId && cashfreeSecret && !cashfreeAppId.includes('TEST_APP_ID'));
 
     if (isLiveCashfree) {
-      const isProd = process.env.CASHFREE_ENV === 'PROD';
+      const isProd = (process.env.CASHFREE_ENV || 'PROD') === 'PROD';
       const baseUrl = isProd
         ? 'https://api.cashfree.com/pg/orders'
         : 'https://sandbox.cashfree.com/pg/orders';
 
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://follower.blog';
       const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${orderId}`;
 
       const cfResponse = await fetch(baseUrl, {
