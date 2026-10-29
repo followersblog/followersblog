@@ -195,9 +195,9 @@ export const CREATOR_EDITING_TIERS: CreatorEditingTier[] = [
     id: 'edit-tier-49',
     level: 'Tier 1 • Starter',
     name: 'Fast-Track Mobile Video Editing & Reels Hooks Pack',
-    price: 1,
-    originalPrice: 49,
-    badge: '⚡ TEST LEVEL (₹1)',
+    price: 49,
+    originalPrice: 149,
+    badge: '⚡ STARTER LEVEL',
     description: 'Beginner essential: Mobile editing workflow, 250+ viral reels hook formulas, caption hacks, and CapCut quick-export presets.',
     features: [
       '📱 250+ Viral Hook Templates',
