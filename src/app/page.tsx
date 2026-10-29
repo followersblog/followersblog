@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -56,6 +56,29 @@ export default function HomePage() {
   const [tierCustomerEmail, setTierCustomerEmail] = useState('');
   const [isTierSubmitting, setIsTierSubmitting] = useState(false);
   const [tierModalError, setTierModalError] = useState('');
+
+  // Unfreeze screen & restore scroll helper
+  const restoreScroll = () => {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.height = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.position = '';
+      document.documentElement.style.height = '';
+      document.querySelectorAll('.razorpay-container').forEach((el) => {
+        try {
+          el.remove();
+        } catch (e) {}
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedTierForModal) {
+      restoreScroll();
+    }
+  }, [selectedTierForModal]);
 
   // Filter editing tiers by tab
   const filteredTiers = CREATOR_EDITING_TIERS.filter((tier) => {
@@ -165,6 +188,7 @@ export default function HomePage() {
           ondismiss: () => {
             setIsTierSubmitting(false);
             setTierModalError('');
+            restoreScroll();
           },
         },
         handler: async function (paymentResponse: any) {
@@ -185,16 +209,22 @@ export default function HomePage() {
           } catch (e: any) {
             setTierModalError(e.message || 'Payment verification failed');
             setIsTierSubmitting(false);
+            restoreScroll();
           }
         },
       };
 
       const rzpInstance = new (window as any).Razorpay(options);
+      rzpInstance.on('payment.failed', function () {
+        setIsTierSubmitting(false);
+        restoreScroll();
+      });
       rzpInstance.open();
       setTimeout(() => setIsTierSubmitting(false), 1200);
     } catch (err: any) {
       setTierModalError(err.message || 'Something went wrong.');
       setIsTierSubmitting(false);
+      restoreScroll();
     }
   };
 
@@ -849,11 +879,26 @@ export default function HomePage() {
 
         {/* Quick Enrolment Modal for Video Editing & Creator Tiers */}
         {selectedTierForModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setSelectedTierForModal(null);
+                setTierModalError('');
+                setIsTierSubmitting(false);
+                restoreScroll();
+              }
+            }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200"
+          >
             <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-left shadow-2xl border border-zinc-200 relative animate-in zoom-in-95 duration-200">
               <button
                 type="button"
-                onClick={() => setSelectedTierForModal(null)}
+                onClick={() => {
+                  setSelectedTierForModal(null);
+                  setTierModalError('');
+                  setIsTierSubmitting(false);
+                  restoreScroll();
+                }}
                 className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 p-1.5 rounded-full hover:bg-zinc-100 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />

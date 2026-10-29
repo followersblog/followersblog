@@ -61,6 +61,29 @@ export default function FollowersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [modalError, setModalError] = useState('');
 
+  // Unfreeze screen & restore scroll helper
+  const restoreScroll = () => {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.height = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.position = '';
+      document.documentElement.style.height = '';
+      document.querySelectorAll('.razorpay-container').forEach((el) => {
+        try {
+          el.remove();
+        } catch (e) {}
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedPackageForModal) {
+      restoreScroll();
+    }
+  }, [selectedPackageForModal]);
+
   // Category change handler
   const handleCategorySelect = (catId: string) => {
     setSelectedCategory(catId);
@@ -324,6 +347,7 @@ export default function FollowersPage() {
           ondismiss: () => {
             setIsSubmitting(false);
             setModalError('');
+            restoreScroll();
           },
         },
         handler: async function (paymentResponse: any) {
@@ -379,6 +403,7 @@ export default function FollowersPage() {
       const razorpayInstance = new (window as any).Razorpay(options);
       razorpayInstance.on('payment.failed', function () {
         setIsSubmitting(false);
+        restoreScroll();
       });
       razorpayInstance.open();
       // Ensure button spinner doesn't get stuck once popup is launched
@@ -388,6 +413,7 @@ export default function FollowersPage() {
     } catch (err: any) {
       setModalError(err.message || 'Something went wrong. Please try again.');
       setIsSubmitting(false);
+      restoreScroll();
     }
   };
 
@@ -827,7 +853,17 @@ export default function FollowersPage() {
       {/* 8. QUICK ORDER POPUP MODAL (Ultra-Premium Fintech Sheet) */}
       {/* ==================================================================== */}
       {selectedPackageForModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/65 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setSelectedPackageForModal(null);
+              setModalError('');
+              setIsSubmitting(false);
+              restoreScroll();
+            }
+          }}
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/65 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-200"
+        >
           <div className="bg-white rounded-t-3xl sm:rounded-3xl max-w-md w-full shadow-2xl border border-zinc-200/80 relative flex flex-col max-h-[92vh] overflow-hidden animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
             {/* Mobile drag handle pill */}
             <div className="w-10 h-1 bg-zinc-300 rounded-full mx-auto mt-2.5 sm:hidden shrink-0" />
@@ -863,6 +899,7 @@ export default function FollowersPage() {
                     setSelectedPackageForModal(null);
                     setModalError('');
                     setIsSubmitting(false);
+                    restoreScroll();
                   }}
                   className="text-zinc-400 hover:text-zinc-700 p-1.5 rounded-full hover:bg-zinc-100 transition-colors ml-1"
                 >
