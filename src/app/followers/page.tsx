@@ -14,6 +14,7 @@ import {
 } from '@/data/followers-services';
 import { SocialServicePackage } from '@/types';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
+import { loadCashfreeScript } from '@/lib/load-cashfree';
 import { event } from '@/lib/meta-pixel';
 import {
   Sparkles,
@@ -255,10 +256,41 @@ export default function FollowersPage() {
         throw new Error(data?.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
       }
 
+      // 2b. Cashfree routing if enabled
+      if (data.gateway === 'cashfree' || data.payment_session_id) {
+        const Cashfree = await loadCashfreeScript();
+        if (Cashfree && data.payment_session_id) {
+          const cashfree = Cashfree({
+            mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'PROD' ? 'production' : 'sandbox',
+          });
+          cashfree.checkout({
+            paymentSessionId: data.payment_session_id,
+            redirectTarget: '_self',
+          });
+          return;
+        }
+        if (data.payment_url) {
+          window.location.href = data.payment_url;
+          return;
+        }
+      }
+
+      // Suppress annoying browser alerts from gateway iframe errors
+      if (typeof window !== 'undefined') {
+        const rawAlert = window.alert;
+        window.alert = function (msg: any) {
+          if (typeof msg === 'string' && (msg.includes('Oops') || msg.includes('checkout') || msg.includes('opening'))) {
+            console.warn('Suppressed gateway browser alert:', msg);
+            return;
+          }
+          rawAlert.apply(window, arguments as any);
+        };
+      }
+
       const cleanDigits = customerPhone.replace(/\D/g, '').slice(-10);
       const formattedContact = `+91${cleanDigits}`;
 
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://followers.blog';
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
 
       // 3. Open Razorpay Checkout Modal directly with prefilled contact details
       const options = {
@@ -291,6 +323,7 @@ export default function FollowersPage() {
         modal: {
           ondismiss: () => {
             setIsSubmitting(false);
+            setModalError('');
           },
         },
         handler: async function (paymentResponse: any) {
@@ -344,15 +377,14 @@ export default function FollowersPage() {
       };
 
       const razorpayInstance = new (window as any).Razorpay(options);
-      razorpayInstance.on('payment.failed', function (failResp: any) {
-        setModalError(failResp.error?.description || 'Payment cancel ho gaya ya fail ho gaya.');
+      razorpayInstance.on('payment.failed', function () {
         setIsSubmitting(false);
       });
       razorpayInstance.open();
       // Ensure button spinner doesn't get stuck once popup is launched
       setTimeout(() => {
         setIsSubmitting(false);
-      }, 1000);
+      }, 800);
     } catch (err: any) {
       setModalError(err.message || 'Something went wrong. Please try again.');
       setIsSubmitting(false);
@@ -827,7 +859,11 @@ export default function FollowersPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSelectedPackageForModal(null)}
+                  onClick={() => {
+                    setSelectedPackageForModal(null);
+                    setModalError('');
+                    setIsSubmitting(false);
+                  }}
                   className="text-zinc-400 hover:text-zinc-700 p-1.5 rounded-full hover:bg-zinc-100 transition-colors ml-1"
                 >
                   <X className="w-5 h-5" />

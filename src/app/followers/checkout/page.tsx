@@ -202,6 +202,18 @@ function FollowersCheckoutContent() {
         throw new Error('Razorpay payment gateway failed to load. Please check your connection.');
       }
 
+      // Suppress annoying browser alerts from gateway iframe errors
+      if (typeof window !== 'undefined') {
+        const rawAlert = window.alert;
+        window.alert = function (msg: any) {
+          if (typeof msg === 'string' && (msg.includes('Oops') || msg.includes('checkout') || msg.includes('opening'))) {
+            console.warn('Suppressed gateway browser alert:', msg);
+            return;
+          }
+          rawAlert.apply(window, arguments as any);
+        };
+      }
+
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
 
       // 3. Open Razorpay Checkout Modal
@@ -235,6 +247,7 @@ function FollowersCheckoutContent() {
         modal: {
           ondismiss: () => {
             setIsProcessing(false);
+            setErrorMessage('');
           },
         },
         handler: async function (paymentResponse: any) {

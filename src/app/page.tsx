@@ -129,6 +129,18 @@ export default function HomePage() {
         throw new Error('Payment gateway load nahi ho paya. Kripya connection check karein.');
       }
 
+      // Suppress annoying browser alerts from gateway iframe errors
+      if (typeof window !== 'undefined') {
+        const rawAlert = window.alert;
+        window.alert = function (msg: any) {
+          if (typeof msg === 'string' && (msg.includes('Oops') || msg.includes('checkout') || msg.includes('opening'))) {
+            console.warn('Suppressed gateway browser alert:', msg);
+            return;
+          }
+          rawAlert.apply(window, arguments as any);
+        };
+      }
+
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
 
       const options = {
@@ -152,6 +164,7 @@ export default function HomePage() {
         modal: {
           ondismiss: () => {
             setIsTierSubmitting(false);
+            setTierModalError('');
           },
         },
         handler: async function (paymentResponse: any) {

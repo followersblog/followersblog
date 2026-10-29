@@ -120,6 +120,18 @@ export default function CourseCheckoutPage() {
         throw new Error('Razorpay payment gateway failed to load. Please check your internet connection.');
       }
 
+      // Suppress annoying browser alerts from gateway iframe errors
+      if (typeof window !== 'undefined') {
+        const rawAlert = window.alert;
+        window.alert = function (msg: any) {
+          if (typeof msg === 'string' && (msg.includes('Oops') || msg.includes('checkout') || msg.includes('opening'))) {
+            console.warn('Suppressed gateway browser alert:', msg);
+            return;
+          }
+          rawAlert.apply(window, arguments as any);
+        };
+      }
+
       // Open Razorpay Checkout Modal
       const options = {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
@@ -151,6 +163,7 @@ export default function CourseCheckoutPage() {
         modal: {
           ondismiss: () => {
             setIsProcessing(false);
+            setErrorMessage('');
           },
         },
         handler: async function (paymentResponse: any) {
