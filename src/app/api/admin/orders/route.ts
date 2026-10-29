@@ -18,6 +18,22 @@ export async function GET(req: NextRequest) {
     const rzpRes = await razorpay.payments.all({ count: 100 });
     const rzpPayments = rzpRes.items || [];
 
+    // 1b. Fetch active disputes from Razorpay
+    let rzpDisputes: any[] = [];
+    try {
+      if ((razorpay as any).disputes) {
+        const dRes = await (razorpay as any).disputes.all({ count: 50 });
+        if (dRes && dRes.items) rzpDisputes = dRes.items;
+      }
+    } catch (dErr) {
+      console.warn('Disputes fetch non-fatal:', dErr);
+    }
+
+    const disputeByPaymentId = new Map<string, any>();
+    rzpDisputes.forEach((d) => {
+      if (d.payment_id) disputeByPaymentId.set(d.payment_id, d);
+    });
+
     // 2. Fetch records from Supabase
     const supabase = getServiceSupabase();
     let supabaseOrders: any[] = [];
@@ -96,10 +112,17 @@ export async function GET(req: NextRequest) {
       else if (amountInRupees === 500) serviceDisplay = '100,000 Indian Followers';
       else if (amountInRupees === 600) serviceDisplay = 'VIP Media Growth Bundle';
 
+      const activeDispute = disputeByPaymentId.get(p.id);
+      const disputeStatus = activeDispute ? 'under_review' : 'none';
+      const disputeReason = activeDispute?.reason_description || activeDispute?.reason_code || '';
+      const disputeId = activeDispute?.id || '';
+
       return {
         id: receiptId,
         paymentId: p.id,
         orderId: p.order_id,
+        disputeId: disputeId,
+        disputeReason: disputeReason,
         bankRrn: p.acquirer_data?.rrn || p.acquirer_data?.bank_transaction_id || p.id,
         customerName: customerName,
         customerEmail: p.email || matchedSb?.customer_email || '',
@@ -111,7 +134,7 @@ export async function GET(req: NextRequest) {
         amount: amountInRupees,
         paymentStatus: p.status === 'captured' ? 'success' : p.status,
         orderStatus: p.status === 'captured' ? 'completed' : 'pending',
-        disputeStatus: 'none', // Default, can be toggled by admin
+        disputeStatus: disputeStatus,
         createdAt: formattedDate,
         dateOnly: dateOnly,
         method: p.method ? p.method.toUpperCase() : 'UPI',

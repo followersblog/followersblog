@@ -201,6 +201,7 @@ export default function AdminDashboardPage() {
       return (
         (o.id && o.id.toLowerCase().includes(q)) ||
         (o.paymentId && o.paymentId.toLowerCase().includes(q)) ||
+        (o.disputeId && o.disputeId.toLowerCase().includes(q)) ||
         (o.target && o.target.toLowerCase().includes(q)) ||
         (o.customerName && o.customerName.toLowerCase().includes(q)) ||
         (o.customerEmail && o.customerEmail.toLowerCase().includes(q)) ||
