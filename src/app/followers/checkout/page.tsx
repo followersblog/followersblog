@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { SOCIAL_PACKAGES } from '@/data/followers-services';
 import { SocialServicePackage } from '@/types';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
+import { loadCashfreeScript } from '@/lib/load-cashfree';
 import {
   Sparkles,
   ArrowRight,
@@ -131,13 +132,7 @@ function FollowersCheckoutContent() {
     setErrorMessage('');
 
     try {
-      // 1. Ensure Razorpay checkout.js script is loaded
-      const isLoaded = await loadRazorpayScript();
-      if (!isLoaded) {
-        throw new Error('Razorpay payment gateway failed to load. Please check your connection.');
-      }
-
-      // 2. Use background pre-generated order (0ms latency) if ready
+      // 1. Fetch / create order first
       let data: any = null;
       if (
         preloadedOrderRef.current &&
@@ -182,7 +177,32 @@ function FollowersCheckoutContent() {
         throw new Error(data?.error || 'Failed to initiate payment.');
       }
 
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://followers.blog';
+      // Cashfree routing
+      if (data.gateway === 'cashfree' || data.payment_session_id) {
+        const Cashfree = await loadCashfreeScript();
+        if (Cashfree && data.payment_session_id) {
+          const cashfree = Cashfree({
+            mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'PROD' ? 'production' : 'sandbox',
+          });
+          cashfree.checkout({
+            paymentSessionId: data.payment_session_id,
+            redirectTarget: '_self',
+          });
+          return;
+        }
+        if (data.payment_url) {
+          window.location.href = data.payment_url;
+          return;
+        }
+      }
+
+      // Razorpay routing
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error('Razorpay payment gateway failed to load. Please check your connection.');
+      }
+
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
 
       // 3. Open Razorpay Checkout Modal
       const options = {

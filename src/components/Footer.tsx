@@ -46,6 +46,11 @@ export default function Footer() {
                   AI Website Building Course
                 </Link>
               </li>
+              <li>
+                <Link href="/#editing-courses" className="hover:text-blue-600 transition-colors">
+                  Video Editing & Creator Tiers (₹49 - ₹600)
+                </Link>
+              </li>
             </ul>
           </div>
 

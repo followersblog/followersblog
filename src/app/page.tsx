@@ -12,7 +12,11 @@ import {
   WHATS_INCLUDED,
   COURSE_ADDONS,
   COURSE_FAQS,
+  CREATOR_EDITING_TIERS,
+  CreatorEditingTier,
 } from '@/data/courses';
+import { loadRazorpayScript } from '@/lib/load-razorpay';
+import { loadCashfreeScript } from '@/lib/load-cashfree';
 import {
   Sparkles,
   ArrowRight,
@@ -31,10 +35,155 @@ import {
   Terminal,
   Gift,
   HelpCircle,
+  Film,
+  Play,
+  X,
+  Lock,
+  Mail,
+  Phone,
+  User,
+  TrendingUp,
 } from 'lucide-react';
 
 export default function HomePage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  // Creator Video Editing Modules Modal & Filter State
+  const [selectedTierForModal, setSelectedTierForModal] = useState<CreatorEditingTier | null>(null);
+  const [tierCategory, setTierCategory] = useState<'all' | 'starter' | 'viral' | 'vip'>('all');
+  const [tierCustomerName, setTierCustomerName] = useState('');
+  const [tierCustomerPhone, setTierCustomerPhone] = useState('');
+  const [tierCustomerEmail, setTierCustomerEmail] = useState('');
+  const [isTierSubmitting, setIsTierSubmitting] = useState(false);
+  const [tierModalError, setTierModalError] = useState('');
+
+  // Filter editing tiers by tab
+  const filteredTiers = CREATOR_EDITING_TIERS.filter((tier) => {
+    if (tierCategory === 'starter') return tier.price <= 99;
+    if (tierCategory === 'viral') return tier.price >= 199 && tier.price <= 350;
+    if (tierCategory === 'vip') return tier.price >= 500;
+    return true;
+  });
+
+  const handleEnrollTier = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTierModalError('');
+
+    if (!selectedTierForModal) return;
+
+    const cleanPhone = tierCustomerPhone.replace(/\D/g, '').slice(-10);
+    if (cleanPhone.length < 10) {
+      setTierModalError('Kripya valid 10-digit mobile number daalein.');
+      return;
+    }
+
+    setIsTierSubmitting(true);
+
+    try {
+      const displayName = tierCustomerName.trim() || 'Learner';
+      const email = tierCustomerEmail.trim() || `${cleanPhone}@follower.blog`;
+
+      const response = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: selectedTierForModal.price,
+          currency: 'INR',
+          productType: 'service',
+          productId: selectedTierForModal.id,
+          productName: selectedTierForModal.name,
+          customerName: displayName,
+          customerEmail: email,
+          customerPhone: cleanPhone,
+          targetUrl: 'home_tier_enrollment',
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.order_id) {
+        throw new Error(data.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
+      }
+
+      // Cashfree routing
+      if (data.gateway === 'cashfree' || data.payment_session_id) {
+        const Cashfree = await loadCashfreeScript();
+        if (Cashfree && data.payment_session_id) {
+          const cashfree = Cashfree({
+            mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'PROD' ? 'production' : 'sandbox',
+          });
+          cashfree.checkout({
+            paymentSessionId: data.payment_session_id,
+            redirectTarget: '_self',
+          });
+          return;
+        }
+        if (data.payment_url) {
+          window.location.href = data.payment_url;
+          return;
+        }
+      }
+
+      // Razorpay routing
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error('Payment gateway load nahi ho paya. Kripya connection check karein.');
+      }
+
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
+
+      const options = {
+        key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
+        amount: data.amount,
+        currency: data.currency || 'INR',
+        name: 'Followers.blog',
+        description: selectedTierForModal.name,
+        image: '/logo.png',
+        order_id: data.order_id,
+        callback_url: `${origin}/api/razorpay-callback`,
+        redirect: true,
+        prefill: {
+          name: displayName,
+          email: email,
+          contact: `+91${cleanPhone}`,
+        },
+        theme: {
+          color: '#2563EB',
+        },
+        modal: {
+          ondismiss: () => {
+            setIsTierSubmitting(false);
+          },
+        },
+        handler: async function (paymentResponse: any) {
+          try {
+            await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                receipt: data.receipt,
+              }),
+            });
+
+            const successUrl = `/receipt?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}&name=${encodeURIComponent(displayName)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(cleanPhone)}&amount=${encodeURIComponent(String(selectedTierForModal.price))}`;
+            window.location.href = successUrl;
+          } catch (e: any) {
+            setTierModalError(e.message || 'Payment verification failed');
+            setIsTierSubmitting(false);
+          }
+        },
+      };
+
+      const rzpInstance = new (window as any).Razorpay(options);
+      rzpInstance.open();
+      setTimeout(() => setIsTierSubmitting(false), 1200);
+    } catch (err: any) {
+      setTierModalError(err.message || 'Something went wrong.');
+      setIsTierSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -120,6 +269,178 @@ export default function HomePage() {
                     <div className="text-sm font-bold text-zinc-900">Q&A + Community</div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ==================================================================== */}
+        {/* CREATOR VIDEO EDITING & DIGITAL ASSET MASTERCLASS TIERS (₹49 - ₹600) */}
+        {/* ==================================================================== */}
+        <section id="editing-courses" className="py-20 bg-zinc-50/70 border-b border-zinc-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-3xl mx-auto mb-12">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 tracking-wider uppercase bg-blue-100/70 px-3.5 py-1.5 rounded-full border border-blue-200">
+                <Film className="w-3.5 h-3.5 text-blue-600" />
+                <span>Modular Digital Creator Curriculum</span>
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-zinc-950 mt-3 tracking-tight">
+                Creator Video Editing & Digital Skills Masterclass Tiers
+              </h2>
+              <p className="text-zinc-600 mt-2 text-sm sm:text-base leading-relaxed">
+                Mobile video editing presets, viral retention frameworks, aur commercial production toolkits — har creator stage ke liye step-by-step modular practical programs.
+              </p>
+
+              {/* Tier Filter Tabs */}
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setTierCategory('all')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    tierCategory === 'all'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
+                  }`}
+                >
+                  All Tiers (₹49 - ₹600)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTierCategory('starter')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    tierCategory === 'starter'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
+                  }`}
+                >
+                  Starter Packs (₹49 - ₹99)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTierCategory('viral')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    tierCategory === 'viral'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
+                  }`}
+                >
+                  Viral Editing (₹199 - ₹350)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTierCategory('vip')}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    tierCategory === 'vip'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white text-zinc-600 hover:bg-zinc-100 border border-zinc-200'
+                  }`}
+                >
+                  Agency & VIP (₹500 - ₹600)
+                </button>
+              </div>
+            </div>
+
+            {/* Editing Tiers Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredTiers.map((tier) => (
+                <div
+                  key={tier.id}
+                  className={`bg-white rounded-3xl p-6 border flex flex-col justify-between transition-all hover:-translate-y-1 hover:shadow-lg ${
+                    tier.popular
+                      ? 'border-2 border-blue-600 shadow-md shadow-blue-500/10 relative'
+                      : 'border-zinc-200'
+                  }`}
+                >
+                  <div>
+                    {/* Top Level Pill & Badge */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">
+                        {tier.level}
+                      </span>
+                      {tier.badge && (
+                        <span
+                          className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                            tier.popular
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-blue-50 text-blue-700 border border-blue-100'
+                          }`}
+                        >
+                          {tier.badge}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Tier Name */}
+                    <h3 className="font-extrabold text-zinc-950 text-base leading-snug mb-2">
+                      {tier.name}
+                    </h3>
+
+                    {/* Price */}
+                    <div className="flex items-baseline gap-2 mb-3">
+                      <span className="text-3xl font-black text-zinc-950">
+                        ₹{tier.price}
+                      </span>
+                      <span className="text-xs text-zinc-400 line-through">
+                        ₹{tier.originalPrice}
+                      </span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        Save ₹{tier.originalPrice - tier.price}
+                      </span>
+                    </div>
+
+                    {/* Description */}
+                    <p className="text-xs text-zinc-600 leading-relaxed mb-4">
+                      {tier.description}
+                    </p>
+
+                    {/* Features */}
+                    <ul className="space-y-2 mb-6 border-t border-zinc-100 pt-3">
+                      {tier.features.map((feat, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-[11px] text-zinc-700 font-medium">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Enroll CTA */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedTierForModal(tier);
+                      setTierModalError('');
+                    }}
+                    className={`w-full py-3 px-4 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      tier.popular
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/25'
+                        : 'bg-zinc-900 hover:bg-zinc-800 text-white'
+                    }`}
+                  >
+                    <span>Get Instant Access • ₹{tier.price}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Gateway & Banking Trust Banner */}
+            <div className="mt-12 p-6 rounded-2xl bg-white border border-zinc-200 text-center max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3 text-left">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-zinc-950 uppercase tracking-wider">
+                    Instant Electronic Dispatch & Verified Tax Receipts
+                  </h4>
+                  <p className="text-[11px] text-zinc-500">
+                    All digital programs include immediate digital asset access, video modules, and GST-compliant invoices.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg shrink-0">
+                <span>🔒 256-Bit SSL Encrypted Checkout</span>
               </div>
             </div>
           </div>
@@ -512,6 +833,112 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* Quick Enrolment Modal for Video Editing & Creator Tiers */}
+        {selectedTierForModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+            <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-left shadow-2xl border border-zinc-200 relative animate-in zoom-in-95 duration-200">
+              <button
+                type="button"
+                onClick={() => setSelectedTierForModal(null)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 p-1.5 rounded-full hover:bg-zinc-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100 uppercase">
+                  {selectedTierForModal.level}
+                </span>
+                <span className="text-xs font-black text-blue-600">₹{selectedTierForModal.price}</span>
+              </div>
+
+              <h3 className="text-lg font-bold text-zinc-950 mb-1 leading-snug">
+                {selectedTierForModal.name}
+              </h3>
+              <p className="text-xs text-zinc-500 mb-5">
+                Instant digital download + video curriculum access via email/WhatsApp.
+              </p>
+
+              {tierModalError && (
+                <div className="p-3 mb-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                  {tierModalError}
+                </div>
+              )}
+
+              <form onSubmit={handleEnrollTier} className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-bold text-zinc-700 mb-1">
+                    Your Full Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Enter your name"
+                    value={tierCustomerName}
+                    onChange={(e) => setTierCustomerName(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-xs text-zinc-900 focus:outline-hidden focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-zinc-700 mb-1">
+                    WhatsApp Mobile Number
+                  </label>
+                  <div className="flex items-center rounded-xl border border-zinc-300 overflow-hidden">
+                    <span className="px-3 py-2.5 bg-zinc-100 text-xs font-bold text-zinc-600 border-r border-zinc-200 select-none">
+                      +91
+                    </span>
+                    <input
+                      type="tel"
+                      required
+                      maxLength={10}
+                      placeholder="10-digit mobile number"
+                      value={tierCustomerPhone}
+                      onChange={(e) => setTierCustomerPhone(e.target.value.replace(/\D/g, ''))}
+                      className="w-full px-3.5 py-2.5 text-xs text-zinc-900 focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-zinc-700 mb-1">
+                    Email Address (For Tax Receipt & Credentials)
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="name@gmail.com"
+                    value={tierCustomerEmail}
+                    onChange={(e) => setTierCustomerEmail(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-300 text-xs text-zinc-900 focus:outline-hidden focus:border-blue-500"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={isTierSubmitting}
+                    className="w-full py-3.5 px-6 rounded-xl font-bold text-sm text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {isTierSubmitting ? (
+                      <span>Connecting Gateway...</span>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4" />
+                        <span>Pay ₹{selectedTierForModal.price} • Instant Access</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="text-center text-[10px] text-zinc-400 pt-1 flex items-center justify-center gap-1">
+                  <Lock className="w-3 h-3 text-emerald-600" />
+                  <span>256-Bit SSL Encrypted • GST Compliant Tax Receipt Included</span>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
 
       <Footer />

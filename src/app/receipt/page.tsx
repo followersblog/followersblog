@@ -97,7 +97,7 @@ function ReceiptContent() {
               Digital E-Learning & Media Consultation Platform
             </p>
             <p className="text-[11px] text-zinc-400">
-              Official Desk: support@followers.blog • https://followers.blog
+              Official Desk: support@followers.blog • https://follower.blog
             </p>
           </div>
 
@@ -126,9 +126,9 @@ function ReceiptContent() {
               Payment & Dispatch Info
             </div>
             <div className="text-zinc-700"><strong>Date of Issue:</strong> {date}</div>
-            <div className="text-zinc-700"><strong>Payment Gateway:</strong> Razorpay Payments (Verified 256-Bit SSL)</div>
+            <div className="text-zinc-700"><strong>Payment Gateway:</strong> Authorized Secure Gateway (256-Bit SSL)</div>
             {paramPaymentId && (
-              <div className="text-zinc-700 font-mono text-[11px]"><strong>Razorpay Ref:</strong> {paramPaymentId}</div>
+              <div className="text-zinc-700 font-mono text-[11px]"><strong>Gateway Ref:</strong> {paramPaymentId}</div>
             )}
             <div className="text-zinc-700"><strong>Delivery Mode:</strong> Electronic / Digital Access Dispatched</div>
           </div>

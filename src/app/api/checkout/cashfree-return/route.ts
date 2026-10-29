@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
       ? `https://api.cashfree.com/pg/orders/${orderId}`
       : `https://sandbox.cashfree.com/pg/orders/${orderId}`;
 
+    let orderData: any = null;
     try {
       const response = await fetch(baseUrl, {
         headers: {
@@ -31,9 +32,9 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      const orderData = await response.json();
+      orderData = await response.json();
 
-      if (orderData.order_status === 'PAID') {
+      if (orderData && orderData.order_status === 'PAID') {
         if (supabase && isSupabaseConfigured) {
           await supabase
             .from('orders')
@@ -48,7 +49,7 @@ export async function GET(req: NextRequest) {
           if (isCourse) {
             await supabase.from('course_access').upsert({
               order_id: orderId,
-              customer_email: orderData.customer_details?.customer_email || 'student@followers.blog',
+              customer_email: orderData.customer_details?.customer_email || 'student@follower.blog',
               customer_name: orderData.customer_details?.customer_name || 'Student',
               course_name: 'AI Website Building — 3 Hour Complete Practical Class',
               status: 'active',
@@ -59,9 +60,17 @@ export async function GET(req: NextRequest) {
     } catch (err) {
       console.error('Cashfree order verification error:', err);
     }
+
+    if (orderData && orderData.order_status === 'PAID') {
+      const cust = orderData.customer_details || {};
+      const redirectPath = isCourse
+        ? `/course/success?order_id=${encodeURIComponent(orderId)}`
+        : `/receipt?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(orderData.cf_order_id || '')}&name=${encodeURIComponent(cust.customer_name || 'Valued Customer')}&email=${encodeURIComponent(cust.customer_email || '')}&phone=${encodeURIComponent(cust.customer_phone || '')}&amount=${encodeURIComponent(String(orderData.order_amount || ''))}`;
+      return NextResponse.redirect(new URL(redirectPath, req.url));
+    }
   }
 
-  // Redirect to appropriate success page
+  // Fallback redirect
   const redirectPath = isCourse
     ? `/course/success?order_id=${orderId}`
     : `/followers/success?order_id=${orderId}`;

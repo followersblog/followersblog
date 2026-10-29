@@ -178,6 +178,127 @@ export const WHATS_INCLUDED = [
   'Private Telegram community access for questions',
 ];
 
+export interface CreatorEditingTier {
+  id: string;
+  level: string;
+  name: string;
+  price: number;
+  originalPrice: number;
+  badge?: string;
+  description: string;
+  features: string[];
+  popular?: boolean;
+}
+
+export const CREATOR_EDITING_TIERS: CreatorEditingTier[] = [
+  {
+    id: 'edit-tier-49',
+    level: 'Tier 1 • Starter',
+    name: 'Fast-Track Mobile Video Editing & Reels Hooks Pack',
+    price: 49,
+    originalPrice: 149,
+    badge: '⚡ STARTER LEVEL',
+    description: 'Beginner essential: Mobile editing workflow, 250+ viral reels hook formulas, caption hacks, and CapCut quick-export presets.',
+    features: [
+      '📱 250+ Viral Hook Templates',
+      '⚡ CapCut & VN Export Presets',
+      '🎯 Instant Electronic Dispatch',
+      '🔒 100% Practical Beginner Blueprint',
+    ],
+  },
+  {
+    id: 'edit-tier-99',
+    level: 'Tier 2 • Audio & Color',
+    name: 'Cinematic Color Grading LUTs & Audio Preset Toolkit',
+    price: 99,
+    originalPrice: 299,
+    badge: '⚡ POPULAR',
+    description: 'Transform mobile footage: 50+ cinematic color grading LUTs (Moody, Teal & Orange, Clean Urban) plus podcast-grade voice clarity EQ presets.',
+    features: [
+      '🎨 50+ Cinematic Video LUTs',
+      '🎙️ Podcast Voice Clarifier Presets',
+      '📱 Works on CapCut, VN & Premiere',
+      '🔄 Lifetime Updates & Guide Included',
+    ],
+  },
+  {
+    id: 'edit-tier-199',
+    level: 'Tier 3 • Viral Masterclass',
+    name: 'Reels & Short-Form Video Editing Masterclass',
+    price: 199,
+    originalPrice: 499,
+    badge: '🔥 BEST VALUE',
+    popular: true,
+    description: 'Master retention editing: Pacing, jump cuts, zoom keyframes, sound design layering, and viral b-roll selection techniques.',
+    features: [
+      '🎬 Full Retention Editing Framework',
+      '⚡ Zoom Keyframing & SFX Library',
+      '📈 Boost Audience Watch Time',
+      '⭐ High Retention Creator Workflow',
+    ],
+  },
+  {
+    id: 'edit-tier-250',
+    level: 'Tier 4 • Content Machine',
+    name: '30-Day Content Repurposing & Viral Template Kit',
+    price: 250,
+    originalPrice: 750,
+    badge: '⚡ CREATOR CHOICE',
+    description: 'Turn 1 video into 10 formats: Carousel generators, text-to-reel animations, storytelling templates, and workflow automation guides.',
+    features: [
+      '📦 30-Day Viral Content Calendar',
+      '🔄 10x Content Repurposing Guide',
+      '🎨 Canva & Figma Reel Templates',
+      '🔒 Ready-to-Publish Formats',
+    ],
+  },
+  {
+    id: 'edit-tier-350',
+    level: 'Tier 5 • Motion Graphics',
+    name: 'Motion Graphics, Kinetic Typography & SFX Asset Suite',
+    price: 350,
+    originalPrice: 1000,
+    badge: '⚡ PRO SUITE',
+    description: 'High-end creator visuals: 500+ sound effects (whooshes, pops, risers, bass drops), kinetic subtitle presets, and animated sticker overlays.',
+    features: [
+      '🎵 500+ Royalty-Free SFX Library',
+      '✨ Kinetic Subtitle Presets',
+      '🎬 4K Overlay Transitions & Stickers',
+      '⭐ Priority Creator Support',
+    ],
+  },
+  {
+    id: 'edit-tier-500',
+    level: 'Tier 6 • Commercial Pro',
+    name: 'End-to-End Creator Strategy & Commercial Video Production',
+    price: 500,
+    originalPrice: 1500,
+    badge: '⭐ AGENCY LEVEL',
+    description: 'Commercial video editing standard: Multi-cam syncing, client pitch deck templates, branding color science, and high-ticket portfolio frameworks.',
+    features: [
+      '💼 Commercial Video Production Guide',
+      '🎥 Multi-Cam & Audio Sync Mastery',
+      '📄 Client Pitch Deck & Contract Kit',
+      '🎯 Agency-Grade Deliverables',
+    ],
+  },
+  {
+    id: 'edit-tier-600',
+    level: 'Tier 7 • VIP Academy',
+    name: 'VIP All-Access Video Editing Academy & Strategy Consultation',
+    price: 600,
+    originalPrice: 1999,
+    badge: '👑 VIP ALL-ACCESS',
+    description: 'The complete creator bundle: Instant access to ALL 6 previous video editing tiers, LUTs, SFX suites, templates, plus 1-on-1 media consultation review.',
+    features: [
+      '👑 All Level 1–6 Packs Included (All-in-One)',
+      '🤝 1-on-1 Creator Profile & Editing Audit',
+      '🚀 Priority WhatsApp Creator Helpdesk',
+      '🔒 Full Commercial License Included',
+    ],
+  },
+];
+
 export const COURSE_FAQS: FaqItem[] = [
   {
     question: 'Kya is class ke liye coding aani zaroori hai?',

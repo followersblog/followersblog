@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   description: 'Learn practical AI website building and explore digital services at Followers.blog.',
   keywords: ['AI website building', 'practical coding workshop', 'learn web development', 'Followers.blog', 'digital skills'],
   authors: [{ name: 'Followers.blog' }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://followers.blog'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://follower.blog'),
   openGraph: {
     title: 'Followers.blog — Learn AI Website Building & Digital Skills',
     description: 'AI Se Professional Website Banana Seekho — Sirf 3 Ghante Mein. Zero to live website workflow.',
-    url: 'https://followers.blog',
+    url: 'https://follower.blog',
     siteName: 'Followers.blog',
     locale: 'en_IN',
     type: 'website',

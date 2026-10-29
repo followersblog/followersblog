@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { COURSE_DETAILS, COURSE_ADDONS } from '@/data/courses';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
+import { loadCashfreeScript } from '@/lib/load-cashfree';
 import {
   Sparkles,
   ShieldCheck,
@@ -71,13 +72,7 @@ export default function CourseCheckoutPage() {
         return { id: item.id, name: item.name, price: item.price };
       });
 
-      // 1. Ensure Razorpay checkout.js script is loaded
-      const isLoaded = await loadRazorpayScript();
-      if (!isLoaded) {
-        throw new Error('Razorpay payment gateway failed to load. Please check your internet connection.');
-      }
-
-      // 2. Create Razorpay order via backend endpoint
+      // 1. Create order via backend endpoint
       const response = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,7 +95,32 @@ export default function CourseCheckoutPage() {
         throw new Error(data.error || 'Failed to initiate payment.');
       }
 
-      // 3. Open Razorpay Checkout Modal
+      // Cashfree checkout routing
+      if (data.gateway === 'cashfree' || data.payment_session_id) {
+        const Cashfree = await loadCashfreeScript();
+        if (Cashfree && data.payment_session_id) {
+          const cashfree = Cashfree({
+            mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === 'PROD' ? 'production' : 'sandbox',
+          });
+          cashfree.checkout({
+            paymentSessionId: data.payment_session_id,
+            redirectTarget: '_self',
+          });
+          return;
+        }
+        if (data.payment_url) {
+          window.location.href = data.payment_url;
+          return;
+        }
+      }
+
+      // Razorpay checkout routing
+      const isLoaded = await loadRazorpayScript();
+      if (!isLoaded) {
+        throw new Error('Razorpay payment gateway failed to load. Please check your internet connection.');
+      }
+
+      // Open Razorpay Checkout Modal
       const options = {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
         amount: data.amount,

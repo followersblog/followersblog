@@ -13,20 +13,20 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized access to admin orders' }, { status: 401 });
     }
 
-    // 1. Fetch live payments from Razorpay
-    const razorpay = getRazorpayInstance();
-    const rzpRes = await razorpay.payments.all({ count: 100 });
-    const rzpPayments = rzpRes.items || [];
-
-    // 1b. Fetch active disputes from Razorpay
+    // 1. Fetch live payments from Razorpay safely
+    let rzpPayments: any[] = [];
     let rzpDisputes: any[] = [];
     try {
+      const razorpay = getRazorpayInstance();
+      const rzpRes = await razorpay.payments.all({ count: 100 });
+      if (rzpRes && rzpRes.items) rzpPayments = rzpRes.items;
+
       if ((razorpay as any).disputes) {
         const dRes = await (razorpay as any).disputes.all({ count: 50 });
         if (dRes && dRes.items) rzpDisputes = dRes.items;
       }
-    } catch (dErr) {
-      console.warn('Disputes fetch non-fatal:', dErr);
+    } catch (rzpErr) {
+      console.warn('Razorpay fetch non-fatal (account may be paused):', rzpErr);
     }
 
     const disputeByPaymentId = new Map<string, any>();

@@ -43,7 +43,14 @@ export default function Navbar() {
               className="text-sm font-semibold text-zinc-700 hover:text-blue-600 transition-colors flex items-center gap-1.5"
             >
               <BookOpen className="w-4 h-4 text-blue-500" />
-              Course Curriculum
+              Website Course
+            </Link>
+            <Link 
+              href="/#editing-courses" 
+              className="text-sm font-semibold text-zinc-700 hover:text-blue-600 transition-colors flex items-center gap-1.5"
+            >
+              <TrendingUp className="w-4 h-4 text-indigo-500" />
+              Video Editing Tiers
             </Link>
             <Link 
               href="/#faq" 
@@ -103,6 +110,17 @@ export default function Navbar() {
               AI Website Building Course
             </span>
             <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">₹1499</span>
+          </Link>
+          <Link
+            href="/#editing-courses"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center justify-between px-3 py-2 rounded-lg text-base font-semibold text-zinc-800 hover:bg-blue-50 hover:text-blue-600"
+          >
+            <span className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-indigo-500" />
+              Video Editing Tiers
+            </span>
+            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">₹49 - ₹600</span>
           </Link>
           <Link
             href="/#faq"
