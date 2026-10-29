@@ -272,9 +272,9 @@ function FollowersCheckoutContent() {
 
             // Redirect to success page
             if (typeof window !== 'undefined') {
-              window.location.href = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}`;
+              window.location.href = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}&from=/followers`;
             } else {
-              router.push(`/followers/success?order_id=${data.receipt}`);
+              router.push(`/followers/success?order_id=${encodeURIComponent(data.receipt)}&from=/followers`);
             }
           } catch (verifyErr: any) {
             setErrorMessage(verifyErr.message || 'Payment verification failed. Please contact support.');

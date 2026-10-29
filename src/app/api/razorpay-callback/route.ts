@@ -27,7 +27,7 @@ function getTargetRedirectUrls(source: string, orderIdOrReceipt: string, baseUrl
     return {
       type: 'followers',
       failureUrl: `${baseUrl}/followers?payment_status=pending`,
-      successUrl: (params: string) => `${baseUrl}/followers/success?${params}`,
+      successUrl: (params: string) => `${baseUrl}/followers/success?${params}&from=/followers`,
     };
   }
 

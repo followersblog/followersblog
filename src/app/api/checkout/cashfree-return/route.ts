@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL(`/course/success?order_id=${encodeURIComponent(orderId)}`, baseUrl));
     }
     if (isFollowers) {
-      return NextResponse.redirect(new URL(`/followers/success?order_id=${encodeURIComponent(orderId)}`, baseUrl));
+      return NextResponse.redirect(new URL(`/followers/success?order_id=${encodeURIComponent(orderId)}&from=/followers`, baseUrl));
     }
     // Home or Default: Official Tax Invoice receipt
     const receiptUrl = `/receipt?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(orderData.cf_order_id || '')}&name=${encodeURIComponent(cust.customer_name || 'Valued Customer')}&email=${encodeURIComponent(cust.customer_email || '')}&phone=${encodeURIComponent(cust.customer_phone || '')}&amount=${encodeURIComponent(String(orderData.order_amount || ''))}`;

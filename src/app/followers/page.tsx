@@ -386,7 +386,7 @@ export default function FollowersPage() {
             }
 
             // Direct redirect to success page with full order details!
-            const successUrl = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}&amount=${encodeURIComponent(String(selectedPackageForModal.price))}&name=${encodeURIComponent(displayName)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(cleanPhone)}`;
+            const successUrl = `/followers/success?order_id=${encodeURIComponent(data.receipt)}&payment_id=${encodeURIComponent(paymentResponse.razorpay_payment_id || '')}&amount=${encodeURIComponent(String(selectedPackageForModal.price))}&name=${encodeURIComponent(displayName)}&email=${encodeURIComponent(email)}&phone=${encodeURIComponent(cleanPhone)}&from=/followers`;
 
             if (typeof window !== 'undefined') {
               window.location.href = successUrl;
