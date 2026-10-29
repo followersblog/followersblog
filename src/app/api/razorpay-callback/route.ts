@@ -2,7 +2,51 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyRazorpaySignature, getRazorpayInstance } from '@/lib/razorpay';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
 
+function getTargetRedirectUrls(source: string, orderIdOrReceipt: string, baseUrl: string) {
+  const isHome = source === 'home' || orderIdOrReceipt.startsWith('EDT-');
+  const isCourse = source === 'course' || orderIdOrReceipt.startsWith('CRS-');
+  const isFollowers = source === 'followers' || orderIdOrReceipt.startsWith('MED-');
+
+  if (isHome) {
+    return {
+      type: 'home',
+      failureUrl: `${baseUrl}/#editing-courses?status=cancelled`,
+      successUrl: (params: string) => `${baseUrl}/receipt?${params}`,
+    };
+  }
+
+  if (isCourse) {
+    return {
+      type: 'course',
+      failureUrl: `${baseUrl}/course/checkout?payment_status=cancelled`,
+      successUrl: (params: string) => `${baseUrl}/course/success?${params}`,
+    };
+  }
+
+  if (isFollowers) {
+    return {
+      type: 'followers',
+      failureUrl: `${baseUrl}/followers?payment_status=pending`,
+      successUrl: (params: string) => `${baseUrl}/followers/success?${params}`,
+    };
+  }
+
+  // Universal safe fallback: Homepage, NEVER followers!
+  return {
+    type: 'home',
+    failureUrl: `${baseUrl}/?status=cancelled`,
+    successUrl: (params: string) => `${baseUrl}/receipt?${params}`,
+  };
+}
+
 export async function POST(req: NextRequest) {
+  const host = req.headers.get('host') || 'follower.blog';
+  const protocol = req.headers.get('x-forwarded-proto') || 'https';
+  const baseUrl = `${protocol}://${host}`;
+
+  const searchParams = req.nextUrl.searchParams;
+  const querySource = searchParams.get('source') || '';
+
   try {
     let razorpay_payment_id = '';
     let razorpay_order_id = '';
@@ -24,16 +68,14 @@ export async function POST(req: NextRequest) {
       razorpay_signature = json.razorpay_signature || '';
     }
 
-    const host = req.headers.get('host') || 'followers.blog';
-    const protocol = req.headers.get('x-forwarded-proto') || 'https';
-    const baseUrl = `${protocol}://${host}`;
+    const targetUrls = getTargetRedirectUrls(querySource, razorpay_order_id, baseUrl);
 
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
-      console.error('Razorpay callback missing required parameters:', {
+      console.warn('Razorpay callback missing parameters (payment cancelled or failed):', {
         razorpay_payment_id,
         razorpay_order_id,
       });
-      return NextResponse.redirect(`${baseUrl}/followers?payment_status=pending`, 303);
+      return NextResponse.redirect(targetUrls.failureUrl, 303);
     }
 
     const isValid = verifyRazorpaySignature(
@@ -47,7 +89,7 @@ export async function POST(req: NextRequest) {
         razorpay_order_id,
         razorpay_payment_id,
       });
-      return NextResponse.redirect(`${baseUrl}/followers?payment_status=invalid_signature`, 303);
+      return NextResponse.redirect(targetUrls.failureUrl, 303);
     }
 
     // Try to get receipt / internal order id & details from Razorpay order
@@ -56,6 +98,7 @@ export async function POST(req: NextRequest) {
     let customerName = '';
     let customerEmail = '';
     let customerPhone = '';
+    let orderSource = querySource;
 
     try {
       const razorpay = getRazorpayInstance();
@@ -67,11 +110,15 @@ export async function POST(req: NextRequest) {
           customerName = (rzpOrder.notes.customer_name as string) || '';
           customerEmail = (rzpOrder.notes.customer_email as string) || '';
           customerPhone = (rzpOrder.notes.customer_phone as string) || '';
+          if (rzpOrder.notes.source) orderSource = rzpOrder.notes.source as string;
         }
       }
     } catch (fetchErr) {
       console.warn('Could not fetch razorpay order details:', fetchErr);
     }
+
+    // Re-evaluate target URLs with receipt
+    const resolvedUrls = getTargetRedirectUrls(orderSource, receipt, baseUrl);
 
     // Update Supabase if configured & enrich customer details if needed
     const supabase = getServiceSupabase();
@@ -79,7 +126,7 @@ export async function POST(req: NextRequest) {
       try {
         const { data: existingOrder } = await supabase
           .from('orders')
-          .select('customer_name, customer_email, customer_phone, amount, target_url')
+          .select('customer_name, customer_email, customer_phone, amount, target_url, product_type')
           .eq('id', receipt)
           .single();
 
@@ -87,7 +134,7 @@ export async function POST(req: NextRequest) {
           if (!customerName && existingOrder.customer_name && existingOrder.customer_name !== 'Creator' && existingOrder.customer_name !== 'Learner') {
             customerName = existingOrder.customer_name;
           }
-          if (!customerEmail && existingOrder.customer_email && !existingOrder.customer_email.includes('@followers.blog')) {
+          if (!customerEmail && existingOrder.customer_email && !existingOrder.customer_email.includes('@follower.blog')) {
             customerEmail = existingOrder.customer_email;
           }
           if (!customerPhone && existingOrder.customer_phone && existingOrder.customer_phone !== '9876543210') {
@@ -118,7 +165,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // REDIRECT DIRECTLY TO THE SMM SUCCESS PAGE WITH ACCURATE PARAMS!
+    // Format parameters
     const redirectParams = new URLSearchParams();
     redirectParams.set('order_id', receipt);
     redirectParams.set('payment_id', razorpay_payment_id);
@@ -128,29 +175,37 @@ export async function POST(req: NextRequest) {
     if (customerPhone) redirectParams.set('phone', customerPhone);
 
     return NextResponse.redirect(
-      `${baseUrl}/followers/success?${redirectParams.toString()}`,
+      resolvedUrls.successUrl(redirectParams.toString()),
       303
     );
   } catch (err: any) {
     console.error('Razorpay callback error:', err);
-    return NextResponse.redirect('https://followers.blog/followers', 303);
+    const fallbackUrls = getTargetRedirectUrls(querySource, '', baseUrl);
+    return NextResponse.redirect(fallbackUrls.failureUrl, 303);
   }
 }
 
 export async function GET(req: NextRequest) {
-  const host = req.headers.get('host') || 'followers.blog';
+  const host = req.headers.get('host') || 'follower.blog';
   const protocol = req.headers.get('x-forwarded-proto') || 'https';
   const baseUrl = `${protocol}://${host}`;
+
   const searchParams = req.nextUrl.searchParams;
   const paymentId = searchParams.get('razorpay_payment_id') || '';
   const orderId = searchParams.get('razorpay_order_id') || '';
+  const source = searchParams.get('source') || '';
+
+  const targetUrls = getTargetRedirectUrls(source, orderId, baseUrl);
 
   if (paymentId) {
+    const redirectParams = new URLSearchParams();
+    redirectParams.set('order_id', orderId || 'ACTIVE-ORDER');
+    redirectParams.set('payment_id', paymentId);
     return NextResponse.redirect(
-      `${baseUrl}/followers/success?order_id=${encodeURIComponent(orderId || 'SMM-ACTIVE')}&payment_id=${encodeURIComponent(paymentId)}`,
+      targetUrls.successUrl(redirectParams.toString()),
       303
     );
   }
 
-  return NextResponse.redirect(`${baseUrl}/followers`, 303);
+  return NextResponse.redirect(targetUrls.failureUrl, 303);
 }

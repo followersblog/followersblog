@@ -89,7 +89,7 @@ export default function HomePage() {
         body: JSON.stringify({
           amount: selectedTierForModal.price,
           currency: 'INR',
-          productType: 'service',
+          productType: 'tier',
           productId: selectedTierForModal.id,
           productName: selectedTierForModal.name,
           customerName: displayName,
@@ -139,8 +139,8 @@ export default function HomePage() {
         description: selectedTierForModal.name,
         image: '/logo.png',
         order_id: data.order_id,
-        callback_url: `${origin}/api/razorpay-callback`,
-        redirect: true,
+        callback_url: `${origin}/api/razorpay-callback?source=home`,
+        redirect: false,
         prefill: {
           name: displayName,
           email: email,

@@ -35,13 +35,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const prefix = productType === 'course' ? 'CRS' : 'MED';
+    const prefix = productType === 'course' ? 'CRS' : productType === 'tier' ? 'EDT' : 'MED';
     const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
     const internalOrderId = receipt || `${prefix}-${Date.now().toString().slice(-6)}-${randomSuffix}`;
+
+    // Source context: home, course, or followers
+    const sourceParam = productType === 'tier' ? 'home' : productType === 'course' ? 'course' : 'followers';
 
     // Compliant note for Gateway dashboard & compliance audits (No SMM / bot terms)
     const compliantNote = productType === 'course'
       ? (productName || 'AI Website Building — 3 Hour Complete Practical Class')
+      : productType === 'tier'
+      ? (productName || `Creator Video Editing Class & Digital Toolkit (Tier ₹${amountInPaise / 100})`)
       : `Digital Creator Strategy Class & Media Consultation (Tier ₹${amountInPaise / 100})`;
 
     // Check if Cashfree gateway is enabled
@@ -60,7 +65,7 @@ export async function POST(req: NextRequest) {
       const host = req.headers.get('host');
       const proto = req.headers.get('x-forwarded-proto') || 'https';
       const appUrl = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_APP_URL || 'https://follower.blog');
-      const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${internalOrderId}`;
+      const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${internalOrderId}&source=${sourceParam}`;
 
       const cfResponse = await fetch(baseUrl, {
         method: 'POST',
@@ -131,6 +136,7 @@ export async function POST(req: NextRequest) {
         amount: Math.round(amountInPaise / 100),
         currency: 'INR',
         receipt: internalOrderId,
+        source: sourceParam,
       });
     }
 
@@ -143,8 +149,9 @@ export async function POST(req: NextRequest) {
       notes: {
         product_name: compliantNote,
         customer_name: customerName || 'Learner',
-        customer_email: customerEmail || 'customer@followers.blog',
+        customer_email: customerEmail || 'customer@follower.blog',
         order_id: internalOrderId,
+        source: sourceParam,
       },
     };
 
@@ -158,7 +165,7 @@ export async function POST(req: NextRequest) {
           await supabase.from('orders').insert({
             id: internalOrderId,
             customer_name: customerName || 'Learner',
-            customer_email: customerEmail || `${customerPhone || 'customer'}@followers.blog`,
+            customer_email: customerEmail || `${customerPhone || 'customer'}@follower.blog`,
             customer_phone: customerPhone || '9876543210',
             product_type: productType,
             product_name: compliantNote,
@@ -181,6 +188,7 @@ export async function POST(req: NextRequest) {
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
       receipt: internalOrderId,
+      source: sourceParam,
       key_id: process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
     });
   } catch (error: any) {

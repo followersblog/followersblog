@@ -48,12 +48,17 @@ function ReceiptContent() {
 
   // Compliant naming: Course/Consultation instead of SMM
   const isCourse = orderId.startsWith('CRS');
+  const isTier = orderId.startsWith('EDT');
   const itemName = isCourse
     ? 'AI Website Building — 3-Hour Live Interactive Practical Class'
+    : isTier
+    ? `Creator Video Editing Class & Digital Asset Suite (Tier ₹${amount})`
     : `Digital Creator Media Strategy & Growth Training Program (Tier ₹${amount})`;
 
   const itemCategory = isCourse
     ? 'Digital Education & E-Learning Workshop'
+    : isTier
+    ? 'Creator Video Editing & Digital Curriculum'
     : 'Creator Marketing Strategy & Digital Asset Bundle';
 
   return (
@@ -61,11 +66,11 @@ function ReceiptContent() {
       {/* Action Bar (Hidden when printing) */}
       <div className="flex items-center justify-between mb-6 print:hidden">
         <Link
-          href="/followers"
+          href="/"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-600 hover:text-zinc-950 bg-zinc-100 hover:bg-zinc-200 px-3.5 py-2 rounded-xl transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Followers Hub</span>
+          <span>Back to Home</span>
         </Link>
         <button
           onClick={() => window.print()}

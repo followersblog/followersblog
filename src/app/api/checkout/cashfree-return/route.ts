@@ -4,27 +4,35 @@ import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const orderId = searchParams.get('order_id');
+  const source = searchParams.get('source') || '';
+
+  const host = req.headers.get('host') || 'follower.blog';
+  const proto = req.headers.get('x-forwarded-proto') || 'https';
+  const baseUrl = `${proto}://${host}`;
 
   if (!orderId) {
-    return NextResponse.redirect(new URL('/', req.url));
+    return NextResponse.redirect(new URL('/', baseUrl));
   }
 
   const supabase = getServiceSupabase();
-  const isCourse = orderId.startsWith('CRS');
+  const isCourse = orderId.startsWith('CRS') || source === 'course';
+  const isHome = orderId.startsWith('EDT') || source === 'home';
+  const isFollowers = orderId.startsWith('MED') || source === 'followers';
 
   // Verify with Cashfree if credentials exist
   const cashfreeAppId = process.env.CASHFREE_APP_ID;
   const cashfreeSecret = process.env.CASHFREE_SECRET_KEY;
 
+  let orderData: any = null;
+
   if (cashfreeAppId && cashfreeSecret && !cashfreeAppId.includes('TEST_APP_ID')) {
     const isProd = process.env.CASHFREE_ENV === 'PROD';
-    const baseUrl = isProd
+    const cfBaseUrl = isProd
       ? `https://api.cashfree.com/pg/orders/${orderId}`
       : `https://sandbox.cashfree.com/pg/orders/${orderId}`;
 
-    let orderData: any = null;
     try {
-      const response = await fetch(baseUrl, {
+      const response = await fetch(cfBaseUrl, {
         headers: {
           'x-client-id': cashfreeAppId,
           'x-client-secret': cashfreeSecret,
@@ -40,7 +48,7 @@ export async function GET(req: NextRequest) {
             .from('orders')
             .update({
               payment_status: 'success',
-              order_status: isCourse ? 'completed' : 'processing',
+              order_status: 'completed',
               payment_reference: orderData.cf_order_id || 'CF_VERIFIED',
               updated_at: new Date().toISOString(),
             })
@@ -60,20 +68,32 @@ export async function GET(req: NextRequest) {
     } catch (err) {
       console.error('Cashfree order verification error:', err);
     }
-
-    if (orderData && orderData.order_status === 'PAID') {
-      const cust = orderData.customer_details || {};
-      const redirectPath = isCourse
-        ? `/course/success?order_id=${encodeURIComponent(orderId)}`
-        : `/receipt?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(orderData.cf_order_id || '')}&name=${encodeURIComponent(cust.customer_name || 'Valued Customer')}&email=${encodeURIComponent(cust.customer_email || '')}&phone=${encodeURIComponent(cust.customer_phone || '')}&amount=${encodeURIComponent(String(orderData.order_amount || ''))}`;
-      return NextResponse.redirect(new URL(redirectPath, req.url));
-    }
   }
 
-  // Fallback redirect
-  const redirectPath = isCourse
-    ? `/course/success?order_id=${orderId}`
-    : `/followers/success?order_id=${orderId}`;
+  // Handle successful payments
+  if (orderData && orderData.order_status === 'PAID') {
+    const cust = orderData.customer_details || {};
+    if (isCourse) {
+      return NextResponse.redirect(new URL(`/course/success?order_id=${encodeURIComponent(orderId)}`, baseUrl));
+    }
+    if (isFollowers) {
+      return NextResponse.redirect(new URL(`/followers/success?order_id=${encodeURIComponent(orderId)}`, baseUrl));
+    }
+    // Home or Default: Official Tax Invoice receipt
+    const receiptUrl = `/receipt?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(orderData.cf_order_id || '')}&name=${encodeURIComponent(cust.customer_name || 'Valued Customer')}&email=${encodeURIComponent(cust.customer_email || '')}&phone=${encodeURIComponent(cust.customer_phone || '')}&amount=${encodeURIComponent(String(orderData.order_amount || ''))}`;
+    return NextResponse.redirect(new URL(receiptUrl, baseUrl));
+  }
 
-  return NextResponse.redirect(new URL(redirectPath, req.url));
+  // Handle failed or cancelled checkout safely
+  if (isHome) {
+    return NextResponse.redirect(new URL('/#editing-courses?status=cancelled', baseUrl));
+  }
+  if (isCourse) {
+    return NextResponse.redirect(new URL('/course/checkout?payment_status=cancelled', baseUrl));
+  }
+  if (isFollowers) {
+    return NextResponse.redirect(new URL('/followers?payment_status=cancelled', baseUrl));
+  }
+
+  return NextResponse.redirect(new URL('/#editing-courses?status=cancelled', baseUrl));
 }

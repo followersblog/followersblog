@@ -129,6 +129,8 @@ export default function CourseCheckoutPage() {
         description: 'AI Website Building — 3 Hour Complete Practical Class',
         image: '/logo.png',
         order_id: data.order_id,
+        callback_url: `${typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog'}/api/razorpay-callback?source=course`,
+        redirect: false,
         prefill: {
           name: fullName,
           email: email,
