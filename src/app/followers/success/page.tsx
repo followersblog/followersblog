@@ -9,7 +9,7 @@ import { event } from '@/lib/meta-pixel';
 function FollowersSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const orderId = searchParams.get('order_id') || 'SMM-2026-ACTIVE';
+  const orderId = searchParams.get('order_id') || 'MED-2026-ACTIVE';
   const paramAmount = searchParams.get('amount') || '';
   const paramName = searchParams.get('name') || '';
   const paramEmail = searchParams.get('email') || '';
@@ -41,7 +41,7 @@ function FollowersSuccessContent() {
         event('Purchase', {
           value: Number(activeAmount) || 49,
           currency: 'INR',
-          content_name: 'Followers Growth Order',
+          content_name: 'Creator Media Consultation',
           content_type: 'product',
           order_id: orderId,
         });
@@ -110,7 +110,7 @@ export default function FollowersSuccessPage() {
   return (
     <div className="min-h-screen bg-zinc-50 font-sans flex flex-col">
       <header className="border-b border-zinc-200 bg-white py-3 px-6 flex items-center justify-center">
-        <Link href="/followers" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center p-0.5 border border-zinc-200 shadow-xs overflow-hidden">
             <img 
               src="/logo.png" 

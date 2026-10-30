@@ -3,6 +3,10 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
+Disallow: /followers
+Disallow: /followers/
+Disallow: /receipt
+Disallow: /receipt/
 
 # Host
 Host: https://followers.blog

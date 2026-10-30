@@ -4,6 +4,7 @@ import './globals.css';
 import MetaPixel from '@/components/MetaPixel';
 
 export const metadata: Metadata = {
+  referrer: 'origin',
   title: 'Followers.blog — Learn AI Website Building & Digital Skills',
   description: 'Learn practical AI website building and explore digital services at Followers.blog.',
   keywords: ['AI website building', 'practical coding workshop', 'learn web development', 'Followers.blog', 'digital skills'],

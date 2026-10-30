@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  referrer: 'origin',
   title: 'Media Consultation & Growth Portal | Followers.blog',
   robots: {
     index: false,
