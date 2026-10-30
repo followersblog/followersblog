@@ -12,8 +12,11 @@ function ReceiptContent() {
   const paramEmail = searchParams.get('email') || '';
   const paramPhone = searchParams.get('phone') || '';
   const paramAmount = searchParams.get('amount') || '';
-  const paramPaymentId = searchParams.get('payment_id') || '';
-  const date = searchParams.get('date') || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const paramPaymentId = searchParams.get('payment_id') || searchParams.get('tx_id') || '';
+  const paramGateway = searchParams.get('gateway');
+  const paramDate = searchParams.get('date');
+  const date = paramDate || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const gatewayDisplay = paramGateway || 'Cashfree Payments / Authorized Gateway (256-Bit SSL)';
 
   const [orderState, setOrderState] = useState<{
     name: string;
@@ -131,9 +134,9 @@ function ReceiptContent() {
               Payment & Dispatch Info
             </div>
             <div className="text-zinc-700"><strong>Date of Issue:</strong> {date}</div>
-            <div className="text-zinc-700"><strong>Payment Gateway:</strong> Authorized Secure Gateway (256-Bit SSL)</div>
+            <div className="text-zinc-700"><strong>Payment Gateway:</strong> {gatewayDisplay}</div>
             {paramPaymentId && (
-              <div className="text-zinc-700 font-mono text-[11px]"><strong>Gateway Ref:</strong> {paramPaymentId}</div>
+              <div className="text-zinc-700 font-mono text-[11px]"><strong>Transaction ID / Gateway Ref:</strong> {paramPaymentId}</div>
             )}
             <div className="text-zinc-700"><strong>Delivery Mode:</strong> Electronic / Digital Access Dispatched</div>
           </div>
