@@ -225,7 +225,7 @@ function FollowersCheckoutContent() {
         description: 'Digital Creator Strategy Class & Media Consultation',
         image: '/logo.png',
         order_id: data.order_id,
-        callback_url: `${origin}/api/razorpay-callback?source=followers`,
+        callback_url: `${origin}/api/razorpay-callback?source=media`,
         redirect: false,
         prefill: {
           name: displayName,

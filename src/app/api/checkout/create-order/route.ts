@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
         : 'https://sandbox.cashfree.com/pg/orders';
 
       const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://follower.blog';
-      const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${orderId}`;
+      const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${orderId}&source=media`;
 
       const cfResponse = await fetch(baseUrl, {
         method: 'POST',

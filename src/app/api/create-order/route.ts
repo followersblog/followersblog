@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
     const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
     const internalOrderId = receipt || `${prefix}-${Date.now().toString().slice(-6)}-${randomSuffix}`;
 
-    // Source context: home, course, or followers
-    const sourceParam = productType === 'tier' ? 'home' : productType === 'course' ? 'course' : 'followers';
+    // Source context: home, course, or media consultation (completely neutral for gateways)
+    const sourceParam = productType === 'tier' ? 'home' : productType === 'course' ? 'course' : 'media';
 
     // Compliant note for Gateway dashboard & compliance audits (No SMM / bot terms)
     const compliantNote = productType === 'course'

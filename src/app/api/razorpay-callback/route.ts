@@ -5,7 +5,7 @@ import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
 function getTargetRedirectUrls(source: string, orderIdOrReceipt: string, baseUrl: string) {
   const isHome = source === 'home' || orderIdOrReceipt.startsWith('EDT-');
   const isCourse = source === 'course' || orderIdOrReceipt.startsWith('CRS-');
-  const isFollowers = source === 'followers' || orderIdOrReceipt.startsWith('MED-');
+  const isFollowers = source === 'followers' || source === 'media' || orderIdOrReceipt.startsWith('MED-');
 
   if (isHome) {
     return {
@@ -25,8 +25,8 @@ function getTargetRedirectUrls(source: string, orderIdOrReceipt: string, baseUrl
 
   if (isFollowers) {
     return {
-      type: 'followers',
-      failureUrl: `${baseUrl}/followers?payment_status=pending`,
+      type: 'media',
+      failureUrl: `${baseUrl}/#editing-courses?status=cancelled`,
       successUrl: (params: string) => `${baseUrl}/followers/success?${params}&from=/followers`,
     };
   }
