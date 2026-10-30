@@ -53,10 +53,11 @@ export default function PrivacyPage() {
               We do not sell, trade, or rent your personal identification information to outside parties. We only share transaction-necessary data with verified payment processors (e.g. Cashfree) and communication delivery partners.
             </p>
 
-            <h2 className="text-lg font-bold text-zinc-950">5. Contact Our Privacy Officer</h2>
+            <h2 className="text-lg font-bold text-zinc-950">5. Contact Our Grievance Officer</h2>
             <p>
-              If you have any questions about this Privacy Policy or wish to request data deletion, contact us at: <br />
-              <strong>Email:</strong> support@followers.blog
+              If you have any questions about this Privacy Policy or wish to request data updates, contact us at: <br />
+              <strong>Grievance Officer:</strong> Sujan Kumar <br />
+              <strong>Official Email:</strong> vipuhere50@gmail.com
             </p>
           </section>
         </div>

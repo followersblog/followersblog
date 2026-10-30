@@ -772,7 +772,7 @@ export default function HomePage() {
               <ul className="space-y-3 mb-8 text-sm text-zinc-700">
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>3-Hour intensive live session with instructor</span>
+                  <span>3-Hour intensive live session with <strong>Sujan Kumar</strong> (Lead Instructor)</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -791,6 +791,20 @@ export default function HomePage() {
                   <span>Vercel deployment & custom domain guidance</span>
                 </li>
               </ul>
+
+              {/* Lead Instructor Profile (Cashfree & Student Compliance) */}
+              <div className="mb-8 p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
+                  SK
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
+                    <span>Sujan Kumar</span>
+                    <span className="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200">Course Mentor</span>
+                  </div>
+                  <div className="text-[11px] text-zinc-500">Lead AI Developer & Founder, Followers.blog</div>
+                </div>
+              </div>
 
               <Link
                 href="/course/checkout"

@@ -426,7 +426,7 @@ export default function CourseCheckoutPage() {
               {/* Trust Badge */}
               <div className="p-4 rounded-2xl bg-white border border-zinc-200 text-center text-xs text-zinc-500 space-y-1">
                 <div className="font-bold text-zinc-800">Followers.blog Official Enrolment</div>
-                <div>Support: <span className="font-medium text-zinc-700">support@followers.blog</span></div>
+                <div>Support: <span className="font-medium text-zinc-700">vipuhere50@gmail.com</span></div>
               </div>
             </div>
           </div>

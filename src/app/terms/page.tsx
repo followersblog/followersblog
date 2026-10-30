@@ -47,10 +47,11 @@ export default function TermsPage() {
               In no event shall Followers.blog, its instructors, or affiliates be liable for any indirect, incidental, or consequential damages arising from the implementation of our educational training materials.
             </p>
 
-            <h2 className="text-lg font-bold text-zinc-950">7. Contact Information</h2>
+            <h2 className="text-lg font-bold text-zinc-950">7. Contact & Legal Entity Information</h2>
             <p>
-              For legal inquiries or clarifications regarding these Terms, please contact: <br />
-              <strong>Email:</strong> support@followers.blog <br />
+              For legal inquiries, dispute claims, or clarifications regarding these Terms, please contact: <br />
+              <strong>Legal Entity / Operator:</strong> Sujan Kumar (trading as Followers.blog) <br />
+              <strong>Official Email:</strong> vipuhere50@gmail.com <br />
               <strong>Official Website:</strong> https://follower.blog <br />
               <strong>Registered Address:</strong> 237-3 Mayakund, Rishikesh, Dehradun, Uttarakhand - 249201, India
             </p>

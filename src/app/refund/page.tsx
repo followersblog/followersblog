@@ -53,7 +53,7 @@ export default function RefundPolicyPage() {
 
             <h2 className="text-lg font-bold text-zinc-950">4. How to Request a Refund</h2>
             <p>
-              To submit a refund or cancellation request, please email our support desk at <strong>support@followers.blog</strong> with your <strong>Order ID</strong> and registered email address.
+              To submit a refund or cancellation request, please email our support desk at <strong>vipuhere50@gmail.com</strong> (Attention: Sujan Kumar / Grievance Desk) with your <strong>Order ID</strong> and registered email address.
             </p>
           </section>
         </div>

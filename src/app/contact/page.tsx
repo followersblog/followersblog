@@ -38,11 +38,22 @@ export default function ContactPage() {
                     <Mail className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-zinc-900">Email Desk</div>
-                    <a href="mailto:support@followers.blog" className="text-blue-600 hover:underline">
-                      support@followers.blog
+                    <div className="font-bold text-zinc-900">Official Support & Grievance Desk</div>
+                    <a href="mailto:vipuhere50@gmail.com" className="text-blue-600 hover:underline font-semibold block">
+                      vipuhere50@gmail.com
                     </a>
-                    <div className="text-[11px] text-zinc-400">Response within 2-4 hours</div>
+                    <div className="text-[11px] text-zinc-400">Response within 2-4 hours • Monitored daily</div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 font-bold text-xs">
+                    SK
+                  </div>
+                  <div>
+                    <div className="font-bold text-zinc-900">Platform Operator / Lead Instructor</div>
+                    <div className="text-zinc-700 font-semibold">Sujan Kumar</div>
+                    <div className="text-[11px] text-zinc-400">Trading as Followers.blog (Creator Education & Digital Media)</div>
                   </div>
                 </div>
 

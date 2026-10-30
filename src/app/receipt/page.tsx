@@ -105,7 +105,7 @@ function ReceiptContent() {
               Digital E-Learning & Media Consultation Platform
             </p>
             <p className="text-[11px] text-zinc-400">
-              Official Desk: support@followers.blog • https://follower.blog
+              Official Desk: vipuhere50@gmail.com • Operated by Sujan Kumar • https://follower.blog
             </p>
           </div>
 
@@ -197,7 +197,7 @@ function ReceiptContent() {
 
         {/* Footer */}
         <div className="pt-4 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-400 gap-2">
-          <div>Followers.blog • Computer Generated Tax Invoice • No Signature Required</div>
+          <div>Followers.blog • Operated by Sujan Kumar • Computer Generated Tax Invoice • No Signature Required</div>
           <div>Authorized Electronic Voucher</div>
         </div>
       </div>

@@ -56,9 +56,9 @@ export default function ShippingDeliveryPage() {
                 In the rare event that your confirmation email or digital workshop credentials do not appear in your inbox within 15 minutes of payment:
               </p>
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
-                <li>Please verify your spam/promotions folder for an email from <strong>orders@followers.blog</strong>.</li>
+                <li>Please verify your spam/promotions folder for an email confirmation.</li>
                 <li>Ensure that the email address provided during checkout was spelled correctly.</li>
-                <li>Contact our 24/7 support desk at <strong>support@followers.blog</strong> with your payment transaction ID, and our operations team will immediately re-dispatch your credentials.</li>
+                <li>Contact our 24/7 support desk at <strong>vipuhere50@gmail.com</strong> with your payment transaction ID, and our operations team will immediately re-dispatch your credentials.</li>
               </ul>
             </div>
 
@@ -66,7 +66,8 @@ export default function ShippingDeliveryPage() {
               <h2 className="text-lg font-bold text-zinc-950 mb-2">4. Contact Delivery Desk</h2>
               <p>
                 For any queries regarding delivery timelines or student portal credentials, contact: <br />
-                <strong>Email:</strong> support@followers.blog <br />
+                <strong>Operated by:</strong> Sujan Kumar (trading as Followers.blog) <br />
+                <strong>Official Email:</strong> vipuhere50@gmail.com <br />
                 <strong>Registered Office:</strong> 237-3 Mayakund, Rishikesh, Dehradun, Uttarakhand - 249201, India <br />
                 <strong>Operating Desk:</strong> Monday – Sunday, 9:00 AM – 11:00 PM IST
               </p>

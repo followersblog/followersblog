@@ -112,7 +112,7 @@ export default function Footer() {
               </a>
               <div className="flex items-center gap-2 text-xs text-zinc-500 pt-2">
                 <Mail className="w-3.5 h-3.5 text-zinc-400" />
-                <span>support@followers.blog</span>
+                <a href="mailto:vipuhere50@gmail.com" className="hover:text-blue-600 transition-colors">vipuhere50@gmail.com</a>
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>© 2026 Followers.blog. All rights reserved.</p>
+          <p>© 2026 Followers.blog • Operated by Sujan Kumar. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Built with precision for creators</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />

@@ -270,14 +270,6 @@ export default function AdminDashboardPage() {
                 onChange={(e) => setPasswordInput(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-zinc-950 border border-zinc-800 text-sm text-white focus:outline-hidden focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
               />
-              <div className="flex items-center justify-between text-[11px] text-zinc-500 mt-1.5">
-                <span>Default Passcode:</span>
-                <span className="space-x-1">
-                  <code className="text-blue-400 font-mono bg-zinc-800 px-1.5 py-0.5 rounded">followers@7055</code>
-                  <span className="text-zinc-600">/</span>
-                  <code className="text-blue-400 font-mono bg-zinc-800 px-1.5 py-0.5 rounded">followers2026admin</code>
-                </span>
-              </div>
             </div>
 
             <button
@@ -547,7 +539,7 @@ Prior to payment checkout, the customer agreed to our Terms of Service (https://
 An official computer-generated Tax Invoice certifying electronic fulfillment with Transaction Reference ${selectedOrderForDetail.paymentId || ''} is attached with this response.
 
 5. NO ATTEMPT TO CONTACT MERCHANT SUPPORT:
-The customer made no attempt to contact our 24/7 support desk (support@followers.blog) before filing this claim.
+The customer made no attempt to contact our 24/7 support desk (vipuhere50@gmail.com) before filing this claim.
 
 CONCLUSION & RELIEF REQUESTED:
 Because the customer actively authorized the 2FA transaction and received the digital fulfillment as agreed, this fraud complaint is groundless. We respectfully request Cashfree and the issuing bank to dismiss this dispute, reject the chargeback, and release the funds to the merchant account.`;
