@@ -31,48 +31,9 @@ function FollowersCheckoutContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const preloadedOrderRef = useRef<{
-    pkgId: string;
-    promise: Promise<any>;
-  } | null>(null);
-
-  const startPreloadingOrder = (pkg: SocialServicePackage) => {
-    try {
-      const orderPromise = fetch('/api/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: pkg.price,
-          currency: 'INR',
-          productType: 'service',
-          productId: pkg.id,
-          customerName: 'Creator',
-          customerEmail: 'creator@followers.blog',
-          customerPhone: '9876543210',
-          targetUrl: 'checkout_preload',
-        }),
-      })
-        .then(async (res) => {
-          if (!res.ok) return null;
-          return res.json();
-        })
-        .catch(() => null);
-
-      preloadedOrderRef.current = {
-        pkgId: pkg.id,
-        promise: orderPromise,
-      };
-    } catch (e) {
-      // Non-fatal
-    }
-  };
-
-  // Preload script & order when selected package is ready
+  // Preload script when selected package is ready
   useEffect(() => {
     loadRazorpayScript();
-    if (selectedPkg) {
-      startPreloadingOrder(selectedPkg);
-    }
   }, [selectedPkg?.id]);
 
   // Load from sessionStorage if available or query param
@@ -132,46 +93,22 @@ function FollowersCheckoutContent() {
     setErrorMessage('');
 
     try {
-      // 1. Fetch / create order first
-      let data: any = null;
-      if (
-        preloadedOrderRef.current &&
-        preloadedOrderRef.current.pkgId === selectedPkg.id
-      ) {
-        data = await preloadedOrderRef.current.promise;
-      }
-
-      // If preload wasn't ready or failed, request on demand
-      if (!data || !data.order_id) {
-        const response = await fetch('/api/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: selectedPkg.price,
-            currency: 'INR',
-            productType: 'service',
-            productId: selectedPkg.id,
-            customerName: displayName,
-            customerEmail: email,
-            customerPhone: cleanPhone,
-            targetUrl,
-          }),
-        });
-        data = await response.json();
-      } else {
-        // Fast non-blocking update to sync customer details into Supabase
-        fetch('/api/update-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            receipt: data.receipt,
-            customerName: displayName,
-            customerEmail: email,
-            customerPhone: cleanPhone,
-            targetUrl,
-          }),
-        }).catch(() => {});
-      }
+      // 1. Create order with real verified customer details
+      const response = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: selectedPkg.price,
+          currency: 'INR',
+          productType: 'service',
+          productId: selectedPkg.id,
+          customerName: displayName,
+          customerEmail: email,
+          customerPhone: cleanPhone,
+          targetUrl,
+        }),
+      });
+      const data = await response.json();
 
       if (!data || !data.order_id) {
         throw new Error(data?.error || 'Failed to initiate payment.');

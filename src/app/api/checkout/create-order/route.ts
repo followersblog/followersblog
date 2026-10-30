@@ -120,7 +120,7 @@ export async function POST(req: NextRequest) {
           customer_details: {
             customer_id: customerPhone.replace(/\D/g, '') || `cust_${orderId}`,
             customer_name: customerName,
-            customer_email: customerEmail || 'orders@followers.blog',
+            customer_email: customerEmail || 'orders@follower.blog',
             customer_phone: customerPhone.replace(/\D/g, '').slice(-10),
           },
           order_meta: {

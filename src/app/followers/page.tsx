@@ -135,54 +135,14 @@ export default function FollowersPage() {
 
   const telegramLink = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT_URL || 'https://t.me/FollowersBlogSupport';
 
-  // Cache preloaded order promise to open Razorpay in 0ms without server wait
-  const preloadedOrderRef = useRef<{
-    pkgId: string;
-    promise: Promise<any>;
-  } | null>(null);
-
-  // Preload Razorpay checkout script immediately on page load for lightning-fast 1-click checkout
+  // Preload Razorpay checkout script immediately on page load
   useEffect(() => {
     loadRazorpayScript();
   }, []);
 
-  const startPreloadingOrder = (pkg: SocialServicePackage) => {
-    try {
-      const orderPromise = fetch('/api/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: pkg.price,
-          currency: 'INR',
-          productType: 'service',
-          productId: pkg.id,
-          customerName: 'Creator',
-          customerEmail: 'creator@followers.blog',
-          customerPhone: '9876543210',
-          targetUrl: 'quick_modal',
-        }),
-      })
-        .then(async (res) => {
-          if (!res.ok) return null;
-          return res.json();
-        })
-        .catch(() => null);
-
-      preloadedOrderRef.current = {
-        pkgId: pkg.id,
-        promise: orderPromise,
-      };
-    } catch (e) {
-      // Non-fatal background preload
-    }
-  };
-
   const handleBuyNow = (pkg: SocialServicePackage) => {
     setSelectedPackageForModal(pkg);
-    // Ensure script is ready in memory
     loadRazorpayScript();
-    // Instantly generate Razorpay order in background while user fills in inputs
-    startPreloadingOrder(pkg);
     // Meta Pixel: ViewContent event
     event('ViewContent', {
       content_name: pkg.name,
@@ -234,46 +194,23 @@ export default function FollowersPage() {
       const displayName = customerName.trim() || targetUsername.trim().replace(/^@/, '') || 'Creator';
       const email = customerEmail.trim() || `${cleanPhone}@followers.blog`;
 
-      // 2. Use background pre-generated order (0ms latency) if ready
-      let data: any = null;
-      if (
-        preloadedOrderRef.current &&
-        preloadedOrderRef.current.pkgId === selectedPackageForModal.id
-      ) {
-        data = await preloadedOrderRef.current.promise;
-      }
+      // 2. Generate Gateway order with real verified customer details
+      const response = await fetch('/api/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: selectedPackageForModal.price,
+          currency: 'INR',
+          productType: 'service',
+          productId: selectedPackageForModal.id,
+          customerName: displayName,
+          customerEmail: email,
+          customerPhone: cleanPhone,
+          targetUrl: targetUsername.trim(),
+        }),
+      });
 
-      // If preload wasn't ready or failed, request on demand
-      if (!data || !data.order_id) {
-        const response = await fetch('/api/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amount: selectedPackageForModal.price,
-            currency: 'INR',
-            productType: 'service',
-            productId: selectedPackageForModal.id,
-            customerName: displayName,
-            customerEmail: email,
-            customerPhone: cleanPhone,
-            targetUrl: targetUsername.trim(),
-          }),
-        });
-        data = await response.json();
-      } else {
-        // Fast non-blocking update to sync customer details into Supabase
-        fetch('/api/update-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            receipt: data.receipt,
-            customerName: displayName,
-            customerEmail: email,
-            customerPhone: cleanPhone,
-            targetUrl: targetUsername.trim(),
-          }),
-        }).catch(() => {});
-      }
+      const data = await response.json();
 
       if (!data || !data.order_id) {
         throw new Error(data?.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
