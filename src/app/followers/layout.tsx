@@ -19,5 +19,14 @@ export default function FollowersLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {/* High-speed CDN & Gateway Preconnect for instant checkout initiation */}
+      <link rel="preconnect" href="https://sdk.cashfree.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://sdk.cashfree.com" />
+      <link rel="preconnect" href="https://api.cashfree.com" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://api.cashfree.com" />
+      {children}
+    </>
+  );
 }

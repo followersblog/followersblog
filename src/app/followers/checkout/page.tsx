@@ -31,8 +31,9 @@ function FollowersCheckoutContent() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Preload script when selected package is ready
+  // Preload gateway scripts immediately when selected package is ready
   useEffect(() => {
+    loadCashfreeScript();
     loadRazorpayScript();
   }, [selectedPkg?.id]);
 
@@ -93,6 +94,12 @@ function FollowersCheckoutContent() {
     setErrorMessage('');
 
     try {
+      const cleanCustomerName = customerName.trim() || 'Creator';
+      const email = customerEmail.trim() || `${cleanPhone}@followers.blog`;
+
+      // Parallelize Cashfree SDK readiness with the order creation request
+      const cashfreePromise = loadCashfreeScript();
+
       // 1. Create order with real verified customer details
       const response = await fetch('/api/create-order', {
         method: 'POST',
@@ -102,7 +109,7 @@ function FollowersCheckoutContent() {
           currency: 'INR',
           productType: 'service',
           productId: selectedPkg.id,
-          customerName: displayName,
+          customerName: cleanCustomerName,
           customerEmail: email,
           customerPhone: cleanPhone,
           targetUrl,
@@ -114,9 +121,9 @@ function FollowersCheckoutContent() {
         throw new Error(data?.error || 'Failed to initiate payment.');
       }
 
-      // Cashfree routing
+      // Fast Cashfree routing
       if (data.gateway === 'cashfree' || data.payment_session_id) {
-        const Cashfree = await loadCashfreeScript();
+        const Cashfree = await cashfreePromise;
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
