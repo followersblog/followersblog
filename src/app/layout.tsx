@@ -41,12 +41,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <link rel="preconnect" href="https://sdk.cashfree.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://sdk.cashfree.com" />
+        <link rel="preconnect" href="https://api.cashfree.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://api.cashfree.com" />
         <link rel="preconnect" href="https://api.razorpay.com" />
         <link rel="dns-prefetch" href="https://api.razorpay.com" />
         <link rel="preconnect" href="https://checkout.razorpay.com" />
         <link rel="dns-prefetch" href="https://checkout.razorpay.com" />
       </head>
       <body className="min-h-screen bg-white text-zinc-900 flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+        <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="afterInteractive" />
         <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
         <MetaPixel />
         {children}

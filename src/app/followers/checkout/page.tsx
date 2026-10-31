@@ -123,15 +123,28 @@ function FollowersCheckoutContent() {
 
       // Fast Cashfree routing
       if (data.gateway === 'cashfree' || data.payment_session_id) {
-        const Cashfree = await cashfreePromise;
+        const Cashfree = (await cashfreePromise) || (typeof window !== 'undefined' && (window as any).Cashfree);
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
           });
-          cashfree.checkout({
-            paymentSessionId: data.payment_session_id,
-            redirectTarget: '_self',
-          });
+          cashfree
+            .checkout({
+              paymentSessionId: data.payment_session_id,
+              redirectTarget: '_modal',
+            })
+            .then((result: any) => {
+              if (result?.error) {
+                console.warn('Cashfree modal closed:', result.error);
+                setIsProcessing(false);
+              }
+              if (result?.redirect) {
+                console.log('Cashfree redirect active');
+              }
+              if (result?.paymentDetails) {
+                window.location.href = `/followers/success?order_id=${encodeURIComponent(data.order_id)}&from=/followers`;
+              }
+            });
           return;
         }
         if (data.payment_url) {

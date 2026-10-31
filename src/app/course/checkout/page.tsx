@@ -97,15 +97,25 @@ export default function CourseCheckoutPage() {
 
       // Cashfree checkout routing
       if (data.gateway === 'cashfree' || data.payment_session_id) {
-        const Cashfree = await loadCashfreeScript();
+        const Cashfree = (await loadCashfreeScript()) || (typeof window !== 'undefined' && (window as any).Cashfree);
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
           });
-          cashfree.checkout({
-            paymentSessionId: data.payment_session_id,
-            redirectTarget: '_self',
-          });
+          cashfree
+            .checkout({
+              paymentSessionId: data.payment_session_id,
+              redirectTarget: '_modal',
+            })
+            .then((result: any) => {
+              if (result?.error) {
+                console.warn('Cashfree modal closed:', result.error);
+                setIsProcessing(false);
+              }
+              if (result?.paymentDetails) {
+                window.location.href = `/course/success?order_id=${encodeURIComponent(data.order_id)}`;
+              }
+            });
           return;
         }
         if (data.payment_url) {

@@ -13,28 +13,43 @@ export const loadCashfreeScript = (): Promise<any> => {
     return Promise.resolve((window as any).Cashfree);
   }
 
-  // If already loading in flight, return the existing active Promise
   if (cashfreePromise) {
     return cashfreePromise;
   }
 
   cashfreePromise = new Promise((resolve) => {
-    // Check if script tag already exists in DOM
+    // If window.Cashfree appears within 2 seconds (e.g. from RootLayout Script)
+    const checkInterval = setInterval(() => {
+      if ((window as any).Cashfree) {
+        clearInterval(checkInterval);
+        resolve((window as any).Cashfree);
+      }
+    }, 25);
+
+    // If script tag already exists in DOM
     const existing = document.querySelector('script[src*="cashfree.js"]');
     if (existing) {
-      existing.addEventListener('load', () => resolve((window as any).Cashfree || null));
-      existing.addEventListener('error', () => {
-        cashfreePromise = null;
-        resolve(null);
+      existing.addEventListener('load', () => {
+        clearInterval(checkInterval);
+        resolve((window as any).Cashfree || null);
       });
+      // Safety timeout after 2.5s
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        resolve((window as any).Cashfree || null);
+      }, 2500);
       return;
     }
 
     const script = document.createElement('script');
     script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
     script.async = true;
-    script.onload = () => resolve((window as any).Cashfree || null);
+    script.onload = () => {
+      clearInterval(checkInterval);
+      resolve((window as any).Cashfree || null);
+    };
     script.onerror = () => {
+      clearInterval(checkInterval);
       cashfreePromise = null;
       resolve(null);
     };

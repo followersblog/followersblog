@@ -216,17 +216,30 @@ export default function FollowersPage() {
         throw new Error(data?.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
       }
 
-      // Fast Cashfree routing: SDK is already preloaded, opens in <0.3s
+      // Fast Cashfree routing: SDK is preloaded, opens modal overlay instantly
       if (data.gateway === 'cashfree' || data.payment_session_id) {
-        const Cashfree = await cashfreePromise;
+        const Cashfree = (await cashfreePromise) || (typeof window !== 'undefined' && (window as any).Cashfree);
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
           });
-          cashfree.checkout({
-            paymentSessionId: data.payment_session_id,
-            redirectTarget: '_self',
-          });
+          cashfree
+            .checkout({
+              paymentSessionId: data.payment_session_id,
+              redirectTarget: '_modal',
+            })
+            .then((result: any) => {
+              if (result?.error) {
+                console.warn('Cashfree modal closed or dismissed:', result.error);
+                setIsSubmitting(false);
+              }
+              if (result?.redirect) {
+                console.log('Cashfree external redirect active');
+              }
+              if (result?.paymentDetails) {
+                window.location.href = `/followers/success?order_id=${encodeURIComponent(data.order_id)}&from=/followers`;
+              }
+            });
           return;
         }
         if (data.payment_url) {
