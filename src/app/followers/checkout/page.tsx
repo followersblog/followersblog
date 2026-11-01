@@ -174,7 +174,7 @@ function FollowersCheckoutContent() {
 
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
 
-      const compliantProductTitle = getCompliantProductTitle(selectedPackage.price, 'service');
+      const compliantProductTitle = getCompliantProductTitle(selectedPkg?.price || (data.amount ? data.amount / 100 : 0), 'service');
 
       // 3. Open Razorpay Checkout Modal
       const options = {
