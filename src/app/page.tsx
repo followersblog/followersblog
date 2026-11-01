@@ -142,10 +142,10 @@ export default function HomePage() {
             .then((result: any) => {
               if (result?.error) {
                 console.warn('Cashfree modal closed:', result.error);
-                setIsSubmitting(false);
+                setIsTierSubmitting(false);
               }
               if (result?.paymentDetails) {
-                window.location.href = `/receipt?order_id=${encodeURIComponent(data.order_id)}&payment_id=${encodeURIComponent(result.paymentDetails.paymentId || '')}&amount=${encodeURIComponent(String(selectedTier.price))}`;
+                window.location.href = `/receipt?order_id=${encodeURIComponent(data.order_id)}&payment_id=${encodeURIComponent(result.paymentDetails.paymentId || '')}&amount=${encodeURIComponent(String(selectedTierForModal?.price || 0))}`;
               }
             });
           return;
