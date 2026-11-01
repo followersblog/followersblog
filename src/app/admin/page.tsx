@@ -559,38 +559,42 @@ export default function AdminDashboardPage() {
                   <button
                     onClick={() => {
                       const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
-                      const cashfreeDefense = `MERCHANT FORMAL DISPUTE DEFENSE STATEMENT
-To: Cashfree Dispute Desk & Bank Chargeback Operations
-Dispute ID: ${selectedOrderForDetail.disputeId || '637602'}
-Order ID: ${selectedOrderForDetail.id}
-Transaction ID: ${selectedOrderForDetail.paymentId || ''}
-Bank UTR / Reference: ${selectedOrderForDetail.bankRrn || ''}
-Customer Name: ${selectedOrderForDetail.customerName}
-Customer Contact: ${selectedOrderForDetail.customerPhone || ''} | ${selectedOrderForDetail.customerEmail || ''}
-Transaction Amount: INR ${selectedOrderForDetail.amount}.00
-Date of Transaction: ${selectedOrderForDetail.createdAt}
-Payment Method: ${selectedOrderForDetail.method || 'UPI (2FA Authenticated)'}
+                      const cashfreeDefense = `MERCHANT FORMAL DISPUTE DEFENSE & REBUTTAL STATEMENT
+To: Cashfree Dispute Operations, Risk Assessment Team & Issuing Bank Chargeback Desk
+Merchant Entity: Followers.blog (Digital E-Learning & Media Advisory Platform)
+Official Support Desk: vipuhere50@gmail.com | Operating URL: https://follower.blog
 
-DISPUTE REASON REFUTATION (1401 - Fraud Transaction / NCRP):
-We strongly refute this dispute/complaint. The transaction was 100% authorized and legitimate:
+DISPUTE & TRANSACTION DOSSIER:
+- Dispute Reference ID: ${selectedOrderForDetail.disputeId || '637602'}
+- Merchant Order ID: ${selectedOrderForDetail.id}
+- Gateway Transaction ID: ${selectedOrderForDetail.paymentId || 'N/A'}
+- Bank UTR / Reference (RRN): ${selectedOrderForDetail.bankRrn || 'N/A'}
+- Customer Legal Name: ${selectedOrderForDetail.customerName}
+- Customer Contact Coordinates: ${selectedOrderForDetail.customerPhone || 'N/A'} | ${selectedOrderForDetail.customerEmail || 'N/A'}
+- Authorized Transaction Amount: INR ${selectedOrderForDetail.amount}.00
+- Timestamp of Authorized Payment: ${selectedOrderForDetail.createdAt}
+- Payment Mechanism: ${selectedOrderForDetail.method || 'UPI (2-Factor Authenticated)'}
 
-1. MANDATORY TWO-FACTOR AUTHENTICATION (2FA):
-This payment was completed via ${selectedOrderForDetail.method || 'UPI'}, with Bank Reference/UTR: ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}. Under RBI guidelines, this transaction mandatorily required the customer's personal device, registered SIM card, and confidential 2FA MPIN. A fraudulent transaction cannot occur without the customer actively entering their confidential PIN on their personal device.
+FORMAL REBUTTAL TO DISPUTE REASON 1401 (FRAUD TRANSACTION / NCRP INQUIRY):
+We categorically refute this claim. The charge in question is a legitimate, fully authenticated commercial purchase of non-tangible educational curriculum. The transaction fulfills all regulatory authorization requirements under Indian banking law:
 
-2. SERVICE PURCHASED & ELECTRONICALLY FULFILLED:
-The customer purchased access to "${compliantTitle}". This is a digital curriculum and creator media advisory bundle. The order was registered in our automated system and fulfilled electronically to the customer's verified coordinates (${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail}).
+1. MANDATORY 2-FACTOR AUTHENTICATION & DEVICE-LEVEL AUTHORIZATION:
+Under Reserve Bank of India (RBI) payment security directives, this UPI transaction was successfully authenticated via the customer's personally registered SIM card, mobile handset hardware credentials, and confidential MPIN (2FA). A fraudulent or unauthorized debit cannot occur without direct physical control of the customer's phone and active knowledge of their confidential bank security PIN.
 
-3. CONSENT TO TERMS & DIGITAL FULFILLMENT POLICY:
-Prior to payment checkout, the customer agreed to our Terms of Service (https://follower.blog/terms) and Non-Refundable Digital Goods Fulfillment Policy (https://follower.blog/refund).
+2. PRODUCT DESCRIPTION & ELECTRONIC FULFILLMENT:
+The customer purchased full digital access to "${compliantTitle}". This product comprises digital creator curriculum frameworks, video editing asset toolkits, and customized electronic consultation advisories. Immediately upon successful payment capture by Cashfree, digital fulfillment was completed and dispatched to the customer's verified contact details (${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail}). No physical shipping is required for this digital product.
 
-4. TAX INVOICE & AUDIT PROOF ATTACHED:
-An official computer-generated Tax Invoice certifying electronic fulfillment with Transaction Reference ${selectedOrderForDetail.paymentId || ''} and Bank UTR ${selectedOrderForDetail.bankRrn || ''} is attached with this response.
+3. EXPLICIT CONSENT TO TERMS & DIGITAL REFUND POLICY:
+Prior to initiating payment checkout, the customer actively affirmed consent to our Terms of Service (https://follower.blog/terms) and Non-Refundable Digital Fulfillment Policy (https://follower.blog/refund), which expressly stipulate that digital e-learning assets and consultation packages are non-returnable once accessed and dispatched.
 
-5. NO ATTEMPT TO CONTACT MERCHANT SUPPORT:
-The customer made no attempt to contact our 24/7 support desk (vipuhere50@gmail.com) before filing this claim.
+4. COMPUTER-GENERATED TAX INVOICE & AUDIT TRAIL ATTACHED:
+In strict compliance with Section 65B of the Indian Evidence Act, we have attached the official computerized Tax Invoice (Invoice Ref: ${selectedOrderForDetail.id}) reflecting the exact transaction amount of INR ${selectedOrderForDetail.amount}.00, matching Bank UTR ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}, and complete electronic dispatch timestamps.
 
-CONCLUSION & RELIEF REQUESTED:
-Because the customer actively authorized the 2FA transaction and received the digital fulfillment as agreed, this fraud complaint is groundless. We respectfully request Cashfree and the issuing bank to dismiss Dispute ${selectedOrderForDetail.disputeId || ''}, reject the chargeback, and release the funds to the merchant account.`;
+5. ABSENCE OF PRIOR MERCHANT SUPPORT CONTACT (FRIENDLY FRAUD):
+The customer made zero attempt to reach out to our dedicated merchant grievance desk (vipuhere50@gmail.com) prior to initiating this charge inquiry. The filing of this complaint appears to be an unjustified friendly fraud claim attempting to retain electronic assets while evading legitimate payment.
+
+CONCLUSION & FORMAL RELIEF SOUGHT:
+Because the customer actively authenticated the payment via personal 2FA MPIN and received the agreed digital fulfillment, the allegation of an unauthorized transaction is verifiably groundless. We respectfully urge the Cashfree Dispute Desk and the issuing bank to dismiss Dispute ${selectedOrderForDetail.disputeId || '637602'}, uphold the legitimate merchant charge, and release all withheld settlement funds.`;
                       navigator.clipboard.writeText(cashfreeDefense);
                       setCopiedDefenseId('cashfree_' + selectedOrderForDetail.id);
                       setTimeout(() => setCopiedDefenseId(null), 2500);
