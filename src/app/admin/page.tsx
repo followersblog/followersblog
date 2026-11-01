@@ -652,16 +652,13 @@ Because the customer actively authorized the 2FA transaction and received the di
                 </div>
 
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs">
-                  <div className="text-xs font-bold text-zinc-400 uppercase">Fulfillment & Dispute State</div>
+                  <div className="text-xs font-bold text-zinc-400 uppercase">Fulfillment State</div>
                   <div className="text-xs font-mono font-semibold text-zinc-900 mt-1 break-all">
                     {selectedOrderForDetail.target ? `@${selectedOrderForDetail.target}` : 'N/A (Course Access)'}
                   </div>
                   <div className="mt-2 flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
                       ORDER: {selectedOrderForDetail.orderStatus.toUpperCase()}
-                    </span>
-                    <span className="text-[10px] font-bold text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded">
-                      DISPUTE: {selectedOrderForDetail.disputeStatus?.toUpperCase() || 'NONE'}
                     </span>
                   </div>
                 </div>
