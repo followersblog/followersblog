@@ -47,6 +47,51 @@ export default function AdminDashboardPage() {
   const [fetchError, setFetchError] = useState<string>('');
   const [copiedDefenseId, setCopiedDefenseId] = useState<string | null>(null);
 
+  // Live Gateway Investigator state
+  const [investigateInput, setInvestigateInput] = useState<string>('');
+  const [investigateDisputeId, setInvestigateDisputeId] = useState<string>('');
+  const [isInvestigating, setIsInvestigating] = useState<boolean>(false);
+  const [investigateError, setInvestigateError] = useState<string>('');
+
+  const handleInvestigateGatewayOrder = async (queryToSearch: string, disputeNum?: string) => {
+    const q = (queryToSearch || investigateInput).trim();
+    if (!q) {
+      setInvestigateError('Kripya Order ID (e.g. MED-...) ya Transaction ID enter karein.');
+      return;
+    }
+    setIsInvestigating(true);
+    setInvestigateError('');
+    try {
+      const res = await fetch('/api/admin/order-lookup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-key': ADMIN_PASSWORD,
+        },
+        body: JSON.stringify({
+          query: q,
+          disputeId: disputeNum || investigateDisputeId.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.order) {
+        setOrders((prev) => {
+          const exists = prev.some((o) => o.id === data.order.id);
+          return exists ? prev.map((o) => o.id === data.order.id ? data.order : o) : [data.order, ...prev];
+        });
+        setSelectedOrderForDetail(data.order);
+        setInvestigateInput('');
+        setInvestigateDisputeId('');
+      } else {
+        setInvestigateError(data.error || 'Gateway order locate nahi ho paya.');
+      }
+    } catch (err: any) {
+      setInvestigateError(err.message || 'Error connecting to Gateway lookup API');
+    } finally {
+      setIsInvestigating(false);
+    }
+  };
+
   const fetchLiveOrders = async () => {
     setIsLoadingOrders(true);
     setFetchError('');
@@ -442,7 +487,7 @@ export default function AdminDashboardPage() {
                 <div className="flex items-center gap-2">
                   {/* Direct Link to Compliant Dispute Tax Invoice */}
                   <Link
-                    href={`/receipt?order_id=${selectedOrderForDetail.id}&payment_id=${selectedOrderForDetail.paymentId || ''}&name=${encodeURIComponent(selectedOrderForDetail.customerName)}&email=${encodeURIComponent(selectedOrderForDetail.customerEmail)}&phone=${encodeURIComponent(selectedOrderForDetail.customerPhone)}&amount=${selectedOrderForDetail.amount}&date=${encodeURIComponent(selectedOrderForDetail.dateOnly || '')}&gateway=${encodeURIComponent(selectedOrderForDetail.gateway || 'Cashfree Payments')}`}
+                    href={`/receipt?order_id=${selectedOrderForDetail.id}&payment_id=${selectedOrderForDetail.paymentId || ''}&utr=${encodeURIComponent(selectedOrderForDetail.bankRrn || '')}&name=${encodeURIComponent(selectedOrderForDetail.customerName)}&email=${encodeURIComponent(selectedOrderForDetail.customerEmail)}&phone=${encodeURIComponent(selectedOrderForDetail.customerPhone)}&amount=${selectedOrderForDetail.amount}&date=${encodeURIComponent(selectedOrderForDetail.dateOnly || '')}&gateway=${encodeURIComponent(selectedOrderForDetail.gateway || 'Cashfree Payments')}`}
                     target="_blank"
                     className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xs"
                   >
@@ -514,35 +559,36 @@ export default function AdminDashboardPage() {
                     onClick={() => {
                       const cashfreeDefense = `MERCHANT FORMAL DISPUTE DEFENSE STATEMENT
 To: Cashfree Dispute Desk & Bank Chargeback Operations
-Dispute ID: ${selectedOrderForDetail.disputeId || '636643'}
+Dispute ID: ${selectedOrderForDetail.disputeId || '637602'}
 Order ID: ${selectedOrderForDetail.id}
-Transaction ID: ${selectedOrderForDetail.paymentId || '6865892615'}
+Transaction ID: ${selectedOrderForDetail.paymentId || ''}
+Bank UTR / Reference: ${selectedOrderForDetail.bankRrn || ''}
 Customer Name: ${selectedOrderForDetail.customerName}
 Customer Contact: ${selectedOrderForDetail.customerPhone || ''} | ${selectedOrderForDetail.customerEmail || ''}
 Transaction Amount: INR ${selectedOrderForDetail.amount}.00
 Date of Transaction: ${selectedOrderForDetail.createdAt}
-Payment Method: ${selectedOrderForDetail.method || 'UPI Credit Card'} (2-Factor Authenticated)
+Payment Method: ${selectedOrderForDetail.method || 'UPI (2FA Authenticated)'}
 
 DISPUTE REASON REFUTATION (1401 - Fraud Transaction / NCRP):
 We strongly refute this dispute/complaint. The transaction was 100% authorized and legitimate:
 
 1. MANDATORY TWO-FACTOR AUTHENTICATION (2FA):
-This payment was completed via UPI Credit Card, which mandatorily requires the customer's personal device, registered SIM, and confidential UPI PIN/OTP under RBI guidelines. A fraudulent transaction cannot occur without the account holder actively authorizing it.
+This payment was completed via ${selectedOrderForDetail.method || 'UPI'}, with Bank Reference/UTR: ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}. Under RBI guidelines, this transaction mandatorily required the customer's personal device, registered SIM card, and confidential 2FA MPIN. A fraudulent transaction cannot occur without the customer actively entering their confidential PIN on their personal device.
 
 2. SERVICE PURCHASED & ELECTRONICALLY FULFILLED:
-The customer purchased access to "${selectedOrderForDetail.compliantBillingName || selectedOrderForDetail.serviceName}". This is a digital curriculum and creator media advisory bundle. The order was registered in our automated queue and fulfilled electronically to the customer.
+The customer purchased access to "${selectedOrderForDetail.compliantBillingName || selectedOrderForDetail.serviceName}". This is a digital curriculum and creator media advisory bundle. The order was registered in our automated system and fulfilled electronically to the customer's verified coordinates (${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail}).
 
 3. CONSENT TO TERMS & DIGITAL FULFILLMENT POLICY:
 Prior to payment checkout, the customer agreed to our Terms of Service (https://follower.blog/terms) and Non-Refundable Digital Goods Fulfillment Policy (https://follower.blog/refund).
 
 4. TAX INVOICE & AUDIT PROOF ATTACHED:
-An official computer-generated Tax Invoice certifying electronic fulfillment with Transaction Reference ${selectedOrderForDetail.paymentId || ''} is attached with this response.
+An official computer-generated Tax Invoice certifying electronic fulfillment with Transaction Reference ${selectedOrderForDetail.paymentId || ''} and Bank UTR ${selectedOrderForDetail.bankRrn || ''} is attached with this response.
 
 5. NO ATTEMPT TO CONTACT MERCHANT SUPPORT:
 The customer made no attempt to contact our 24/7 support desk (vipuhere50@gmail.com) before filing this claim.
 
 CONCLUSION & RELIEF REQUESTED:
-Because the customer actively authorized the 2FA transaction and received the digital fulfillment as agreed, this fraud complaint is groundless. We respectfully request Cashfree and the issuing bank to dismiss this dispute, reject the chargeback, and release the funds to the merchant account.`;
+Because the customer actively authorized the 2FA transaction and received the digital fulfillment as agreed, this fraud complaint is groundless. We respectfully request Cashfree and the issuing bank to dismiss Dispute ${selectedOrderForDetail.disputeId || ''}, reject the chargeback, and release the funds to the merchant account.`;
                       navigator.clipboard.writeText(cashfreeDefense);
                       setCopiedDefenseId('cashfree_' + selectedOrderForDetail.id);
                       setTimeout(() => setCopiedDefenseId(null), 2500);
@@ -802,13 +848,84 @@ Because the customer actively authorized the 2FA transaction and received the di
                 </div>
               </div>
 
+              {/* LIVE GATEWAY ORDER INVESTIGATOR & DISPUTE SOLVER */}
+              <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-900 to-indigo-950 text-white shadow-md border border-blue-800 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-400 shrink-0">
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black uppercase tracking-wider text-blue-200">
+                        Live Gateway Order & Dispute Investigator
+                      </h3>
+                      <p className="text-[11px] text-zinc-300">
+                        Cashfree ya bank par koi dispute aane par Order ID ya Transaction ID daalkar 100% Asli Customer Data, Invoice aur Timeline generate karein.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30 self-start sm:self-auto">
+                    ● Direct Cashfree Sync Active
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-1">
+                  <div className="sm:col-span-6">
+                    <input
+                      type="text"
+                      placeholder="Order ID (e.g. MED-874290-W50F4B) ya Txn ID (e.g. 6882404667)"
+                      value={investigateInput}
+                      onChange={(e) => setInvestigateInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleInvestigateGatewayOrder(investigateInput, investigateDisputeId)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900/90 border border-blue-700/60 text-xs text-white placeholder:text-zinc-400 focus:outline-hidden focus:border-blue-400"
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <input
+                      type="text"
+                      placeholder="Dispute ID (e.g. 637602) [Optional]"
+                      value={investigateDisputeId}
+                      onChange={(e) => setInvestigateDisputeId(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleInvestigateGatewayOrder(investigateInput, investigateDisputeId)}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900/90 border border-blue-700/60 text-xs text-white placeholder:text-zinc-400 focus:outline-hidden focus:border-blue-400"
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <button
+                      onClick={() => handleInvestigateGatewayOrder(investigateInput, investigateDisputeId)}
+                      disabled={isInvestigating}
+                      className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 active:scale-[0.99] transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      {isInvestigating ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Searching Gateway...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Search className="w-3.5 h-3.5" />
+                          <span>Pull Real Data & Dossier</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {investigateError && (
+                  <div className="p-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs flex items-center gap-2">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-400" />
+                    <span>{investigateError}</span>
+                  </div>
+                )}
+              </div>
+
               {/* Search Bar & Instant Lookup Guidance */}
               <div className="bg-white rounded-2xl border border-zinc-200 p-4 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div className="relative flex-1">
                   <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
                   <input
                     type="text"
-                    placeholder="Search by Order ID (MED-...), Phone Number, Customer Email, or Amount..."
+                    placeholder="Search loaded orders by Order ID (MED-...), Phone Number, Customer Email, or Amount..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 text-xs focus:outline-hidden focus:border-blue-500"
@@ -817,7 +934,7 @@ Because the customer actively authorized the 2FA transaction and received the di
 
                 <div className="flex items-center gap-1.5 text-xs text-zinc-500 shrink-0">
                   <HelpCircle className="w-4 h-4 text-blue-500" />
-                  <span>Dispute milne par customer ka Mobile ya Order ID upar daaliye.</span>
+                  <span>Naya dispute aane par upar blue box me Order ID ya Txn ID paste karein.</span>
                 </div>
               </div>
 
@@ -851,43 +968,21 @@ Because the customer actively authorized the 2FA transaction and received the di
                             <div className="text-zinc-500 text-xs">Koi matching order database list me nahi mila.</div>
                             {searchFilter.trim() && (
                               <button
-                                onClick={() => {
-                                  const synthetic = {
-                                    id: searchFilter.trim(),
-                                    paymentId: '6865892615',
-                                    orderId: searchFilter.trim(),
-                                    disputeId: '636643',
-                                    disputeReason: '1401-Fraud Transaction (NCRP complaint)',
-                                    bankRrn: searchFilter.trim(),
-                                    customerName: 'Creator',
-                                    customerEmail: 'creator@followers.blog',
-                                    customerPhone: '+91 9876543210',
-                                    productType: 'service',
-                                    serviceName: 'VIP Media Growth Bundle',
-                                    compliantBillingName: 'Digital Creator Media Strategy & Growth Training Program (Tier ₹600)',
-                                    target: '',
-                                    amount: 600,
-                                    paymentStatus: 'success',
-                                    orderStatus: 'completed',
-                                    disputeStatus: 'under_review',
-                                    createdAt: '30 Oct 2026',
-                                    dateOnly: '30 Oct 2026',
-                                    method: 'UPI Credit Card',
-                                    gateway: 'Cashfree Payments',
-                                    timeline: [
-                                      { time: '30 Oct 2026, 12:49 PM', title: 'Payment Captured & Verified', desc: '₹600 authorized via UPI Credit Card (2FA PIN)' },
-                                      { time: '30 Oct 2026, 12:49 PM', title: 'Tax Invoice Dispatched', desc: 'Digital Creator Media Strategy & Growth Training Program (Tier ₹600)' },
-                                      { time: '30 Oct 2026, 12:50 PM', title: 'Digital Asset Delivered', desc: 'Creator curriculum & consultation advisory unlocked' },
-                                    ],
-                                    notes: [],
-                                    evidence: [],
-                                  };
-                                  setSelectedOrderForDetail(synthetic);
-                                }}
-                                className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
+                                onClick={() => handleInvestigateGatewayOrder(searchFilter.trim())}
+                                disabled={isInvestigating}
+                                className="px-4 py-2.5 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 active:scale-[0.99] transition-all shadow-sm inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
-                                <FileText className="w-4 h-4" />
-                                <span>Generate Instant Dispute Dossier &amp; Invoice for &ldquo;{searchFilter.trim()}&rdquo; →</span>
+                                {isInvestigating ? (
+                                  <>
+                                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                    <span>Searching Live Cashfree Gateway...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Search className="w-3.5 h-3.5" />
+                                    <span>Pull Real Cashfree Data &amp; Invoice for &ldquo;{searchFilter.trim()}&rdquo; →</span>
+                                  </>
+                                )}
                               </button>
                             )}
                           </td>

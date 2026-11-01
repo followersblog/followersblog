@@ -13,6 +13,7 @@ function ReceiptContent() {
   const paramPhone = searchParams.get('phone') || '';
   const paramAmount = searchParams.get('amount') || '';
   const paramPaymentId = searchParams.get('payment_id') || searchParams.get('tx_id') || '';
+  const paramUtr = searchParams.get('utr') || '';
   const paramGateway = searchParams.get('gateway');
   const paramDate = searchParams.get('date');
   const date = paramDate || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -137,6 +138,9 @@ function ReceiptContent() {
             <div className="text-zinc-700"><strong>Payment Gateway:</strong> {gatewayDisplay}</div>
             {paramPaymentId && (
               <div className="text-zinc-700 font-mono text-[11px]"><strong>Transaction ID / Gateway Ref:</strong> {paramPaymentId}</div>
+            )}
+            {paramUtr && (
+              <div className="text-zinc-700 font-mono text-[11px]"><strong>Bank UTR / Auth Reference:</strong> {paramUtr}</div>
             )}
             <div className="text-zinc-700"><strong>Delivery Mode:</strong> Electronic / Digital Access Dispatched</div>
           </div>

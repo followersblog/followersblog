@@ -43,13 +43,33 @@ export async function GET(req: NextRequest) {
       orderData = await response.json();
 
       if (orderData && orderData.order_status === 'PAID') {
+        let realPaymentId = orderData.cf_order_id || 'CF_VERIFIED';
+        try {
+          const cfPayRes = await fetch(`${cfBaseUrl}/payments`, {
+            headers: {
+              'x-client-id': cashfreeAppId,
+              'x-client-secret': cashfreeSecret,
+              'x-api-version': process.env.CASHFREE_API_VERSION || '2023-08-01',
+            },
+          });
+          if (cfPayRes.ok) {
+            const payJson = await cfPayRes.json();
+            if (Array.isArray(payJson) && payJson.length > 0) {
+              const successful = payJson.find((p: any) => p.payment_status === 'SUCCESS') || payJson[0];
+              if (successful?.cf_payment_id) {
+                realPaymentId = successful.cf_payment_id;
+              }
+            }
+          }
+        } catch (e) {}
+
         if (supabase && isSupabaseConfigured) {
           await supabase
             .from('orders')
             .update({
               payment_status: 'success',
               order_status: 'completed',
-              payment_reference: orderData.cf_order_id || 'CF_VERIFIED',
+              payment_reference: realPaymentId,
               updated_at: new Date().toISOString(),
             })
             .eq('id', orderId);

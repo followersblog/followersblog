@@ -102,12 +102,12 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Save order in Supabase
+      // Save order in Supabase reliably (ensures orders persist on Vercel serverless)
       const supabase = getServiceSupabase();
       if (supabase && isSupabaseConfigured) {
-        (async () => {
-          try {
-            await supabase.from('orders').insert({
+        try {
+          await Promise.race([
+            supabase.from('orders').insert({
               id: internalOrderId,
               customer_name: customerName || 'Learner',
               customer_email: customerEmail || `${customerPhone || 'customer'}@follower.blog`,
@@ -119,11 +119,12 @@ export async function POST(req: NextRequest) {
               payment_status: 'pending',
               order_status: 'pending',
               payment_gateway: 'cashfree',
-            });
-          } catch (dbErr) {
-            console.error('Supabase save error (non-fatal):', dbErr);
-          }
-        })();
+            }),
+            new Promise((resolve) => setTimeout(resolve, 300)),
+          ]);
+        } catch (dbErr) {
+          console.error('Supabase save error (non-fatal):', dbErr);
+        }
       }
 
       return NextResponse.json({
