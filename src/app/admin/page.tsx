@@ -703,10 +703,8 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                     <span>100% Delivered (Services Rendered)</span>
                   </div>
-                  <div className="text-xs font-mono font-medium text-zinc-600 mt-1 break-all">
-                    {selectedOrderForDetail.target
-                      ? `Target: @${selectedOrderForDetail.target.replace(/^@/, '')}`
-                      : `Dispatched to: ${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail || 'Verified Customer'}`}
+                  <div className="text-xs font-mono font-medium text-zinc-600 mt-1 truncate">
+                    Dispatched to: {selectedOrderForDetail.customerPhone || 'Verified Contact'} {selectedOrderForDetail.customerEmail ? `(${selectedOrderForDetail.customerEmail})` : ''}
                   </div>
                   <div className="mt-2.5 flex items-center gap-2">
                     <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-300">
@@ -1058,7 +1056,7 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                               {order.customerEmail && (
                                 <div className="text-[10px] text-zinc-400 truncate max-w-[160px]">{order.customerEmail}</div>
                               )}
-                              {order.target && (
+                              {order.target && !order.target.includes('http') && !order.target.includes('/') && (
                                 <span className="inline-block mt-1 text-[10px] font-bold text-pink-700 bg-pink-50 px-1.5 py-0.5 rounded border border-pink-200">
                                   @{order.target.replace(/^@/, '')}
                                 </span>

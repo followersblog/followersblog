@@ -152,7 +152,7 @@ export async function GET(req: NextRequest) {
         timeline: [
           { time: formattedDate, title: 'Payment Captured', desc: `₹${amountInRupees} captured via Razorpay (${p.method || 'UPI'})` },
           { time: formattedDate, title: 'Compliance Invoice Dispatched', desc: compliantBillingName },
-          { time: formattedDate, title: `${compliantBillingName} Activated`, desc: targetUrl ? `Target profile @${targetUrl}` : 'Digital asset unlocked' },
+          { time: formattedDate, title: `${compliantBillingName} Activated`, desc: 'Digital curriculum & consultation assets unlocked for registered customer.' },
         ],
         notes: [
           { by: 'Razorpay Gateway', note: `Payment ID: ${p.id} • Status: ${p.status}`, time: formattedDate }
