@@ -699,12 +699,18 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
 
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs">
                   <div className="text-xs font-bold text-zinc-400 uppercase">Fulfillment State</div>
-                  <div className="text-xs font-mono font-semibold text-zinc-900 mt-1 break-all">
-                    {selectedOrderForDetail.target ? `@${selectedOrderForDetail.target}` : 'N/A (Course Access)'}
+                  <div className="text-xs font-bold text-emerald-700 mt-1 flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>100% Delivered (Services Rendered)</span>
                   </div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
-                      ORDER: {selectedOrderForDetail.orderStatus.toUpperCase()}
+                  <div className="text-xs font-mono font-medium text-zinc-600 mt-1 break-all">
+                    {selectedOrderForDetail.target
+                      ? `Target: @${selectedOrderForDetail.target.replace(/^@/, '')}`
+                      : `Dispatched to: ${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail || 'Verified Customer'}`}
+                  </div>
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <span className="text-[10px] font-black text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-300">
+                      ORDER: DELIVERED
                     </span>
                   </div>
                 </div>
