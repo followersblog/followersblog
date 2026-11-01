@@ -189,6 +189,7 @@ export default function FollowersPage() {
     try {
       // Clean customer display name (ensure no Instagram handle or SMM term is sent to gateway)
       const cleanCustomerName = customerName.trim() || 'Creator';
+      const displayName = cleanCustomerName;
       const email = customerEmail.trim() || `${cleanPhone}@followers.blog`;
 
       // Parallelize Cashfree SDK readiness with the order creation request
