@@ -516,8 +516,10 @@ export default function AdminDashboardPage() {
                       <p className="text-amber-800 mt-0.5">
                         {selectedOrderForDetail.disputeReason || 'Bank reported charge inquiry. Compliant receipt ready.'}
                       </p>
-                      <div className="text-[11px] text-amber-900 mt-1 font-semibold">
-                        💡 Action: Upar blue button se <strong>"Generate Compliant Tax Invoice (PDF)"</strong> download karke Razorpay Dispute Desk me submit karein.
+                      <div className="text-[11px] text-amber-900 mt-1 font-semibold space-y-0.5">
+                        <div>💡 <strong>Step 1:</strong> Upar blue button se <strong>"Generate Compliant Tax Invoice (PDF)"</strong> download karke <strong>Statement of Service</strong> me upload karein.</div>
+                        <div>💡 <strong>Step 2:</strong> <strong>"Print Order Dossier"</strong> ko <strong>Proof of Service Used</strong> me upload karein.</div>
+                        <div>💡 <strong>Step 3:</strong> Neeche se <strong>"Cashfree Remarks (Under 500 Chars)"</strong> copy karke Cashfree ke <strong>Additional Remarks</strong> box me paste karein.</div>
                       </div>
                     </div>
                   </div>
@@ -554,8 +556,37 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Cashfree NCRP Fraud Response */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {/* 1. Cashfree Remarks (Strictly Under 500 Chars for Cashfree Portal Box) */}
+                  <button
+                    onClick={() => {
+                      const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
+                      const contactStr = selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail || 'customer';
+                      const cashfreeRemarks = `Refuting NCRP claim for Order ${selectedOrderForDetail.id} (UTR: ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}, INR ${selectedOrderForDetail.amount}). Payment 100% authorized via mandatory UPI 2FA PIN on customer handset. Customer purchased ${compliantTitle}. Assets fulfilled electronically to verified contact ${contactStr} per Terms (follower.blog/terms). Official Tax Invoice certifying fulfillment is attached. Request dispute dismissal and release of funds.`.slice(0, 485);
+                      navigator.clipboard.writeText(cashfreeRemarks);
+                      setCopiedDefenseId('cf_remarks_' + selectedOrderForDetail.id);
+                      setTimeout(() => setCopiedDefenseId(null), 2500);
+                    }}
+                    className="p-3.5 rounded-xl bg-white border-2 border-emerald-400 hover:border-emerald-500 text-left space-y-1.5 transition-all cursor-pointer shadow-xs hover:bg-emerald-50/40"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-emerald-950">📋 Cashfree Remarks</span>
+                      {copiedDefenseId === 'cf_remarks_' + selectedOrderForDetail.id ? (
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-200 px-2 py-0.5 rounded flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Copied!
+                        </span>
+                      ) : (
+                        <span className="text-[9px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded uppercase tracking-wider">
+                          Max 500 Chars
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-zinc-600 font-medium">
+                      Cashfree ke <strong>&ldquo;Additional Remarks&rdquo;</strong> box me direct paste karein. 500 character limit ke andar perfect fit hai.
+                    </p>
+                  </button>
+
+                  {/* 2. Formal Legal Statement (Long Format / PDF Evidence Dossier) */}
                   <button
                     onClick={() => {
                       const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
@@ -596,25 +627,29 @@ The customer made zero attempt to reach out to our dedicated merchant grievance 
 CONCLUSION & FORMAL RELIEF SOUGHT:
 Because the customer actively authenticated the payment via personal 2FA MPIN and received the agreed digital fulfillment, the allegation of an unauthorized transaction is verifiably groundless. We respectfully urge the Cashfree Dispute Desk and the issuing bank to dismiss Dispute ${selectedOrderForDetail.disputeId || '637602'}, uphold the legitimate merchant charge, and release all withheld settlement funds.`;
                       navigator.clipboard.writeText(cashfreeDefense);
-                      setCopiedDefenseId('cashfree_' + selectedOrderForDetail.id);
+                      setCopiedDefenseId('cf_letter_' + selectedOrderForDetail.id);
                       setTimeout(() => setCopiedDefenseId(null), 2500);
                     }}
-                    className="p-3.5 rounded-xl bg-white border border-amber-300 hover:border-amber-400 text-left space-y-1 transition-all cursor-pointer shadow-xs hover:bg-amber-50/50"
+                    className="p-3.5 rounded-xl bg-white border border-amber-300 hover:border-amber-400 text-left space-y-1.5 transition-all cursor-pointer shadow-xs hover:bg-amber-50/50"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-amber-950">📋 Cashfree (NCRP 1401 Fraud) Response</span>
-                      {copiedDefenseId === 'cashfree_' + selectedOrderForDetail.id ? (
+                      <span className="text-xs font-black text-amber-950">📄 Full Defense Letter</span>
+                      {copiedDefenseId === 'cf_letter_' + selectedOrderForDetail.id ? (
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded flex items-center gap-1">
                           <Check className="w-3 h-3" /> Copied!
                         </span>
                       ) : (
-                        <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Copy Cashfree</span>
+                        <span className="text-[9px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+                          RBI & Evidence Act
+                        </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-zinc-500">Specially crafted for Cashfree NCRP fraud complaints with 2FA & Terms defense.</p>
+                    <p className="text-[11px] text-zinc-500">
+                      Formal legal statement. Bank chargeback file ya email desk ke liye.
+                    </p>
                   </button>
 
-                  {/* Razorpay / General Response */}
+                  {/* 3. Razorpay / General Response */}
                   <button
                     onClick={() => {
                       const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
@@ -623,19 +658,23 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                       setCopiedDefenseId('rzp_' + selectedOrderForDetail.id);
                       setTimeout(() => setCopiedDefenseId(null), 2500);
                     }}
-                    className="p-3.5 rounded-xl bg-white border border-amber-300 hover:border-amber-400 text-left space-y-1 transition-all cursor-pointer shadow-xs hover:bg-amber-50/50"
+                    className="p-3.5 rounded-xl bg-white border border-zinc-300 hover:border-zinc-400 text-left space-y-1.5 transition-all cursor-pointer shadow-xs hover:bg-zinc-50"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-amber-950">📋 Standard / Razorpay Response</span>
+                      <span className="text-xs font-black text-zinc-950">📋 Razorpay / Standard</span>
                       {copiedDefenseId === 'rzp_' + selectedOrderForDetail.id ? (
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded flex items-center gap-1">
                           <Check className="w-3 h-3" /> Copied!
                         </span>
                       ) : (
-                        <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Copy Standard</span>
+                        <span className="text-[9px] font-bold text-zinc-700 bg-zinc-100 px-2 py-0.5 rounded">
+                          Short Form
+                        </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-zinc-500">Concise dispute defense for Razorpay and direct bank inquiries.</p>
+                    <p className="text-[11px] text-zinc-500">
+                      Concise defense for Razorpay and direct bank dispute desks.
+                    </p>
                   </button>
                 </div>
               </div>
