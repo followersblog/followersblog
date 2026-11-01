@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { getCompliantProductTitle } from '@/lib/compliance';
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,9 +31,8 @@ export async function POST(req: NextRequest) {
     const orderId = `${prefix}-${Date.now().toString().slice(-6)}-${randomSuffix}`;
 
     // Compliant Billing Name for Gateways & Dispute Invoices
-    const compliantBillingName = productType === 'service'
-      ? `Digital Creator Strategy Class & Media Pack (Tier ₹${amount})`
-      : productName;
+    // Matches the exact educational course title based on price (e.g. ₹600 -> VIP All-Access Video Editing Academy & Strategy Consultation)
+    const compliantBillingName = getCompliantProductTitle(amount, productType);
 
     // Database client
     const supabase = getServiceSupabase();

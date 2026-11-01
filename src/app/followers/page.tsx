@@ -16,6 +16,7 @@ import { SocialServicePackage } from '@/types';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
 import { loadCashfreeScript } from '@/lib/load-cashfree';
 import { event } from '@/lib/meta-pixel';
+import { getCompliantProductTitle } from '@/lib/compliance';
 import {
   Sparkles,
   ArrowRight,
@@ -272,13 +273,15 @@ export default function FollowersPage() {
 
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
 
+      const compliantProductTitle = getCompliantProductTitle(selectedPackageForModal.price, 'service');
+
       // 3. Open Razorpay Checkout Modal directly with prefilled contact details
       const options = {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
         amount: data.amount,
         currency: data.currency || 'INR',
         name: 'Followers.blog',
-        description: 'Digital Creator Strategy Class & Media Consultation',
+        description: compliantProductTitle,
         image: '/logo.png',
         order_id: data.order_id,
         callback_url: `${origin}/api/razorpay-callback?source=media`,
@@ -294,7 +297,7 @@ export default function FollowersPage() {
           name: true,
         },
         notes: {
-          service: 'Digital Creator Strategy Class',
+          service: compliantProductTitle,
           receipt: data.receipt,
         },
         theme: {

@@ -29,6 +29,7 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
+import { getCompliantProductTitle } from '@/lib/compliance';
 
 export default function AdminDashboardPage() {
   // ==========================================================================
@@ -557,6 +558,7 @@ export default function AdminDashboardPage() {
                   {/* Cashfree NCRP Fraud Response */}
                   <button
                     onClick={() => {
+                      const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
                       const cashfreeDefense = `MERCHANT FORMAL DISPUTE DEFENSE STATEMENT
 To: Cashfree Dispute Desk & Bank Chargeback Operations
 Dispute ID: ${selectedOrderForDetail.disputeId || '637602'}
@@ -576,7 +578,7 @@ We strongly refute this dispute/complaint. The transaction was 100% authorized a
 This payment was completed via ${selectedOrderForDetail.method || 'UPI'}, with Bank Reference/UTR: ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}. Under RBI guidelines, this transaction mandatorily required the customer's personal device, registered SIM card, and confidential 2FA MPIN. A fraudulent transaction cannot occur without the customer actively entering their confidential PIN on their personal device.
 
 2. SERVICE PURCHASED & ELECTRONICALLY FULFILLED:
-The customer purchased access to "${selectedOrderForDetail.compliantBillingName || selectedOrderForDetail.serviceName}". This is a digital curriculum and creator media advisory bundle. The order was registered in our automated system and fulfilled electronically to the customer's verified coordinates (${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail}).
+The customer purchased access to "${compliantTitle}". This is a digital curriculum and creator media advisory bundle. The order was registered in our automated system and fulfilled electronically to the customer's verified coordinates (${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail}).
 
 3. CONSENT TO TERMS & DIGITAL FULFILLMENT POLICY:
 Prior to payment checkout, the customer agreed to our Terms of Service (https://follower.blog/terms) and Non-Refundable Digital Goods Fulfillment Policy (https://follower.blog/refund).
@@ -611,7 +613,8 @@ Because the customer actively authorized the 2FA transaction and received the di
                   {/* Razorpay / General Response */}
                   <button
                     onClick={() => {
-                      const defenseText = `Merchant: Followers.blog\nOrder Receipt: ${selectedOrderForDetail.id}\nPayment ID: ${selectedOrderForDetail.paymentId || 'N/A'}\nCustomer: ${selectedOrderForDetail.customerName} (${selectedOrderForDetail.customerPhone || ''} / ${selectedOrderForDetail.customerEmail || ''})\nAmount Paid: INR ${selectedOrderForDetail.amount}.00\nDate: ${selectedOrderForDetail.createdAt}\n\nOFFICIAL MERCHANT RESPONSE:\nThe customer purchased access to "${selectedOrderForDetail.compliantBillingName || selectedOrderForDetail.serviceName}". This digital curriculum and creator consultation asset was delivered electronically to the customer. Prior to payment checkout, the customer agreed to our Terms of Service & digital non-tangible fulfillment policy. The official Tax Invoice certifying digital dispatch is attached. We request the bank/gateway dispute desk to dismiss this claim as services were rendered.`;
+                      const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
+                      const defenseText = `Merchant: Followers.blog\nOrder Receipt: ${selectedOrderForDetail.id}\nPayment ID: ${selectedOrderForDetail.paymentId || 'N/A'}\nCustomer: ${selectedOrderForDetail.customerName} (${selectedOrderForDetail.customerPhone || ''} / ${selectedOrderForDetail.customerEmail || ''})\nAmount Paid: INR ${selectedOrderForDetail.amount}.00\nDate: ${selectedOrderForDetail.createdAt}\n\nOFFICIAL MERCHANT RESPONSE:\nThe customer purchased access to "${compliantTitle}". This digital curriculum and creator consultation asset was delivered electronically to the customer. Prior to payment checkout, the customer agreed to our Terms of Service & digital non-tangible fulfillment policy. The official Tax Invoice certifying digital dispatch is attached. We request the bank/gateway dispute desk to dismiss this claim as services were rendered.`;
                       navigator.clipboard.writeText(defenseText);
                       setCopiedDefenseId('rzp_' + selectedOrderForDetail.id);
                       setTimeout(() => setCopiedDefenseId(null), 2500);
@@ -645,7 +648,7 @@ Because the customer actively authorized the 2FA transaction and received the di
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs">
                   <div className="text-xs font-bold text-zinc-400 uppercase">Gateway Billing Title</div>
                   <div className="text-xs font-bold text-blue-700 mt-1">
-                    {selectedOrderForDetail.compliantBillingName || selectedOrderForDetail.serviceName}
+                    {getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType)}
                   </div>
                   <div className="text-lg font-black text-zinc-950 mt-1">₹{selectedOrderForDetail.amount}</div>
                   <div className="text-xs text-emerald-600 font-bold">Payment: {selectedOrderForDetail.paymentStatus.toUpperCase()}</div>
@@ -1014,10 +1017,10 @@ Because the customer actively authorized the 2FA transaction and received the di
                             </td>
                             <td className="p-4">
                               <div className="font-semibold text-blue-700">
-                                {order.compliantBillingName || order.serviceName}
+                                {getCompliantProductTitle(order.amount, order.productType)}
                               </div>
                               <div className="text-[10px] text-zinc-400 font-normal">
-                                Original: {order.serviceName}
+                                Internal: {order.serviceName}
                               </div>
                             </td>
                             <td className="p-4">

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRazorpayInstance } from '@/lib/razorpay';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { getCompliantProductTitle } from '@/lib/compliance';
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,11 +44,8 @@ export async function POST(req: NextRequest) {
     const sourceParam = productType === 'tier' ? 'home' : productType === 'course' ? 'course' : 'media';
 
     // Compliant note for Gateway dashboard & compliance audits (No SMM / bot terms)
-    const compliantNote = productType === 'course'
-      ? (productName || 'AI Website Building — 3 Hour Complete Practical Class')
-      : productType === 'tier'
-      ? (productName || `Creator Video Editing Class & Digital Toolkit (Tier ₹${amountInPaise / 100})`)
-      : `Digital Creator Strategy Class & Media Consultation (Tier ₹${amountInPaise / 100})`;
+    // Matches the exact educational course title based on price (e.g. ₹600 -> VIP All-Access Video Editing Academy & Strategy Consultation)
+    const compliantNote = getCompliantProductTitle(amountInPaise / 100, productType);
 
     // Check if Cashfree gateway is enabled
     const cashfreeAppId = process.env.CASHFREE_APP_ID;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { getCompliantProductTitle } from '@/lib/compliance';
 
 export const dynamic = 'force-dynamic';
 
@@ -183,10 +184,8 @@ export async function POST(req: NextRequest) {
       year: 'numeric',
     });
 
-    // Compliant Gateway Billing Title
-    const compliantBillingName = amountInRupees >= 1499
-      ? 'AI Website Building — 3 Hour Practical Live Curriculum'
-      : `Digital Creator Strategy Class & Media Consultation (Tier ₹${amountInRupees})`;
+    // 100% Compliant Gateway Billing Title matching homepage video editing tiers
+    const compliantBillingName = getCompliantProductTitle(amountInRupees, amountInRupees >= 1499 ? 'course' : undefined);
 
     // Service display
     let serviceDisplay = `Creator Media Strategy (Tier ₹${amountInRupees})`;
@@ -216,12 +215,12 @@ export async function POST(req: NextRequest) {
       {
         time: formattedCompletionTime,
         title: 'Automated Electronic Tax Invoice Dispatched',
-        desc: `Computerized Tax Invoice & delivery voucher sent to ${custEmail}.`,
+        desc: `Computerized Tax Invoice & delivery voucher sent to ${custEmail} for ${compliantBillingName}.`,
       },
       {
         time: formattedCompletionTime,
-        title: 'Digital Creator Curriculum & Consultation Activated',
-        desc: `Digital assets unlocked for mobile +91 ${cleanPhone}. Customer affirmed consent to Terms of Service and Digital Goods Refund Policy.`,
+        title: `${compliantBillingName} Activated`,
+        desc: `Digital assets & curriculum unlocked for mobile +91 ${cleanPhone}. Customer affirmed consent to Terms of Service and Digital Goods Refund Policy.`,
       },
       {
         time: 'Current Status',

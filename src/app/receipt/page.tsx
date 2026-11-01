@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Printer, ShieldCheck, CheckCircle2, FileText, ArrowLeft } from 'lucide-react';
+import { getCompliantProductTitle, getCompliantProductCategory } from '@/lib/compliance';
 
 function ReceiptContent() {
   const searchParams = useSearchParams();
@@ -50,20 +51,14 @@ function ReceiptContent() {
 
   const { name, email, phone, amount } = orderState;
 
-  // Compliant naming: Course/Consultation instead of SMM
+  // 100% Uniform Compliant Title matching official homepage video editing & website courses
   const isCourse = orderId.startsWith('CRS');
   const isTier = orderId.startsWith('EDT');
-  const itemName = isCourse
-    ? 'AI Website Building — 3-Hour Live Interactive Practical Class'
-    : isTier
-    ? `Creator Video Editing Class & Digital Asset Suite (Tier ₹${amount})`
-    : `Digital Creator Media Strategy & Growth Training Program (Tier ₹${amount})`;
-
-  const itemCategory = isCourse
-    ? 'Digital Education & E-Learning Workshop'
-    : isTier
-    ? 'Creator Video Editing & Digital Curriculum'
-    : 'Creator Marketing Strategy & Digital Asset Bundle';
+  const itemName = getCompliantProductTitle(amount, isCourse ? 'course' : isTier ? 'tier' : undefined);
+  const { category: itemCategory, description: itemDescription } = getCompliantProductCategory(
+    amount,
+    isCourse ? 'course' : isTier ? 'tier' : undefined
+  );
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 font-sans text-zinc-900">
@@ -161,7 +156,7 @@ function ReceiptContent() {
                 <td className="p-4">
                   <div className="font-bold text-zinc-950 text-sm">{itemName}</div>
                   <div className="text-zinc-500 text-[11px] mt-0.5">
-                    Full digital course assets, curriculum frameworks, and creator consulting delivery.
+                    {itemDescription}
                   </div>
                 </td>
                 <td className="p-4 text-zinc-600 text-[11px]">

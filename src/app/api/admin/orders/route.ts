@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRazorpayInstance } from '@/lib/razorpay';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { getCompliantProductTitle } from '@/lib/compliance';
 
 export const dynamic = 'force-dynamic';
 
@@ -107,9 +108,9 @@ export async function GET(req: NextRequest) {
         year: 'numeric',
       });
 
-      // Compliant billing title for Razorpay dispute defense
+      // Compliant billing title matching homepage video editing tiers
       const compliantBillingName = (p.notes?.product_name as string) ||
-        `Digital Creator Strategy Class & Media Pack (Tier ₹${amountInRupees})`;
+        getCompliantProductTitle(amountInRupees, amountInRupees >= 1499 ? 'course' : undefined);
 
       // Clean display service name
       let serviceDisplay = `${amountInRupees >= 1499 ? 'AI Website Building Practical Course' : 'Digital Creator Media Strategy Tier'}`;
@@ -151,7 +152,7 @@ export async function GET(req: NextRequest) {
         timeline: [
           { time: formattedDate, title: 'Payment Captured', desc: `₹${amountInRupees} captured via Razorpay (${p.method || 'UPI'})` },
           { time: formattedDate, title: 'Compliance Invoice Dispatched', desc: compliantBillingName },
-          { time: formattedDate, title: 'Service Queue Assigned', desc: targetUrl ? `Target profile @${targetUrl}` : 'Digital asset unlocked' },
+          { time: formattedDate, title: `${compliantBillingName} Activated`, desc: targetUrl ? `Target profile @${targetUrl}` : 'Digital asset unlocked' },
         ],
         notes: [
           { by: 'Razorpay Gateway', note: `Payment ID: ${p.id} • Status: ${p.status}`, time: formattedDate }
@@ -188,7 +189,7 @@ export async function GET(req: NextRequest) {
       });
 
       const compliantBillingName = so.product_name ||
-        `Digital Creator Strategy Class & Media Pack (Tier ₹${amountInRupees})`;
+        getCompliantProductTitle(amountInRupees, amountInRupees >= 1499 ? 'course' : undefined);
 
       let serviceDisplay = `${amountInRupees >= 1499 ? 'AI Website Building Practical Course' : 'Digital Creator Media Strategy Tier'}`;
       if (amountInRupees === 49) serviceDisplay = '250 Indian Followers (Starter Pack)';
@@ -226,8 +227,8 @@ export async function GET(req: NextRequest) {
         timeline: [
           { time: formattedDate, title: '2FA Payment Authorized', desc: `₹${amountInRupees} authorized via UPI (Confidential MPIN verified on customer's device)` },
           { time: formattedDate, title: 'Payment Captured & Confirmed', desc: `Transaction Ref: ${so.payment_reference || orderId} verified by Cashfree` },
-          { time: formattedDate, title: 'Compliance Tax Invoice Dispatched', desc: `Dispatched to ${so.customer_email || 'registered customer email'}` },
-          { time: formattedDate, title: 'Digital Assets & Strategy Delivery', desc: `Digital consultation assets unlocked for +91 ${cleanPhone}` },
+          { time: formattedDate, title: 'Compliance Tax Invoice Dispatched', desc: `Dispatched to ${so.customer_email || 'registered customer email'} for ${compliantBillingName}` },
+          { time: formattedDate, title: `${compliantBillingName} Activated`, desc: `Digital consultation assets unlocked for +91 ${cleanPhone}` },
           { time: 'Status: Completed', title: 'Services 100% Rendered & Delivered', desc: 'Electronic fulfillment confirmed. Refuting unauthorized billing claims.' },
         ],
         notes: [
