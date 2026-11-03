@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
           order_note: compliantNote,
           customer_details: {
             customer_id: (customerPhone || '').replace(/\D/g, '') || `cust_${internalOrderId}`,
-            customer_name: customerName || 'Learner',
-            customer_email: customerEmail || 'orders@follower.blog',
+            customer_name: (customerName || 'Creator').replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator',
+            customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
             customer_phone: (customerPhone || '9876543210').replace(/\D/g, '').slice(-10),
           },
           order_meta: {

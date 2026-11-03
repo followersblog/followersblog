@@ -88,16 +88,14 @@ function FollowersCheckoutContent() {
       return;
     }
 
-    const displayName = customerName.trim() || targetUrl.trim().replace(/^@/, '') || 'Creator';
-    const email = customerEmail.trim() || `${cleanPhone}@followers.blog`;
+    const cleanCustomerName = customerName.replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator';
+    const displayName = cleanCustomerName;
+    const email = customerEmail.trim() || `${cleanPhone}@follower.blog`;
 
     setIsProcessing(true);
     setErrorMessage('');
 
     try {
-      const cleanCustomerName = customerName.trim() || 'Creator';
-      const email = customerEmail.trim() || `${cleanPhone}@followers.blog`;
-
       // Parallelize Cashfree SDK readiness with the order creation request
       const cashfreePromise = loadCashfreeScript();
 
@@ -122,30 +120,26 @@ function FollowersCheckoutContent() {
         throw new Error(data?.error || 'Failed to initiate payment.');
       }
 
-      // Fast Cashfree routing
+      // Fast Cashfree routing: Uses full redirect (_self) for 100% native UPI app compatibility on mobile in-app browsers
       if (data.gateway === 'cashfree' || data.payment_session_id) {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('followers_order', JSON.stringify({
+            order_id: data.order_id,
+            amount: selectedPkg.price,
+            targetUsername: targetUrl.trim(),
+            phone: cleanPhone,
+          }));
+        }
+
         const Cashfree = (await cashfreePromise) || (typeof window !== 'undefined' && (window as any).Cashfree);
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
           });
-          cashfree
-            .checkout({
-              paymentSessionId: data.payment_session_id,
-              redirectTarget: '_modal',
-            })
-            .then((result: any) => {
-              if (result?.error) {
-                console.warn('Cashfree modal closed:', result.error);
-                setIsProcessing(false);
-              }
-              if (result?.redirect) {
-                console.log('Cashfree redirect active');
-              }
-              if (result?.paymentDetails) {
-                window.location.href = `/followers/success?order_id=${encodeURIComponent(data.order_id)}&from=/followers`;
-              }
-            });
+          cashfree.checkout({
+            paymentSessionId: data.payment_session_id,
+            redirectTarget: '_self',
+          });
           return;
         }
         if (data.payment_url) {
