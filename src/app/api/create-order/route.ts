@@ -69,19 +69,25 @@ export async function POST(req: NextRequest) {
       const supabase = getServiceSupabase();
       let dbPromise: Promise<any> | null = null;
       if (supabase && isSupabaseConfigured) {
-        dbPromise = supabase.from('orders').insert({
-          id: internalOrderId,
-          customer_name: (customerName || 'Creator').replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator',
-          customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
-          customer_phone: customerPhone || '9876543210',
-          product_type: productType,
-          product_name: compliantNote,
-          target_url: targetUrl || null,
-          amount: Math.round(amountInPaise / 100),
-          payment_status: 'pending',
-          order_status: 'pending',
-          payment_gateway: 'cashfree',
-        });
+        dbPromise = (async () => {
+          try {
+            return await supabase.from('orders').insert({
+              id: internalOrderId,
+              customer_name: (customerName || 'Creator').replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator',
+              customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
+              customer_phone: customerPhone || '9876543210',
+              product_type: productType,
+              product_name: compliantNote,
+              target_url: targetUrl || null,
+              amount: Math.round(amountInPaise / 100),
+              payment_status: 'pending',
+              order_status: 'pending',
+              payment_gateway: 'cashfree',
+            });
+          } catch (e) {
+            return null;
+          }
+        })();
       }
 
       // 2. Call Cashfree Orders API
