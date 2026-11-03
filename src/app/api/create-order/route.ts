@@ -129,14 +129,18 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // 3. Await parallel DB write with short 150ms cap
+      // 3. Ultra-fast non-blocking DB resolution (Zero artificial delay)
       if (dbPromise) {
         try {
-          await Promise.race([dbPromise, new Promise((resolve) => setTimeout(resolve, 150))]);
+          // If already resolved during Cashfree network trip (99% cases), resolves in 0ms; otherwise caps at 30ms max
+          await Promise.race([dbPromise, new Promise((resolve) => setTimeout(resolve, 30))]);
         } catch (dbErr) {
           console.error('Supabase save error (non-fatal):', dbErr);
         }
       }
+
+      const isProdEnv = isProd;
+      const cfPaymentUrl = `https://${isProdEnv ? 'payments.cashfree.com' : 'sandbox.cashfree.com'}/order/#${cfData.payment_session_id}`;
 
       return NextResponse.json({
         success: true,
@@ -144,6 +148,7 @@ export async function POST(req: NextRequest) {
         order_id: internalOrderId,
         id: internalOrderId,
         payment_session_id: cfData.payment_session_id,
+        payment_url: cfPaymentUrl,
         amount: Math.round(amountInPaise / 100),
         currency: 'INR',
         receipt: internalOrderId,

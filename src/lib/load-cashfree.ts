@@ -19,8 +19,20 @@ export const loadCashfreeScript = (): Promise<any> => {
   }
 
   cashfreePromise = new Promise((resolve) => {
+    if ((window as any).Cashfree) {
+      resolve((window as any).Cashfree);
+      return;
+    }
+
+    const existing = document.querySelector('script[src*="cashfree.js"]');
+    if (existing) {
+      existing.addEventListener('load', () => {
+        resolve((window as any).Cashfree || null);
+      });
+    }
+
     let attempts = 0;
-    const maxAttempts = 50; // 50 * 40ms = 2 seconds max poll
+    const maxAttempts = 40; // 40 * 25ms = 1000ms max poll
 
     const interval = setInterval(() => {
       attempts++;
@@ -33,10 +45,9 @@ export const loadCashfreeScript = (): Promise<any> => {
         clearInterval(interval);
         resolve((window as any).Cashfree || null);
       }
-    }, 40);
+    }, 25);
 
     // If script is not in DOM yet, inject it
-    const existing = document.querySelector('script[src*="cashfree.js"]');
     if (!existing) {
       const script = document.createElement('script');
       script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
