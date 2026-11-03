@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRazorpayInstance } from '@/lib/razorpay';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
-import { getCompliantProductTitle } from '@/lib/compliance';
+import { getCompliantProductTitle, sanitizeCustomerName } from '@/lib/compliance';
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,6 +40,9 @@ export async function POST(req: NextRequest) {
     const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
     const internalOrderId = receipt || `${prefix}-${Date.now().toString().slice(-6)}-${randomSuffix}`;
 
+    // Clean human customer name (Zero handles, URLs, or SMM strings allowed)
+    const safeCustomerName = sanitizeCustomerName(customerName, customerEmail);
+
     // Source context: home, course, or media consultation (completely neutral for gateways)
     const sourceParam = productType === 'tier' ? 'home' : productType === 'course' ? 'course' : 'media';
 
@@ -73,7 +76,7 @@ export async function POST(req: NextRequest) {
           try {
             return await supabase.from('orders').insert({
               id: internalOrderId,
-              customer_name: (customerName || 'Creator').replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator',
+              customer_name: safeCustomerName,
               customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
               customer_phone: customerPhone || '9876543210',
               product_type: productType,
@@ -106,7 +109,7 @@ export async function POST(req: NextRequest) {
           order_note: compliantNote,
           customer_details: {
             customer_id: (customerPhone || '').replace(/\D/g, '') || `cust_${internalOrderId}`,
-            customer_name: (customerName || 'Creator').replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator',
+            customer_name: safeCustomerName,
             customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
             customer_phone: (customerPhone || '9876543210').replace(/\D/g, '').slice(-10),
           },
@@ -157,7 +160,7 @@ export async function POST(req: NextRequest) {
       receipt: internalOrderId.slice(0, 40), // Razorpay receipt max 40 chars
       notes: {
         product_name: compliantNote,
-        customer_name: customerName || 'Learner',
+        customer_name: safeCustomerName,
         customer_email: customerEmail || 'customer@follower.blog',
         order_id: internalOrderId,
         source: sourceParam,
@@ -173,7 +176,7 @@ export async function POST(req: NextRequest) {
         try {
           await supabase.from('orders').insert({
             id: internalOrderId,
-            customer_name: customerName || 'Learner',
+            customer_name: safeCustomerName,
             customer_email: customerEmail || `${customerPhone || 'customer'}@follower.blog`,
             customer_phone: customerPhone || '9876543210',
             product_type: productType,

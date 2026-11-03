@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getRazorpayInstance } from '@/lib/razorpay';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
-import { getCompliantProductTitle } from '@/lib/compliance';
+import { getCompliantProductTitle, sanitizeCustomerName } from '@/lib/compliance';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,13 +79,8 @@ export async function GET(req: NextRequest) {
 
       const matchedSb = sbOrderById.get(receiptId) || (cleanPhone ? sbOrderByPhone.get(cleanPhone) : null);
 
-      let customerName = matchedSb?.customer_name;
-      if (!customerName || customerName === 'Creator' || customerName === 'Learner') {
-        customerName = (p.notes?.customer_name as string) || '';
-      }
-      if (!customerName || customerName === 'Creator' || customerName === 'Learner') {
-        customerName = p.email ? p.email.split('@')[0] : 'Verified Customer';
-      }
+      const rawName = matchedSb?.customer_name || (p.notes?.customer_name as string) || '';
+      const customerName = sanitizeCustomerName(rawName, p.email);
 
       const amountInRupees = Math.round(Number(p.amount) / 100);
       const targetUrl = matchedSb?.target_url || (p.notes?.target_url as string) || '';
@@ -209,7 +204,7 @@ export async function GET(req: NextRequest) {
         disputeId: so.dispute_id || '',
         disputeReason: so.dispute_reason || '',
         bankRrn: orderId,
-        customerName: so.customer_name || 'Creator',
+        customerName: sanitizeCustomerName(so.customer_name, so.customer_email),
         customerEmail: so.customer_email || 'creator@followers.blog',
         customerPhone: cleanPhone ? `+91 ${cleanPhone}` : '',
         productType: amountInRupees >= 1499 ? 'course' : 'service',

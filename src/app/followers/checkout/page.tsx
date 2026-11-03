@@ -7,7 +7,7 @@ import { SOCIAL_PACKAGES } from '@/data/followers-services';
 import { SocialServicePackage } from '@/types';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
 import { loadCashfreeScript } from '@/lib/load-cashfree';
-import { getCompliantProductTitle } from '@/lib/compliance';
+import { getCompliantProductTitle, sanitizeCustomerName } from '@/lib/compliance';
 import {
   Sparkles,
   ArrowRight,
@@ -88,9 +88,9 @@ function FollowersCheckoutContent() {
       return;
     }
 
-    const cleanCustomerName = customerName.replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator';
-    const displayName = cleanCustomerName;
     const email = customerEmail.trim() || `${cleanPhone}@follower.blog`;
+    const cleanCustomerName = sanitizeCustomerName(customerName, email);
+    const displayName = cleanCustomerName;
 
     setIsProcessing(true);
     setErrorMessage('');

@@ -16,7 +16,7 @@ import { SocialServicePackage } from '@/types';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
 import { loadCashfreeScript } from '@/lib/load-cashfree';
 import { event } from '@/lib/meta-pixel';
-import { getCompliantProductTitle } from '@/lib/compliance';
+import { getCompliantProductTitle, sanitizeCustomerName } from '@/lib/compliance';
 import {
   Sparkles,
   ArrowRight,
@@ -189,9 +189,9 @@ export default function FollowersPage() {
 
     try {
       // Clean customer display name (ensure no Instagram handle or SMM term is sent to gateway)
-      const cleanCustomerName = customerName.replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator';
-      const displayName = cleanCustomerName;
       const email = customerEmail.trim() || `${cleanPhone}@follower.blog`;
+      const cleanCustomerName = sanitizeCustomerName(customerName, email);
+      const displayName = cleanCustomerName;
 
       // Generate Gateway order with real verified customer details (Runs in ~0.3s)
       const response = await fetch('/api/create-order', {

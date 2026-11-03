@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
-import { getCompliantProductTitle } from '@/lib/compliance';
+import { getCompliantProductTitle, sanitizeCustomerName } from '@/lib/compliance';
 
 export const dynamic = 'force-dynamic';
 
@@ -141,8 +141,9 @@ export async function POST(req: NextRequest) {
     const bankReference = primaryPayment?.bank_reference || matchedSbOrder?.payment_reference || finalOrderId;
     const amountInRupees = Number(cfOrderData?.order_amount || matchedSbOrder?.amount || 0);
 
-    const custName = cfOrderData?.customer_details?.customer_name || matchedSbOrder?.customer_name || 'Creator';
+    const rawCustName = cfOrderData?.customer_details?.customer_name || matchedSbOrder?.customer_name || 'Creator';
     const custEmail = cfOrderData?.customer_details?.customer_email || matchedSbOrder?.customer_email || 'orders@follower.blog';
+    const custName = sanitizeCustomerName(rawCustName, custEmail);
     const rawPhone = cfOrderData?.customer_details?.customer_phone || matchedSbOrder?.customer_phone || '';
     const cleanPhone = String(rawPhone).replace(/\D/g, '').slice(-10);
 

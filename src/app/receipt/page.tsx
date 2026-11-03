@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Printer, ShieldCheck, CheckCircle2, FileText, ArrowLeft } from 'lucide-react';
-import { getCompliantProductTitle, getCompliantProductCategory } from '@/lib/compliance';
+import { getCompliantProductTitle, getCompliantProductCategory, sanitizeCustomerName } from '@/lib/compliance';
 
 function ReceiptContent() {
   const searchParams = useSearchParams();
@@ -26,7 +26,7 @@ function ReceiptContent() {
     phone: string;
     amount: string;
   }>({
-    name: paramName || 'Valued Customer',
+    name: sanitizeCustomerName(paramName, paramEmail),
     email: paramEmail || 'customer@followers.blog',
     phone: paramPhone || '+91 98XXXXXXXX',
     amount: paramAmount || '1',
@@ -38,12 +38,16 @@ function ReceiptContent() {
       if (saved) {
         try {
           const parsed = JSON.parse(saved);
-          setOrderState((prev) => ({
-            name: paramName || parsed.customerName || prev.name,
-            email: paramEmail || parsed.customerEmail || prev.email,
-            phone: paramPhone || (parsed.customerPhone ? `+91 ${parsed.customerPhone}` : prev.phone),
-            amount: paramAmount || (parsed.amount !== undefined ? String(parsed.amount) : prev.amount),
-          }));
+          setOrderState((prev) => {
+            const rawName = paramName || parsed.customerName || prev.name;
+            const cleanEmail = paramEmail || parsed.customerEmail || prev.email;
+            return {
+              name: sanitizeCustomerName(rawName, cleanEmail),
+              email: cleanEmail,
+              phone: paramPhone || (parsed.customerPhone ? `+91 ${parsed.customerPhone}` : prev.phone),
+              amount: paramAmount || (parsed.amount !== undefined ? String(parsed.amount) : prev.amount),
+            };
+          });
         } catch (e) {}
       }
     }
@@ -120,7 +124,7 @@ function ReceiptContent() {
             <div className="font-bold text-zinc-400 uppercase tracking-wider text-[10px] mb-1">
               Billed To (Customer Information)
             </div>
-            <div className="font-bold text-zinc-900 text-sm">{name}</div>
+            <div className="font-bold text-zinc-900 text-sm">{sanitizeCustomerName(name, email)}</div>
             <div className="text-zinc-600 mt-0.5">Email: {email}</div>
             <div className="text-zinc-600">Phone: {phone}</div>
           </div>

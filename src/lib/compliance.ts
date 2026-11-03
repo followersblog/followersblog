@@ -86,3 +86,70 @@ export function getCompliantProductCategory(amount: number | string, productType
     };
   }
 }
+
+/**
+ * Sanitizes customer name to ensure no Instagram/YouTube URLs, bot terms,
+ * or handles are ever sent to payment gateways or printed on official Tax Invoices.
+ * If an invalid link is provided, it intelligently derives a clean real human name
+ * from their email address or falls back to 'Creator'.
+ */
+export function sanitizeCustomerName(name?: string, email?: string): string {
+  const raw = (name || '').trim();
+  const rawLower = raw.toLowerCase();
+
+  const isSuspicious =
+    !raw ||
+    rawLower.includes('http') ||
+    rawLower.includes('www.') ||
+    rawLower.includes('.com') ||
+    rawLower.includes('instagram') ||
+    rawLower.includes('youtu') ||
+    rawLower.includes('/') ||
+    rawLower.includes('@') ||
+    rawLower.includes('_') ||
+    rawLower.includes('exln') ||
+    rawLower.includes('utm_') ||
+    raw.length > 35;
+
+  if (isSuspicious) {
+    if (email && email.includes('@') && !email.endsWith('@follower.blog') && !email.endsWith('@followers.blog')) {
+      let prefix = email.split('@')[0].toLowerCase();
+      prefix = prefix.replace(/\d+/g, '').replace(/[._-]+/g, ' ').trim();
+
+      const fillers = ['official', 'films', 'channel', 'account', 'vlogs', 'production'];
+      for (const f of fillers) {
+        if (prefix.endsWith(f)) {
+          prefix = prefix.slice(0, -f.length).trim();
+        }
+      }
+
+      const words = prefix.split(/\s+/).filter((w) => w.length > 1);
+      if (words.length === 1) {
+        const w = words[0];
+        const surnames = [
+          'dhillon', 'verma', 'sharma', 'kumar', 'singh', 'yadav',
+          'patel', 'gupta', 'kaur', 'mehta', 'joshi', 'ali', 'khan', 'malhotra', 'gill'
+        ];
+        for (const s of surnames) {
+          if (w.endsWith(s) && w.length > s.length) {
+            const first = w.slice(0, -s.length);
+            return `${first.charAt(0).toUpperCase() + first.slice(1)} ${s.charAt(0).toUpperCase() + s.slice(1)}`;
+          }
+        }
+        if (w.length >= 3) {
+          return w.charAt(0).toUpperCase() + w.slice(1);
+        }
+      } else if (words.length >= 2) {
+        return words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
+    }
+    return 'Creator';
+  }
+
+  const clean = raw.replace(/[^a-zA-Z\s]/g, '').trim();
+  if (!clean || clean.length < 2) return 'Creator';
+  return clean
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ');
+}

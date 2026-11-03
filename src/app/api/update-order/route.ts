@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
+import { sanitizeCustomerName } from '@/lib/compliance';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
       const updateData: Record<string, any> = {
         updated_at: new Date().toISOString(),
       };
-      if (customerName) updateData.customer_name = customerName;
+      if (customerName) updateData.customer_name = sanitizeCustomerName(customerName, customerEmail);
       if (customerEmail) updateData.customer_email = customerEmail;
       if (customerPhone) updateData.customer_phone = customerPhone;
       if (targetUrl) updateData.target_url = targetUrl;

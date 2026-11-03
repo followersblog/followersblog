@@ -17,6 +17,7 @@ import {
 } from '@/data/courses';
 import { loadRazorpayScript } from '@/lib/load-razorpay';
 import { loadCashfreeScript } from '@/lib/load-cashfree';
+import { sanitizeCustomerName } from '@/lib/compliance';
 import {
   Sparkles,
   ArrowRight,
@@ -103,8 +104,8 @@ export default function HomePage() {
     setIsTierSubmitting(true);
 
     try {
-      const displayName = tierCustomerName.trim() || 'Learner';
       const email = tierCustomerEmail.trim() || `${cleanPhone}@follower.blog`;
+      const displayName = sanitizeCustomerName(tierCustomerName, email);
 
       const response = await fetch('/api/create-order', {
         method: 'POST',

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceSupabase, isSupabaseConfigured } from '@/lib/supabase';
-import { getCompliantProductTitle } from '@/lib/compliance';
+import { getCompliantProductTitle, sanitizeCustomerName } from '@/lib/compliance';
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
     // Matches the exact educational course title based on price (e.g. ₹600 -> VIP All-Access Video Editing Academy & Strategy Consultation)
     const compliantBillingName = getCompliantProductTitle(amount, productType);
 
+    // Clean verified customer name (Never let URLs or handles reach gateway or DB)
+    const safeCustomerName = sanitizeCustomerName(customerName, customerEmail);
+
     // Database client
     const supabase = getServiceSupabase();
 
@@ -42,7 +45,7 @@ export async function POST(req: NextRequest) {
       try {
         const { error: orderError } = await supabase.from('orders').insert({
           id: orderId,
-          customer_name: customerName,
+          customer_name: safeCustomerName,
           customer_email: customerEmail,
           customer_phone: customerPhone,
           product_type: productType,
@@ -74,7 +77,7 @@ export async function POST(req: NextRequest) {
         if (productType === 'service') {
           await supabase.from('service_orders').insert({
             order_id: orderId,
-            customer_name: customerName,
+            customer_name: safeCustomerName,
             customer_email: customerEmail,
             customer_phone: customerPhone,
             service_name: productName,
@@ -119,7 +122,7 @@ export async function POST(req: NextRequest) {
           order_note: compliantBillingName,
           customer_details: {
             customer_id: customerPhone.replace(/\D/g, '') || `cust_${orderId}`,
-            customer_name: customerName,
+            customer_name: safeCustomerName,
             customer_email: customerEmail || 'orders@follower.blog',
             customer_phone: customerPhone.replace(/\D/g, '').slice(-10),
           },

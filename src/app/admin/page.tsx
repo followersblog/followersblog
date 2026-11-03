@@ -29,7 +29,7 @@ import {
   Copy,
   Check,
 } from 'lucide-react';
-import { getCompliantProductTitle } from '@/lib/compliance';
+import { getCompliantProductTitle, sanitizeCustomerName } from '@/lib/compliance';
 
 export default function AdminDashboardPage() {
   // ==========================================================================
@@ -475,26 +475,28 @@ export default function AdminDashboardPage() {
           {/* ================================================================ */}
           {/* DETAIL VIEW: ORDER AUDIT, DELIVERY PROOF & DISPUTE PACK */}
           {/* ================================================================ */}
-          {selectedOrderForDetail ? (
-            <div className="space-y-6 max-w-5xl mx-auto">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <button
-                  onClick={() => setSelectedOrderForDetail(null)}
-                  className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  ← Back to Orders List
-                </button>
-
-                <div className="flex items-center gap-2">
-                  {/* Direct Link to Compliant Dispute Tax Invoice */}
-                  <Link
-                    href={`/receipt?order_id=${selectedOrderForDetail.id}&payment_id=${selectedOrderForDetail.paymentId || ''}&utr=${encodeURIComponent(selectedOrderForDetail.bankRrn || '')}&name=${encodeURIComponent(selectedOrderForDetail.customerName)}&email=${encodeURIComponent(selectedOrderForDetail.customerEmail)}&phone=${encodeURIComponent(selectedOrderForDetail.customerPhone)}&amount=${selectedOrderForDetail.amount}&date=${encodeURIComponent(selectedOrderForDetail.dateOnly || '')}&gateway=${encodeURIComponent(selectedOrderForDetail.gateway || 'Cashfree Payments')}`}
-                    target="_blank"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xs"
+          {selectedOrderForDetail ? (() => {
+            const safeCustName = sanitizeCustomerName(selectedOrderForDetail.customerName, selectedOrderForDetail.customerEmail);
+            return (
+              <div className="space-y-6 max-w-5xl mx-auto">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <button
+                    onClick={() => setSelectedOrderForDetail(null)}
+                    className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer"
                   >
-                    <FileText className="w-3.5 h-3.5" />
-                    <span>Generate Compliant Tax Invoice (PDF)</span>
-                  </Link>
+                    ← Back to Orders List
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    {/* Direct Link to Compliant Dispute Tax Invoice */}
+                    <Link
+                      href={`/receipt?order_id=${selectedOrderForDetail.id}&payment_id=${selectedOrderForDetail.paymentId || ''}&utr=${encodeURIComponent(selectedOrderForDetail.bankRrn || '')}&name=${encodeURIComponent(safeCustName)}&email=${encodeURIComponent(selectedOrderForDetail.customerEmail)}&phone=${encodeURIComponent(selectedOrderForDetail.customerPhone)}&amount=${selectedOrderForDetail.amount}&date=${encodeURIComponent(selectedOrderForDetail.dateOnly || '')}&gateway=${encodeURIComponent(selectedOrderForDetail.gateway || 'Cashfree Payments')}`}
+                      target="_blank"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-xs"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Generate Compliant Tax Invoice (PDF)</span>
+                    </Link>
 
                   <button
                     onClick={() => window.print()}
@@ -600,7 +602,7 @@ DISPUTE & TRANSACTION DOSSIER:
 - Merchant Order ID: ${selectedOrderForDetail.id}
 - Gateway Transaction ID: ${selectedOrderForDetail.paymentId || 'N/A'}
 - Bank UTR / Reference (RRN): ${selectedOrderForDetail.bankRrn || 'N/A'}
-- Customer Legal Name: ${selectedOrderForDetail.customerName}
+- Customer Legal Name: ${safeCustName}
 - Customer Contact Coordinates: ${selectedOrderForDetail.customerPhone || 'N/A'} | ${selectedOrderForDetail.customerEmail || 'N/A'}
 - Authorized Transaction Amount: INR ${selectedOrderForDetail.amount}.00
 - Timestamp of Authorized Payment: ${selectedOrderForDetail.createdAt}
@@ -653,7 +655,7 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                   <button
                     onClick={() => {
                       const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
-                      const defenseText = `Merchant: Followers.blog\nOrder Receipt: ${selectedOrderForDetail.id}\nPayment ID: ${selectedOrderForDetail.paymentId || 'N/A'}\nCustomer: ${selectedOrderForDetail.customerName} (${selectedOrderForDetail.customerPhone || ''} / ${selectedOrderForDetail.customerEmail || ''})\nAmount Paid: INR ${selectedOrderForDetail.amount}.00\nDate: ${selectedOrderForDetail.createdAt}\n\nOFFICIAL MERCHANT RESPONSE:\nThe customer purchased access to "${compliantTitle}". This digital curriculum and creator consultation asset was delivered electronically to the customer. Prior to payment checkout, the customer agreed to our Terms of Service & digital non-tangible fulfillment policy. The official Tax Invoice certifying digital dispatch is attached. We request the bank/gateway dispute desk to dismiss this claim as services were rendered.`;
+                      const defenseText = `Merchant: Followers.blog\nOrder Receipt: ${selectedOrderForDetail.id}\nPayment ID: ${selectedOrderForDetail.paymentId || 'N/A'}\nCustomer: ${safeCustName} (${selectedOrderForDetail.customerPhone || ''} / ${selectedOrderForDetail.customerEmail || ''})\nAmount Paid: INR ${selectedOrderForDetail.amount}.00\nDate: ${selectedOrderForDetail.createdAt}\n\nOFFICIAL MERCHANT RESPONSE:\nThe customer purchased access to "${compliantTitle}". This digital curriculum and creator consultation asset was delivered electronically to the customer. Prior to payment checkout, the customer agreed to our Terms of Service & digital non-tangible fulfillment policy. The official Tax Invoice certifying digital dispatch is attached. We request the bank/gateway dispute desk to dismiss this claim as services were rendered.`;
                       navigator.clipboard.writeText(defenseText);
                       setCopiedDefenseId('rzp_' + selectedOrderForDetail.id);
                       setTimeout(() => setCopiedDefenseId(null), 2500);
@@ -683,7 +685,7 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs">
                   <div className="text-xs font-bold text-zinc-400 uppercase">Customer Information</div>
-                  <div className="text-sm font-bold text-zinc-950 mt-1">{selectedOrderForDetail.customerName}</div>
+                  <div className="text-sm font-bold text-zinc-950 mt-1">{safeCustName}</div>
                   <div className="text-xs text-zinc-600 mt-0.5">{selectedOrderForDetail.customerEmail}</div>
                   <div className="text-xs font-mono text-zinc-600">{selectedOrderForDetail.customerPhone}</div>
                 </div>
@@ -855,8 +857,8 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                   </div>
                 </div>
               </div>
-            </div>
-          ) : (
+            );
+          })() : (
             // ================================================================
             // DEFAULT VIEW: METRICS & SEARCHABLE ORDERS TABLE
             // ================================================================
@@ -1051,7 +1053,7 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                               </div>
                             </td>
                             <td className="p-4">
-                              <div className="font-bold text-zinc-950">{order.customerName}</div>
+                              <div className="font-bold text-zinc-950">{sanitizeCustomerName(order.customerName, order.customerEmail)}</div>
                               <div className="text-[11px] font-mono text-zinc-700">{order.customerPhone}</div>
                               {order.customerEmail && (
                                 <div className="text-[10px] text-zinc-400 truncate max-w-[160px]">{order.customerEmail}</div>
@@ -1097,7 +1099,7 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                             </td>
                             <td className="p-4 text-right space-x-2">
                               <Link
-                                href={`/receipt?order_id=${order.id}&payment_id=${order.paymentId || ''}&name=${encodeURIComponent(order.customerName)}&email=${encodeURIComponent(order.customerEmail)}&phone=${encodeURIComponent(order.customerPhone)}&amount=${order.amount}&date=${encodeURIComponent(order.dateOnly || '')}&gateway=${encodeURIComponent(order.gateway || 'Cashfree Payments')}`}
+                                href={`/receipt?order_id=${order.id}&payment_id=${order.paymentId || ''}&name=${encodeURIComponent(sanitizeCustomerName(order.customerName, order.customerEmail))}&email=${encodeURIComponent(order.customerEmail)}&phone=${encodeURIComponent(order.customerPhone)}&amount=${order.amount}&date=${encodeURIComponent(order.dateOnly || '')}&gateway=${encodeURIComponent(order.gateway || 'Cashfree Payments')}`}
                                 target="_blank"
                                 className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-zinc-700 bg-zinc-100 hover:bg-zinc-200 transition-colors inline-flex items-center gap-1"
                                 title="Open Official Tax Invoice PDF"
