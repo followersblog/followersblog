@@ -267,6 +267,9 @@ export default function AdminDashboardPage() {
   const capturedOrders = orders.filter((o) => o.paymentStatus === 'success');
   const totalRevenue = capturedOrders.reduce((sum, o) => sum + (Number(o.amount) || 0), 0);
   const activeDisputesCount = orders.filter((o) => o.disputeStatus === 'under_review').length;
+  const safeCustName = selectedOrderForDetail
+    ? sanitizeCustomerName(selectedOrderForDetail.customerName, selectedOrderForDetail.customerEmail)
+    : '';
 
   // ==========================================================================
   // SCREEN 1: ADMIN LOGIN GATEWAY (IF NOT AUTHENTICATED)
@@ -475,10 +478,8 @@ export default function AdminDashboardPage() {
           {/* ================================================================ */}
           {/* DETAIL VIEW: ORDER AUDIT, DELIVERY PROOF & DISPUTE PACK */}
           {/* ================================================================ */}
-          {selectedOrderForDetail ? (() => {
-            const safeCustName = sanitizeCustomerName(selectedOrderForDetail.customerName, selectedOrderForDetail.customerEmail);
-            return (
-              <div className="space-y-6 max-w-5xl mx-auto">
+          {selectedOrderForDetail ? (
+            <div className="space-y-6 max-w-5xl mx-auto">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <button
                     onClick={() => setSelectedOrderForDetail(null)}
@@ -857,8 +858,8 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
                   </div>
                 </div>
               </div>
-            );
-          })() : (
+            </div>
+          ) : (
             // ================================================================
             // DEFAULT VIEW: METRICS & SEARCHABLE ORDERS TABLE
             // ================================================================
