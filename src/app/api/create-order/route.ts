@@ -125,13 +125,18 @@ export async function POST(req: NextRequest) {
         }
       }
 
+      const checkoutUrl = isProd
+        ? `https://payments.cashfree.com/order/#${cfData.payment_session_id}`
+        : `https://payments-test.cashfree.com/order/#${cfData.payment_session_id}`;
+
       return NextResponse.json({
         success: true,
         gateway: 'cashfree',
         order_id: internalOrderId,
         id: internalOrderId,
         payment_session_id: cfData.payment_session_id,
-        payment_url: cfData.payments?.url,
+        checkout_url: checkoutUrl,
+        payment_url: checkoutUrl,
         amount: Math.round(amountInPaise / 100),
         currency: 'INR',
         receipt: internalOrderId,
