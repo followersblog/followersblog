@@ -65,6 +65,26 @@ export async function POST(req: NextRequest) {
       const appUrl = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_APP_URL || 'https://follower.blog');
       const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${internalOrderId}&source=${sourceParam}`;
 
+      // 1. Kick off Supabase pending order record in parallel with Cashfree
+      const supabase = getServiceSupabase();
+      let dbPromise: Promise<any> | null = null;
+      if (supabase && isSupabaseConfigured) {
+        dbPromise = supabase.from('orders').insert({
+          id: internalOrderId,
+          customer_name: (customerName || 'Creator').replace(/[^a-zA-Z\s]/g, '').trim() || 'Creator',
+          customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
+          customer_phone: customerPhone || '9876543210',
+          product_type: productType,
+          product_name: compliantNote,
+          target_url: targetUrl || null,
+          amount: Math.round(amountInPaise / 100),
+          payment_status: 'pending',
+          order_status: 'pending',
+          payment_gateway: 'cashfree',
+        });
+      }
+
+      // 2. Call Cashfree Orders API
       const cfResponse = await fetch(baseUrl, {
         method: 'POST',
         headers: {
@@ -100,26 +120,10 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Save order in Supabase reliably (ensures orders persist on Vercel serverless)
-      const supabase = getServiceSupabase();
-      if (supabase && isSupabaseConfigured) {
+      // 3. Await parallel DB write with short 150ms cap
+      if (dbPromise) {
         try {
-          await Promise.race([
-            supabase.from('orders').insert({
-              id: internalOrderId,
-              customer_name: customerName || 'Learner',
-              customer_email: customerEmail || `${customerPhone || 'customer'}@follower.blog`,
-              customer_phone: customerPhone || '9876543210',
-              product_type: productType,
-              product_name: compliantNote,
-              target_url: targetUrl || null,
-              amount: Math.round(amountInPaise / 100),
-              payment_status: 'pending',
-              order_status: 'pending',
-              payment_gateway: 'cashfree',
-            }),
-            new Promise((resolve) => setTimeout(resolve, 300)),
-          ]);
+          await Promise.race([dbPromise, new Promise((resolve) => setTimeout(resolve, 150))]);
         } catch (dbErr) {
           console.error('Supabase save error (non-fatal):', dbErr);
         }

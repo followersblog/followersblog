@@ -127,16 +127,22 @@ export default function HomePage() {
         throw new Error(data.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
       }
 
-      // Ultra-Fast Cashfree Direct Redirect: Instant zero-delay checkout (<0.5s) with full native UPI mobile support
+      // Fast Cashfree routing using official SDK: Resolves "client session is invalid" & redirects natively for full mobile UPI
       if (data.gateway === 'cashfree' || data.payment_session_id) {
-        const directCheckoutUrl = data.checkout_url || data.payment_url || (
-          data.payment_session_id
-            ? `https://payments.cashfree.com/order/#${data.payment_session_id}`
-            : null
-        );
+        const Cashfree = (await loadCashfreeScript()) || (typeof window !== 'undefined' && (window as any).Cashfree);
+        if (Cashfree && data.payment_session_id) {
+          const cashfree = Cashfree({
+            mode: data.environment || 'production',
+          });
+          cashfree.checkout({
+            paymentSessionId: data.payment_session_id,
+            redirectTarget: '_self',
+          });
+          return;
+        }
 
-        if (directCheckoutUrl) {
-          window.location.href = directCheckoutUrl;
+        if (data.payment_url) {
+          window.location.href = data.payment_url;
           return;
         }
       }

@@ -1,14 +1,15 @@
 /**
- * Helper to dynamically load Cashfree SDK v3 with promise caching & instant resolution
+ * Helper to dynamically load and initialize Cashfree SDK v3 with instant resolution & zero lag
  */
 let cashfreePromise: Promise<any> | null = null;
+let cachedInstance: any = null;
 
 export const loadCashfreeScript = (): Promise<any> => {
   if (typeof window === 'undefined') {
     return Promise.resolve(null);
   }
 
-  // If already loaded on window, resolve instantly
+  // 1. If already loaded on window, resolve immediately
   if ((window as any).Cashfree) {
     return Promise.resolve((window as any).Cashfree);
   }
@@ -18,43 +19,54 @@ export const loadCashfreeScript = (): Promise<any> => {
   }
 
   cashfreePromise = new Promise((resolve) => {
-    // If window.Cashfree appears within 2 seconds (e.g. from RootLayout Script)
-    const checkInterval = setInterval(() => {
+    let attempts = 0;
+    const maxAttempts = 50; // 50 * 40ms = 2 seconds max poll
+
+    const interval = setInterval(() => {
+      attempts++;
       if ((window as any).Cashfree) {
-        clearInterval(checkInterval);
+        clearInterval(interval);
         resolve((window as any).Cashfree);
+        return;
       }
-    }, 25);
+      if (attempts >= maxAttempts) {
+        clearInterval(interval);
+        resolve((window as any).Cashfree || null);
+      }
+    }, 40);
 
-    // If script tag already exists in DOM
+    // If script is not in DOM yet, inject it
     const existing = document.querySelector('script[src*="cashfree.js"]');
-    if (existing) {
-      existing.addEventListener('load', () => {
-        clearInterval(checkInterval);
+    if (!existing) {
+      const script = document.createElement('script');
+      script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+      script.async = true;
+      script.onload = () => {
+        clearInterval(interval);
         resolve((window as any).Cashfree || null);
-      });
-      // Safety timeout after 2.5s
-      setTimeout(() => {
-        clearInterval(checkInterval);
-        resolve((window as any).Cashfree || null);
-      }, 2500);
-      return;
+      };
+      script.onerror = () => {
+        clearInterval(interval);
+        cashfreePromise = null;
+        resolve(null);
+      };
+      document.head.appendChild(script);
     }
-
-    const script = document.createElement('script');
-    script.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-    script.async = true;
-    script.onload = () => {
-      clearInterval(checkInterval);
-      resolve((window as any).Cashfree || null);
-    };
-    script.onerror = () => {
-      clearInterval(checkInterval);
-      cashfreePromise = null;
-      resolve(null);
-    };
-    document.body.appendChild(script);
   });
 
   return cashfreePromise;
+};
+
+export const getCashfreeInstance = async (mode: string = 'production') => {
+  if (cachedInstance) return cachedInstance;
+  const Cashfree = await loadCashfreeScript();
+  if (Cashfree && typeof Cashfree === 'function') {
+    try {
+      cachedInstance = Cashfree({ mode });
+      return cachedInstance;
+    } catch (e) {
+      console.warn('Cashfree initialization error:', e);
+    }
+  }
+  return null;
 };
