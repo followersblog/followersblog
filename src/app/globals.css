@@ -133,3 +133,13 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1aa;
 }
+
+/* Cashfree Modal Overlay Optimization: Prevent GPU blur freeze and eliminate double blur */
+#cf-modal-container,
+.cf-modal-container,
+[id*="cf-modal"],
+[class*="cf-modal"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(0, 0, 0, 0.65) !important;
+}

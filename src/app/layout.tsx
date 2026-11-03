@@ -41,6 +41,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
+        <link rel="preconnect" href="https://payments.cashfree.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://payments.cashfree.com" />
         <link rel="preconnect" href="https://sdk.cashfree.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://sdk.cashfree.com" />
         <link rel="preconnect" href="https://api.cashfree.com" crossOrigin="anonymous" />

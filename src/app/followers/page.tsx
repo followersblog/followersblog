@@ -138,7 +138,13 @@ export default function FollowersPage() {
 
   // Preload gateway checkout scripts immediately on page load for zero-latency checkout
   useEffect(() => {
-    loadCashfreeScript();
+    loadCashfreeScript().then((Cashfree) => {
+      if (Cashfree && typeof Cashfree === 'function') {
+        try {
+          Cashfree({ mode: 'production' });
+        } catch (e) {}
+      }
+    });
     loadRazorpayScript();
   }, []);
 
@@ -215,7 +221,7 @@ export default function FollowersPage() {
         throw new Error(data?.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
       }
 
-      // Fast Cashfree routing using official SDK: Resolves double blur & opens native mobile UPI instantly
+      // Fast Cashfree Modal routing: 100% immune to Panda invalid session errors, zero double blur
       if (data.gateway === 'cashfree' || data.payment_session_id) {
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('followers_order', JSON.stringify({
@@ -231,19 +237,33 @@ export default function FollowersPage() {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
           });
-          cashfree.checkout({
-            paymentSessionId: data.payment_session_id,
-            redirectTarget: '_self',
-          });
-          return;
-        }
 
-        // Direct instant fallback if SDK load was delayed or blocked
-        if (data.payment_url || data.payment_session_id) {
-          const isProd = data.environment === 'production' || !data.environment;
-          const host = isProd ? 'payments.cashfree.com' : 'sandbox.cashfree.com';
-          const directUrl = data.payment_url || `https://${host}/order/#${data.payment_session_id}`;
-          window.location.href = directUrl;
+          const activePkg = selectedPackageForModal;
+          const currentPrice = selectedPackageForModal.price;
+
+          // Close our local form modal immediately so it NEVER gets blurred underneath Cashfree's overlay!
+          setSelectedPackageForModal(null);
+          setIsSubmitting(false);
+
+          cashfree
+            .checkout({
+              paymentSessionId: data.payment_session_id,
+              redirectTarget: '_modal',
+            })
+            .then((result: any) => {
+              if (result?.error) {
+                console.warn('Cashfree modal closed or dismissed:', result.error);
+                setSelectedPackageForModal(activePkg);
+                setIsSubmitting(false);
+                restoreScroll();
+              }
+              if (result?.redirect) {
+                console.log('Cashfree gateway redirect in progress');
+              }
+              if (result?.paymentDetails) {
+                window.location.href = `/followers/success?order_id=${encodeURIComponent(data.order_id)}&amount=${encodeURIComponent(String(currentPrice))}&from=/followers`;
+              }
+            });
           return;
         }
       }

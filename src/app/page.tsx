@@ -128,26 +128,32 @@ export default function HomePage() {
         throw new Error(data.error || 'Order generate nahi ho paya. Kripya punah prayas karein.');
       }
 
-      // Fast Cashfree routing using official SDK: Resolves double blur & opens native mobile UPI instantly
+      // Fast Cashfree Modal routing: 100% immune to Panda invalid session errors
       if (data.gateway === 'cashfree' || data.payment_session_id) {
         const Cashfree = (await loadCashfreeScript()) || (typeof window !== 'undefined' && (window as any).Cashfree);
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
           });
-          cashfree.checkout({
-            paymentSessionId: data.payment_session_id,
-            redirectTarget: '_self',
-          });
-          return;
-        }
+          const activeTier = selectedTierForModal;
+          setSelectedTierForModal(null);
+          setIsTierSubmitting(false);
 
-        // Direct instant fallback if SDK load was delayed or blocked
-        if (data.payment_url || data.payment_session_id) {
-          const isProd = data.environment === 'production' || !data.environment;
-          const host = isProd ? 'payments.cashfree.com' : 'sandbox.cashfree.com';
-          const directUrl = data.payment_url || `https://${host}/order/#${data.payment_session_id}`;
-          window.location.href = directUrl;
+          cashfree
+            .checkout({
+              paymentSessionId: data.payment_session_id,
+              redirectTarget: '_modal',
+            })
+            .then((result: any) => {
+              if (result?.error) {
+                console.warn('Cashfree modal closed:', result.error);
+                setSelectedTierForModal(activeTier);
+                setIsTierSubmitting(false);
+              }
+              if (result?.paymentDetails) {
+                window.location.href = `/receipt?order_id=${encodeURIComponent(data.order_id)}&payment_id=${encodeURIComponent(result.paymentDetails.paymentId || '')}&amount=${encodeURIComponent(String(activeTier?.price || 0))}`;
+              }
+            });
           return;
         }
       }

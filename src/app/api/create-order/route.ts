@@ -139,16 +139,12 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      const isProdEnv = isProd;
-      const cfPaymentUrl = `https://${isProdEnv ? 'payments.cashfree.com' : 'sandbox.cashfree.com'}/order/#${cfData.payment_session_id}`;
-
       return NextResponse.json({
         success: true,
         gateway: 'cashfree',
         order_id: internalOrderId,
         id: internalOrderId,
         payment_session_id: cfData.payment_session_id,
-        payment_url: cfPaymentUrl,
         amount: Math.round(amountInPaise / 100),
         currency: 'INR',
         receipt: internalOrderId,

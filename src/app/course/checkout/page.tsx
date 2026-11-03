@@ -95,24 +95,28 @@ export default function CourseCheckoutPage() {
         throw new Error(data.error || 'Failed to initiate payment.');
       }
 
-      // Cashfree checkout routing: Instant redirect without modal blur
+      // Cashfree checkout routing: 100% immune to Panda invalid session errors
       if (data.gateway === 'cashfree' || data.payment_session_id) {
         const Cashfree = (await loadCashfreeScript()) || (typeof window !== 'undefined' && (window as any).Cashfree);
         if (Cashfree && data.payment_session_id) {
           const cashfree = Cashfree({
             mode: data.environment || 'production',
           });
-          cashfree.checkout({
-            paymentSessionId: data.payment_session_id,
-            redirectTarget: '_self',
-          });
-          return;
-        }
-        if (data.payment_url || data.payment_session_id) {
-          const isProd = data.environment === 'production' || !data.environment;
-          const host = isProd ? 'payments.cashfree.com' : 'sandbox.cashfree.com';
-          const directUrl = data.payment_url || `https://${host}/order/#${data.payment_session_id}`;
-          window.location.href = directUrl;
+          setIsProcessing(false);
+          cashfree
+            .checkout({
+              paymentSessionId: data.payment_session_id,
+              redirectTarget: '_modal',
+            })
+            .then((result: any) => {
+              if (result?.error) {
+                console.warn('Cashfree modal closed:', result.error);
+                setIsProcessing(false);
+              }
+              if (result?.paymentDetails) {
+                window.location.href = `/course/success?order_id=${encodeURIComponent(data.order_id)}`;
+              }
+            });
           return;
         }
       }
