@@ -14,7 +14,7 @@ export default function AboutPage() {
               Our Mission
             </span>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-950 mt-2">
-              About Followers.blog
+              About Next Level Creators
             </h1>
             <p className="text-sm text-zinc-600 mt-2">
               Empowering next-generation digital creators, freelancers, and businesses with modern AI website development skills and digital marketing knowledge.
@@ -23,7 +23,7 @@ export default function AboutPage() {
 
           <div className="space-y-6 text-sm text-zinc-600 leading-relaxed">
             <p>
-              Founded in 2026, <strong>Followers.blog</strong> was built on a simple vision: web development and digital marketing should no longer take months of complex coding syntax. With modern autonomous AI tooling and rapid full-stack frameworks like Next.js and Supabase, anyone can bring their digital ideas to life in hours.
+              Founded in 2026, <strong>Next Level Creators</strong> was built on a simple vision: web development and digital marketing should no longer take months of complex coding syntax. With modern autonomous AI tooling and rapid full-stack frameworks like Next.js and Supabase, anyone can bring their digital ideas to life in hours.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
@@ -54,7 +54,7 @@ export default function AboutPage() {
 
             <h2 className="text-lg font-bold text-zinc-950">Our Commitment</h2>
             <p>
-              Whether you are an aspiring freelancer looking to deliver high-ticket websites to clients, a student looking to master modern generative AI coding, or a creator building your brand, Followers.blog provides the exact tools, templates, and community to accelerate your journey.
+              Whether you are an aspiring freelancer looking to deliver high-ticket websites to clients, a student looking to master modern generative AI coding, or a creator building your brand, Next Level Creators provides the exact tools, templates, and community to accelerate your journey.
             </p>
           </div>
         </div>

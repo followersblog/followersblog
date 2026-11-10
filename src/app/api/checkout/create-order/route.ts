@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
         ? 'https://api.cashfree.com/pg/orders'
         : 'https://sandbox.cashfree.com/pg/orders';
 
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://follower.blog';
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelcreators.in';
       const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${orderId}&source=media`;
 
       const cfResponse = await fetch(baseUrl, {
@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
           customer_details: {
             customer_id: customerPhone.replace(/\D/g, '') || `cust_${orderId}`,
             customer_name: safeCustomerName,
-            customer_email: customerEmail || 'orders@follower.blog',
+            customer_email: customerEmail || 'orders@nextlevelcreators.in',
             customer_phone: customerPhone.replace(/\D/g, '').slice(-10),
           },
           order_meta: {

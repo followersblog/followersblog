@@ -27,7 +27,7 @@ function ReceiptContent() {
     amount: string;
   }>({
     name: sanitizeCustomerName(paramName, paramEmail),
-    email: paramEmail || 'customer@followers.blog',
+    email: paramEmail || 'student@nextlevelcreators.in',
     phone: paramPhone || '+91 98XXXXXXXX',
     amount: paramAmount || '1',
   });
@@ -93,19 +93,19 @@ function ReceiptContent() {
               <div className="w-8 h-8 rounded-lg bg-blue-50/50 flex items-center justify-center p-0.5 border border-blue-100 overflow-hidden">
                 <img 
                   src="/logo.png" 
-                  alt="Followers.blog Logo" 
+                  alt="Next Level Creators Logo" 
                   className="w-full h-full object-contain" 
                 />
               </div>
               <span className="text-2xl font-black tracking-tight text-zinc-950">
-                Followers<span className="text-blue-600">.blog</span>
+                Next Level <span className="text-blue-600">Creators</span>
               </span>
             </div>
             <p className="text-xs text-zinc-500 font-semibold mt-0.5">
-              Digital E-Learning & Media Consultation Platform
+              AI & Digital Creator Media Academy
             </p>
             <p className="text-[11px] text-zinc-400">
-              Official Desk: vipuhere50@gmail.com • Operated by Sujan Kumar • https://follower.blog
+              Official Desk: support@nextlevelcreators.in • Operated by Aman • https://nextlevelcreators.in
             </p>
           </div>
 
@@ -193,14 +193,14 @@ function ReceiptContent() {
             <span>Official Gateway & Banking Notice (Chargeback Defense)</span>
           </div>
           <p className="text-[11px] text-zinc-600 leading-relaxed">
-            This document certifies the successful electronic delivery and fulfillment of digital educational curriculum and creator consultation assets provided by <strong>Followers.blog</strong>. 
+            This document certifies the successful electronic delivery and fulfillment of digital educational curriculum and creator consultation assets provided by <strong>Next Level Creators</strong>. 
             The customer affirmed consent to the Terms of Service and Digital Goods Refund Policy prior to checkout. As these educational assets are non-tangible and dispatched instantly, claims of &ldquo;services not rendered&rdquo; or unauthorized billing disputes are refuted by digital timestamp logs and SMS/WhatsApp contact verification records.
           </p>
         </div>
 
         {/* Footer */}
         <div className="pt-4 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between text-[11px] text-zinc-400 gap-2">
-          <div>Followers.blog • Operated by Sujan Kumar • Computer Generated Tax Invoice • No Signature Required</div>
+          <div>Next Level Creators • Operated by Aman • Computer Generated Tax Invoice • No Signature Required</div>
           <div>Authorized Electronic Voucher</div>
         </div>
       </div>

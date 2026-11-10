@@ -351,7 +351,7 @@ export default function AdminDashboardPage() {
               <img src="/logo.png" alt="Followers.blog Logo" className="w-full h-full object-contain" />
             </div>
             <div>
-              <div className="font-extrabold text-white text-base">followers.blog</div>
+              <div className="font-extrabold text-white text-base">Next Level Creators</div>
               <div className="text-[10px] text-zinc-500 uppercase font-semibold">Admin Workspace</div>
             </div>
           </Link>
@@ -432,7 +432,7 @@ export default function AdminDashboardPage() {
               {selectedOrderForDetail ? `Order Audit: ${selectedOrderForDetail.id}` : `${activeSection} Management`}
             </h1>
             <p className="text-xs text-zinc-500">
-              Merchant: <strong className="text-zinc-800">followers.blog</strong> • Live Gateway & Database Sync
+              Merchant: <strong className="text-zinc-800">nextlevelcreators.in</strong> • Live Gateway & Database Sync
             </p>
           </div>
 
@@ -565,7 +565,7 @@ export default function AdminDashboardPage() {
                     onClick={() => {
                       const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
                       const contactStr = selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail || 'customer';
-                      const cashfreeRemarks = `Refuting NCRP claim for Order ${selectedOrderForDetail.id} (UTR: ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}, INR ${selectedOrderForDetail.amount}). Payment 100% authorized via mandatory UPI 2FA PIN on customer handset. Customer purchased ${compliantTitle}. Assets fulfilled electronically to verified contact ${contactStr} per Terms (follower.blog/terms). Official Tax Invoice certifying fulfillment is attached. Request dispute dismissal and release of funds.`.slice(0, 485);
+                      const cashfreeRemarks = `Refuting NCRP claim for Order ${selectedOrderForDetail.id} (UTR: ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}, INR ${selectedOrderForDetail.amount}). Payment 100% authorized via mandatory UPI 2FA PIN on customer handset. Customer purchased ${compliantTitle}. Assets fulfilled electronically to verified contact ${contactStr} per Terms (nextlevelcreators.in/terms). Official Tax Invoice certifying fulfillment is attached. Request dispute dismissal and release of funds.`.slice(0, 485);
                       navigator.clipboard.writeText(cashfreeRemarks);
                       setCopiedDefenseId('cf_remarks_' + selectedOrderForDetail.id);
                       setTimeout(() => setCopiedDefenseId(null), 2500);
@@ -595,8 +595,8 @@ export default function AdminDashboardPage() {
                       const compliantTitle = getCompliantProductTitle(selectedOrderForDetail.amount, selectedOrderForDetail.productType);
                       const cashfreeDefense = `MERCHANT FORMAL DISPUTE DEFENSE & REBUTTAL STATEMENT
 To: Cashfree Dispute Operations, Risk Assessment Team & Issuing Bank Chargeback Desk
-Merchant Entity: Followers.blog (Digital E-Learning & Media Advisory Platform)
-Official Support Desk: vipuhere50@gmail.com | Operating URL: https://follower.blog
+Merchant Entity: Next Level Creators (AI & Creator Media Academy) • Operated by Aman
+Official Support Desk: support@nextlevelcreators.in | Operating URL: https://nextlevelcreators.in
 
 DISPUTE & TRANSACTION DOSSIER:
 - Dispute Reference ID: ${selectedOrderForDetail.disputeId || '637602'}
@@ -619,13 +619,13 @@ Under Reserve Bank of India (RBI) payment security directives, this UPI transact
 The customer purchased full digital access to "${compliantTitle}". This product comprises digital creator curriculum frameworks, video editing asset toolkits, and customized electronic consultation advisories. Immediately upon successful payment capture by Cashfree, digital fulfillment was completed and dispatched to the customer's verified contact details (${selectedOrderForDetail.customerPhone || selectedOrderForDetail.customerEmail}). No physical shipping is required for this digital product.
 
 3. EXPLICIT CONSENT TO TERMS & DIGITAL REFUND POLICY:
-Prior to initiating payment checkout, the customer actively affirmed consent to our Terms of Service (https://follower.blog/terms) and Non-Refundable Digital Fulfillment Policy (https://follower.blog/refund), which expressly stipulate that digital e-learning assets and consultation packages are non-returnable once accessed and dispatched.
+Prior to initiating payment checkout, the customer actively affirmed consent to our Terms of Service (https://nextlevelcreators.in/terms) and Non-Refundable Digital Fulfillment Policy (https://nextlevelcreators.in/refund), which expressly stipulate that digital e-learning assets and consultation packages are non-returnable once accessed and dispatched.
 
 4. COMPUTER-GENERATED TAX INVOICE & AUDIT TRAIL ATTACHED:
 In strict compliance with Section 65B of the Indian Evidence Act, we have attached the official computerized Tax Invoice (Invoice Ref: ${selectedOrderForDetail.id}) reflecting the exact transaction amount of INR ${selectedOrderForDetail.amount}.00, matching Bank UTR ${selectedOrderForDetail.bankRrn || selectedOrderForDetail.paymentId}, and complete electronic dispatch timestamps.
 
 5. ABSENCE OF PRIOR MERCHANT SUPPORT CONTACT (FRIENDLY FRAUD):
-The customer made zero attempt to reach out to our dedicated merchant grievance desk (vipuhere50@gmail.com) prior to initiating this charge inquiry. The filing of this complaint appears to be an unjustified friendly fraud claim attempting to retain electronic assets while evading legitimate payment.
+The customer made zero attempt to reach out to our dedicated merchant grievance desk (support@nextlevelcreators.in) prior to initiating this charge inquiry. The filing of this complaint appears to be an unjustified friendly fraud claim attempting to retain electronic assets while evading legitimate payment.
 
 CONCLUSION & FORMAL RELIEF SOUGHT:
 Because the customer actively authenticated the payment via personal 2FA MPIN and received the agreed digital fulfillment, the allegation of an unauthorized transaction is verifiably groundless. We respectfully urge the Cashfree Dispute Desk and the issuing bank to dismiss Dispute ${selectedOrderForDetail.disputeId || '637602'}, uphold the legitimate merchant charge, and release all withheld settlement funds.`;
@@ -893,7 +893,7 @@ Because the customer actively authenticated the payment via personal 2FA MPIN an
 
                 <div className="bg-white p-5 rounded-2xl border border-zinc-200 shadow-xs">
                   <div className="text-xs font-bold text-zinc-400 uppercase">Active Domain</div>
-                  <div className="text-lg font-black text-zinc-950 mt-1 truncate">followers.blog</div>
+                  <div className="text-lg font-black text-zinc-950 mt-1 truncate">nextlevelcreators.in</div>
                   <div className="text-[11px] text-emerald-600 font-semibold mt-1">SSL Protected</div>
                 </div>
               </div>

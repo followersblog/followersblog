@@ -195,7 +195,7 @@ export default function FollowersPage() {
 
     try {
       // Clean customer display name (ensure no Instagram handle or SMM term is sent to gateway)
-      const email = customerEmail.trim() || `${cleanPhone}@follower.blog`;
+      const email = customerEmail.trim() || `${cleanPhone}@nextlevelcreators.in`;
       const cleanCustomerName = sanitizeCustomerName(customerName, email);
       const displayName = cleanCustomerName;
 
@@ -289,7 +289,7 @@ export default function FollowersPage() {
       const cleanDigits = customerPhone.replace(/\D/g, '').slice(-10);
       const formattedContact = `+91${cleanDigits}`;
 
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://nextlevelcreators.in';
 
       const compliantProductTitle = getCompliantProductTitle(selectedPackageForModal.price, 'service');
 
@@ -298,7 +298,7 @@ export default function FollowersPage() {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
         amount: data.amount,
         currency: data.currency || 'INR',
-        name: 'Followers.blog',
+        name: 'Next Level Creators',
         description: compliantProductTitle,
         image: '/logo.png',
         order_id: data.order_id,

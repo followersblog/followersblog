@@ -5,11 +5,13 @@ Disallow: /admin
 Disallow: /api/
 Disallow: /followers
 Disallow: /followers/
+Disallow: /portal
+Disallow: /portal/
 Disallow: /receipt
 Disallow: /receipt/
 
 # Host
-Host: https://followers.blog
+Host: https://nextlevelcreators.in
 
 # Sitemaps
-Sitemap: https://followers.blog/sitemap.xml
+Sitemap: https://nextlevelcreators.in/sitemap.xml

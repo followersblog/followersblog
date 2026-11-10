@@ -19,7 +19,7 @@ export default function RefundPolicyPage() {
           <section className="space-y-4 text-sm leading-relaxed text-zinc-600">
             <h2 className="text-lg font-bold text-zinc-950">1. Digital Course Cancellation & Refund</h2>
             <p>
-              At <strong>Followers.blog</strong>, we are committed to providing top-quality education through our <strong>AI Website Building Practical Class</strong>.
+              At <strong>Next Level Creators</strong>, we are committed to providing top-quality education through our <strong>AI Website Building Practical Class</strong>.
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>
@@ -29,7 +29,7 @@ export default function RefundPolicyPage() {
                 <strong>Session Rescheduling:</strong> If you are unable to attend the live session, you may request a free transfer to the next available batch or access the complete HD video recording and code repository.
               </li>
               <li>
-                <strong>Class Postponement:</strong> In the rare event that Followers.blog cancels or postpones a scheduled class, enrolled students are offered the choice of an immediate 100% refund or an automatic transfer to the rescheduled date.
+                <strong>Class Postponement:</strong> In the rare event that Next Level Creators cancels or postpones a scheduled class, enrolled students are offered the choice of an immediate 100% refund or an automatic transfer to the rescheduled date.
               </li>
             </ul>
 
@@ -53,7 +53,7 @@ export default function RefundPolicyPage() {
 
             <h2 className="text-lg font-bold text-zinc-950">4. How to Request a Refund</h2>
             <p>
-              To submit a refund or cancellation request, please email our support desk at <strong>vipuhere50@gmail.com</strong> (Attention: Sujan Kumar / Grievance Desk) with your <strong>Order ID</strong> and registered email address.
+              To submit a refund or cancellation request, please email our support desk at <strong>support@nextlevelcreators.in</strong> (Attention: Aman / Grievance Desk) with your <strong>Order ID</strong> and registered email address.
             </p>
           </section>
         </div>

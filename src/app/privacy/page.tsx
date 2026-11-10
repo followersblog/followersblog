@@ -19,7 +19,7 @@ export default function PrivacyPage() {
           <section className="space-y-4 text-sm leading-relaxed text-zinc-600">
             <h2 className="text-lg font-bold text-zinc-950">1. Information We Collect</h2>
             <p>
-              When you visit or enroll on Followers.blog, we collect minimal personal information necessary to deliver our educational programs and digital assets, including:
+              When you visit or enroll on Next Level Creators, we collect minimal personal information necessary to deliver our educational programs and digital assets, including:
             </p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Full Name</li>
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
 
             <h2 className="text-lg font-bold text-zinc-950">3. Data Security & Storage</h2>
             <p>
-              All traffic between your browser and Followers.blog is encrypted using 256-bit Secure Socket Layer (SSL) encryption. Database records are stored securely in Supabase with strict Row Level Security (RLS) policies.
+              All traffic between your browser and Next Level Creators is encrypted using 256-bit Secure Socket Layer (SSL) encryption. Database records are stored securely in Supabase with strict Row Level Security (RLS) policies.
             </p>
 
             <h2 className="text-lg font-bold text-zinc-950">4. Third-Party Disclosures</h2>
@@ -56,8 +56,8 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-bold text-zinc-950">5. Contact Our Grievance Officer</h2>
             <p>
               If you have any questions about this Privacy Policy or wish to request data updates, contact us at: <br />
-              <strong>Grievance Officer:</strong> Sujan Kumar <br />
-              <strong>Official Email:</strong> vipuhere50@gmail.com
+              <strong>Grievance Officer:</strong> Aman <br />
+              <strong>Official Email:</strong> support@nextlevelcreators.in
             </p>
           </section>
         </div>

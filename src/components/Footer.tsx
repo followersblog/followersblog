@@ -13,16 +13,16 @@ export default function Footer() {
               <div className="w-9 h-9 rounded-xl bg-blue-50/50 flex items-center justify-center p-1 border border-blue-100 shadow-xs overflow-hidden">
                 <img 
                   src="/logo.png" 
-                  alt="Followers.blog Logo" 
+                  alt="Next Level Creators Logo" 
                   className="w-full h-full object-contain" 
                 />
               </div>
               <span className="font-extrabold text-xl tracking-tight text-zinc-900">
-                Followers<span className="text-blue-600">.blog</span>
+                Next Level <span className="text-blue-600">Creators</span>
               </span>
             </Link>
             <p className="text-sm text-zinc-600 leading-relaxed">
-              Empowering creators and digital entrepreneurs with modern AI website development skills and premium digital growth solutions.
+              Empowering creators and digital entrepreneurs with modern AI website development skills and premium digital media training.
             </p>
             <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
               <Shield className="w-4 h-4 text-emerald-600" />
@@ -112,7 +112,7 @@ export default function Footer() {
               </a>
               <div className="flex items-center gap-2 text-xs text-zinc-500 pt-2">
                 <Mail className="w-3.5 h-3.5 text-zinc-400" />
-                <a href="mailto:vipuhere50@gmail.com" className="hover:text-blue-600 transition-colors">vipuhere50@gmail.com</a>
+                <a href="mailto:support@nextlevelcreators.in" className="hover:text-blue-600 transition-colors">support@nextlevelcreators.in</a>
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>© 2026 Followers.blog • Operated by Sujan Kumar. All rights reserved.</p>
+          <p>© 2026 Next Level Creators • Operated by Aman. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Built with precision for creators</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />

@@ -21,7 +21,7 @@ export default function ShippingDeliveryPage() {
             <div>
               <h2 className="text-lg font-bold text-zinc-950 mb-2">1. Nature of Products & Electronic Delivery</h2>
               <p>
-                <strong>Followers.blog</strong> provides digital educational programs, live practical workshops (including the 3-Hour AI Website Building Practical Class), downloadable development assets, and digital strategy consultations. We do NOT ship physical goods through postal courier services. All products and services are fulfilled 100% electronically.
+                <strong>Next Level Creators</strong> provides digital educational programs, live practical workshops (including the 3-Hour AI Website Building Practical Class), downloadable development assets, and digital strategy consultations. We do NOT ship physical goods through postal courier services. All products and services are fulfilled 100% electronically.
               </p>
             </div>
 
@@ -58,7 +58,7 @@ export default function ShippingDeliveryPage() {
               <ul className="list-disc pl-5 space-y-1.5 mt-2">
                 <li>Please verify your spam/promotions folder for an email confirmation.</li>
                 <li>Ensure that the email address provided during checkout was spelled correctly.</li>
-                <li>Contact our 24/7 support desk at <strong>vipuhere50@gmail.com</strong> with your payment transaction ID, and our operations team will immediately re-dispatch your credentials.</li>
+                <li>Contact our 24/7 support desk at <strong>support@nextlevelcreators.in</strong> with your payment transaction ID, and our operations team will immediately re-dispatch your credentials.</li>
               </ul>
             </div>
 
@@ -66,8 +66,8 @@ export default function ShippingDeliveryPage() {
               <h2 className="text-lg font-bold text-zinc-950 mb-2">4. Contact Delivery Desk</h2>
               <p>
                 For any queries regarding delivery timelines or student portal credentials, contact: <br />
-                <strong>Operated by:</strong> Sujan Kumar (trading as Followers.blog) <br />
-                <strong>Official Email:</strong> vipuhere50@gmail.com <br />
+                <strong>Operated by:</strong> Aman (trading as Next Level Creators) <br />
+                <strong>Official Email:</strong> support@nextlevelcreators.in <br />
                 <strong>Registered Office:</strong> 237-3 Mayakund, Rishikesh, Dehradun, Uttarakhand - 249201, India <br />
                 <strong>Operating Desk:</strong> Monday – Sunday, 9:00 AM – 11:00 PM IST
               </p>

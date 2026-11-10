@@ -104,7 +104,7 @@ export default function HomePage() {
     setIsTierSubmitting(true);
 
     try {
-      const email = tierCustomerEmail.trim() || `${cleanPhone}@follower.blog`;
+      const email = tierCustomerEmail.trim() || `${cleanPhone}@nextlevelcreators.in`;
       const displayName = sanitizeCustomerName(tierCustomerName, email);
 
       const response = await fetch('/api/create-order', {
@@ -176,13 +176,13 @@ export default function HomePage() {
         };
       }
 
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog';
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://nextlevelcreators.in';
 
       const options = {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
         amount: data.amount,
         currency: data.currency || 'INR',
-        name: 'Followers.blog',
+        name: 'Next Level Creators',
         description: selectedTierForModal.name,
         image: '/logo.png',
         order_id: data.order_id,
@@ -784,7 +784,7 @@ export default function HomePage() {
               <ul className="space-y-3 mb-8 text-sm text-zinc-700">
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>3-Hour intensive live session with <strong>Sujan Kumar</strong> (Lead Instructor)</span>
+                  <span>3-Hour intensive live session with <strong>Aman</strong> (Lead Instructor)</span>
                 </li>
                 <li className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -807,14 +807,14 @@ export default function HomePage() {
               {/* Lead Instructor Profile (Cashfree & Student Compliance) */}
               <div className="mb-8 p-4 rounded-2xl bg-zinc-50 border border-zinc-200/80 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs">
-                  SK
+                  A
                 </div>
                 <div>
                   <div className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
-                    <span>Sujan Kumar</span>
+                    <span>Aman</span>
                     <span className="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-200">Course Mentor</span>
                   </div>
-                  <div className="text-[11px] text-zinc-500">Lead AI Developer & Founder, Followers.blog</div>
+                  <div className="text-[11px] text-zinc-500">Lead AI Developer & Founder, Next Level Creators</div>
                 </div>
               </div>
 

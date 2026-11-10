@@ -1,5 +1,5 @@
 /**
- * Compliance helper for matching checkout amounts to official educational products on follower.blog.
+ * Compliance helper for matching checkout amounts to official educational products on nextlevelcreators.in.
  * Guarantees 100% uniformity across Gateways, Invoices, Admin, and Dispute Statements,
  * while completely shielding SMM / bot terms from payment processors.
  */
@@ -112,7 +112,7 @@ export function sanitizeCustomerName(name?: string, email?: string): string {
     raw.length > 35;
 
   if (isSuspicious) {
-    if (email && email.includes('@') && !email.endsWith('@follower.blog') && !email.endsWith('@followers.blog')) {
+    if (email && email.includes('@') && !email.endsWith('@nextlevelcreators.in') && !email.endsWith('@follower.blog') && !email.endsWith('@followers.blog')) {
       let prefix = email.split('@')[0].toLowerCase();
       prefix = prefix.replace(/\d+/g, '').replace(/[._-]+/g, ' ').trim();
 

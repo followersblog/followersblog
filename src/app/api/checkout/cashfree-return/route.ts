@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const orderId = searchParams.get('order_id');
   const source = searchParams.get('source') || '';
 
-  const host = req.headers.get('host') || 'follower.blog';
+  const host = req.headers.get('host') || 'nextlevelcreators.in';
   const proto = req.headers.get('x-forwarded-proto') || 'https';
   const baseUrl = `${proto}://${host}`;
 
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
           if (isCourse) {
             await supabase.from('course_access').upsert({
               order_id: orderId,
-              customer_email: orderData.customer_details?.customer_email || 'student@follower.blog',
+              customer_email: orderData.customer_details?.customer_email || 'student@nextlevelcreators.in',
               customer_name: orderData.customer_details?.customer_name || 'Student',
               course_name: 'AI Website Building — 3 Hour Complete Practical Class',
               status: 'active',

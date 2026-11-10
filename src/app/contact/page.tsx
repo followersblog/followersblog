@@ -18,7 +18,7 @@ export default function ContactPage() {
               Customer Support
             </span>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-950 mt-2">
-              Contact Followers.blog
+              Contact Next Level Creators
             </h1>
             <p className="text-xs sm:text-sm text-zinc-600 mt-2">
               Have questions regarding course curriculum, payments, or order status? We are here to help.
@@ -39,8 +39,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <div className="font-bold text-zinc-900">Official Support & Grievance Desk</div>
-                    <a href="mailto:vipuhere50@gmail.com" className="text-blue-600 hover:underline font-semibold block">
-                      vipuhere50@gmail.com
+                    <a href="mailto:support@nextlevelcreators.in" className="text-blue-600 hover:underline font-semibold block">
+                      support@nextlevelcreators.in
                     </a>
                     <div className="text-[11px] text-zinc-400">Response within 2-4 hours • Monitored daily</div>
                   </div>
@@ -48,12 +48,12 @@ export default function ContactPage() {
 
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 font-bold text-xs">
-                    SK
+                    A
                   </div>
                   <div>
                     <div className="font-bold text-zinc-900">Platform Operator / Lead Instructor</div>
-                    <div className="text-zinc-700 font-semibold">Sujan Kumar</div>
-                    <div className="text-[11px] text-zinc-400">Trading as Followers.blog (Creator Education & Digital Media)</div>
+                    <div className="text-zinc-700 font-semibold">Aman</div>
+                    <div className="text-[11px] text-zinc-400">Trading as Next Level Creators (Creator Education & Digital Media)</div>
                   </div>
                 </div>
 
@@ -64,7 +64,7 @@ export default function ContactPage() {
                   <div>
                     <div className="font-bold text-zinc-900">Telegram Instant Support</div>
                     <a href={telegramLink} target="_blank" rel="noopener noreferrer" className="text-sky-600 hover:underline font-semibold">
-                      @FollowersBlogSupport
+                      @NextLevelCreatorsSupport
                     </a>
                     <div className="text-[11px] text-zinc-400">Live chat assistance 24/7</div>
                   </div>

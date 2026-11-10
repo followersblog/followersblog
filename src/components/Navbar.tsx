@@ -16,16 +16,16 @@ export default function Navbar() {
             <div className="w-10 h-10 rounded-xl bg-blue-50/50 flex items-center justify-center p-1 border border-blue-100 group-hover:scale-105 transition-transform overflow-hidden">
               <img 
                 src="/logo.png" 
-                alt="Followers.blog Logo" 
+                alt="Next Level Creators Logo" 
                 className="w-full h-full object-contain" 
               />
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-zinc-900 group-hover:text-blue-600 transition-colors">
-                Followers<span className="text-blue-600">.blog</span>
+                Next Level <span className="text-blue-600">Creators</span>
               </span>
               <span className="text-[10px] text-zinc-500 font-medium tracking-wider uppercase -mt-1">
-                AI & Digital Growth
+                AI & Creator Media Academy
               </span>
             </div>
           </Link>

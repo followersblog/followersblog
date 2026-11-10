@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
 
       const host = req.headers.get('host');
       const proto = req.headers.get('x-forwarded-proto') || 'https';
-      const appUrl = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_APP_URL || 'https://follower.blog');
+      const appUrl = host ? `${proto}://${host}` : (process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelcreators.in');
       const returnUrl = `${appUrl}/api/checkout/cashfree-return?order_id=${internalOrderId}&source=${sourceParam}`;
 
       // 1. Kick off Supabase pending order record in parallel with Cashfree
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
             return await supabase.from('orders').insert({
               id: internalOrderId,
               customer_name: safeCustomerName,
-              customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
+              customer_email: (customerEmail || 'orders@nextlevelcreators.in').replace('@followers.blog', '@nextlevelcreators.in').replace('@follower.blog', '@nextlevelcreators.in'),
               customer_phone: customerPhone || '9876543210',
               product_type: productType,
               product_name: compliantNote,
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
           customer_details: {
             customer_id: (customerPhone || '').replace(/\D/g, '') || `cust_${internalOrderId}`,
             customer_name: safeCustomerName,
-            customer_email: (customerEmail || 'orders@follower.blog').replace('@followers.blog', '@follower.blog'),
+            customer_email: (customerEmail || 'orders@nextlevelcreators.in').replace('@followers.blog', '@nextlevelcreators.in').replace('@follower.blog', '@nextlevelcreators.in'),
             customer_phone: (customerPhone || '9876543210').replace(/\D/g, '').slice(-10),
           },
           order_meta: {
@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
       notes: {
         product_name: compliantNote,
         customer_name: safeCustomerName,
-        customer_email: customerEmail || 'customer@follower.blog',
+        customer_email: customerEmail || 'customer@nextlevelcreators.in',
         order_id: internalOrderId,
         source: sourceParam,
       },
@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
           await supabase.from('orders').insert({
             id: internalOrderId,
             customer_name: safeCustomerName,
-            customer_email: customerEmail || `${customerPhone || 'customer'}@follower.blog`,
+            customer_email: customerEmail || `${customerPhone || 'customer'}@nextlevelcreators.in`,
             customer_phone: customerPhone || '9876543210',
             product_type: productType,
             product_name: compliantNote,

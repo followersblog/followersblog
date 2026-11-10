@@ -144,11 +144,11 @@ export default function CourseCheckoutPage() {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
         amount: data.amount,
         currency: data.currency || 'INR',
-        name: 'Followers.blog',
+        name: 'Next Level Creators',
         description: 'AI Website Building — 3 Hour Complete Practical Class',
         image: '/logo.png',
         order_id: data.order_id,
-        callback_url: `${typeof window !== 'undefined' ? window.location.origin : 'https://follower.blog'}/api/razorpay-callback?source=course`,
+        callback_url: `${typeof window !== 'undefined' ? window.location.origin : 'https://nextlevelcreators.in'}/api/razorpay-callback?source=course`,
         redirect: false,
         prefill: {
           name: fullName,
@@ -432,8 +432,8 @@ export default function CourseCheckoutPage() {
 
               {/* Trust Badge */}
               <div className="p-4 rounded-2xl bg-white border border-zinc-200 text-center text-xs text-zinc-500 space-y-1">
-                <div className="font-bold text-zinc-800">Followers.blog Official Enrolment</div>
-                <div>Support: <span className="font-medium text-zinc-700">vipuhere50@gmail.com</span></div>
+                <div className="font-bold text-zinc-800">Next Level Creators Official Enrolment</div>
+                <div>Support: <span className="font-medium text-zinc-700">support@nextlevelcreators.in</span></div>
               </div>
             </div>
           </div>
