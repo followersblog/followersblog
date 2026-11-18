@@ -195,7 +195,7 @@ export default function PortalPage() {
 
     try {
       // Clean customer display name (ensure no Instagram handle or SMM term is sent to gateway)
-      const email = customerEmail.trim() || `${cleanPhone}@nextlevelcreators.in`;
+      const email = customerEmail.trim() || `${cleanPhone}@nextcreators.in`;
       const cleanCustomerName = sanitizeCustomerName(customerName, email);
       const displayName = cleanCustomerName;
 
@@ -289,7 +289,7 @@ export default function PortalPage() {
       const cleanDigits = customerPhone.replace(/\D/g, '').slice(-10);
       const formattedContact = `+91${cleanDigits}`;
 
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://nextlevelcreators.in';
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://nextcreators.in';
 
       const compliantProductTitle = getCompliantProductTitle(selectedPackageForModal.price, 'service');
 
@@ -298,7 +298,7 @@ export default function PortalPage() {
         key: data.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_live_Ts8dDt5Uk6gpHC',
         amount: data.amount,
         currency: data.currency || 'INR',
-        name: 'Next Level Creators',
+        name: 'Next Creators',
         description: compliantProductTitle,
         image: '/logo.png',
         order_id: data.order_id,
@@ -434,7 +434,7 @@ export default function PortalPage() {
             <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-pink-50 to-white flex items-center justify-center p-1 border border-zinc-200/80 shadow-xs group-hover:scale-105 transition-transform overflow-hidden shrink-0">
               <img 
                 src="/logo.png" 
-                alt="Next Level Creators Logo" 
+                alt="Next Creators Logo" 
                 className="w-full h-full object-contain" 
               />
             </div>
@@ -1026,11 +1026,11 @@ export default function PortalPage() {
             <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center p-0.5 overflow-hidden">
               <img 
                 src="/logo.png" 
-                alt="Next Level Creators Logo" 
+                alt="Next Creators Logo" 
                 className="w-full h-full object-contain" 
               />
             </div>
-            <span className="font-extrabold text-white text-base">Next Level Creators • Portal</span>
+            <span className="font-extrabold text-white text-base">Next Creators • Portal</span>
           </div>
           <p className="text-[11px] text-zinc-500">
             Automated social growth infrastructure and creator acceleration services.
@@ -1044,7 +1044,7 @@ export default function PortalPage() {
             </a>
           </div>
           <p className="text-[10px] text-zinc-600 pt-2">
-            © 2026 Next Level Creators. All rights reserved.
+            © 2026 Next Creators. All rights reserved.
           </p>
         </div>
       </footer>

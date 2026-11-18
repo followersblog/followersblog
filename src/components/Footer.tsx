@@ -13,12 +13,12 @@ export default function Footer() {
               <div className="w-9 h-9 rounded-xl bg-blue-50/50 flex items-center justify-center p-1 border border-blue-100 shadow-xs overflow-hidden">
                 <img 
                   src="/logo.png" 
-                  alt="Next Level Creators Logo" 
+                  alt="Next Creators Logo" 
                   className="w-full h-full object-contain" 
                 />
               </div>
               <span className="font-extrabold text-xl tracking-tight text-zinc-900">
-                Next Level <span className="text-blue-600">Creators</span>
+                Next <span className="text-blue-600">Creators</span>
               </span>
             </Link>
             <p className="text-sm text-zinc-600 leading-relaxed">
@@ -103,7 +103,7 @@ export default function Footer() {
             </p>
             <div className="space-y-2 text-sm">
               <a
-                href={process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT_URL || 'https://t.me/FollowersBlogSupport'}
+                href={process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT_URL || 'https://t.me/NextCreatorsSupport'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 font-semibold transition-colors"
@@ -112,7 +112,7 @@ export default function Footer() {
               </a>
               <div className="flex items-center gap-2 text-xs text-zinc-500 pt-2">
                 <Mail className="w-3.5 h-3.5 text-zinc-400" />
-                <a href="mailto:support@nextlevelcreators.in" className="hover:text-blue-600 transition-colors">support@nextlevelcreators.in</a>
+                <a href="mailto:help@nextcreators.in" className="hover:text-blue-600 transition-colors">help@nextcreators.in</a>
               </div>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>© 2026 Next Level Creators • Operated by Aman. All rights reserved.</p>
+          <p>© 2026 Next Creators • Operated by Mahima. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Built with precision for creators</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />

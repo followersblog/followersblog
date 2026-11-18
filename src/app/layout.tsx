@@ -5,22 +5,22 @@ import MetaPixel from '@/components/MetaPixel';
 
 export const metadata: Metadata = {
   referrer: 'origin',
-  title: 'Next Level Creators — Learn AI Website Building & Digital Skills',
-  description: 'Master practical AI website development, video editing, and modern digital creation with Next Level Creators.',
-  keywords: ['AI website building', 'practical coding workshop', 'learn web development', 'Next Level Creators', 'digital skills'],
-  authors: [{ name: 'Next Level Creators' }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://nextlevelcreators.in'),
+  title: 'Next Creators — Learn AI Website Building & Digital Skills',
+  description: 'Master practical AI website development, video editing, and modern digital creation with Next Creators.',
+  keywords: ['AI website building', 'practical coding workshop', 'learn web development', 'Next Creators', 'digital skills'],
+  authors: [{ name: 'Next Creators' }],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://nextcreators.in'),
   openGraph: {
-    title: 'Next Level Creators — Learn AI Website Building & Digital Skills',
+    title: 'Next Creators — Learn AI Website Building & Digital Skills',
     description: 'AI Se Professional Website Banana Seekho — Sirf 3 Ghante Mein. Zero to live website workflow.',
-    url: 'https://nextlevelcreators.in',
-    siteName: 'Next Level Creators',
+    url: 'https://nextcreators.in',
+    siteName: 'Next Creators',
     locale: 'en_IN',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Next Level Creators — Learn AI Website Building & Digital Skills',
+    title: 'Next Creators — Learn AI Website Building & Digital Skills',
     description: '3-hour practical live workshop to build modern websites with AI.',
   },
   icons: {

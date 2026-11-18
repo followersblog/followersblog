@@ -27,7 +27,7 @@ function getTargetRedirectUrls(source: string, orderIdOrReceipt: string, baseUrl
     return {
       type: 'media',
       failureUrl: `${baseUrl}/#editing-courses?status=cancelled`,
-      successUrl: (params: string) => `${baseUrl}/followers/success?${params}&from=/followers`,
+      successUrl: (params: string) => `${baseUrl}/portal/success?${params}&from=/portal`,
     };
   }
 
@@ -40,7 +40,7 @@ function getTargetRedirectUrls(source: string, orderIdOrReceipt: string, baseUrl
 }
 
 export async function POST(req: NextRequest) {
-  const host = req.headers.get('host') || 'nextlevelcreators.in';
+  const host = req.headers.get('host') || 'nextcreators.in';
   const protocol = req.headers.get('x-forwarded-proto') || 'https';
   const baseUrl = `${protocol}://${host}`;
 
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const host = req.headers.get('host') || 'nextlevelcreators.in';
+  const host = req.headers.get('host') || 'nextcreators.in';
   const protocol = req.headers.get('x-forwarded-proto') || 'https';
   const baseUrl = `${protocol}://${host}`;
 

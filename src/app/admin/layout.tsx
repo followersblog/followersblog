@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Admin Workspace | Followers.blog',
+  title: 'Admin Workspace | Next Creators',
   robots: {
     index: false,
     follow: false,

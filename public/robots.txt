@@ -3,15 +3,13 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
-Disallow: /followers
-Disallow: /followers/
 Disallow: /portal
 Disallow: /portal/
 Disallow: /receipt
 Disallow: /receipt/
 
 # Host
-Host: https://nextlevelcreators.in
+Host: https://nextcreators.in
 
 # Sitemaps
-Sitemap: https://nextlevelcreators.in/sitemap.xml
+Sitemap: https://nextcreators.in/sitemap.xml

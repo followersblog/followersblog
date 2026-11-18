@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const orderId = searchParams.get('order_id');
   const source = searchParams.get('source') || '';
 
-  const host = req.headers.get('host') || 'nextlevelcreators.in';
+  const host = req.headers.get('host') || 'nextcreators.in';
   const proto = req.headers.get('x-forwarded-proto') || 'https';
   const baseUrl = `${proto}://${host}`;
 
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
           if (isCourse) {
             await supabase.from('course_access').upsert({
               order_id: orderId,
-              customer_email: orderData.customer_details?.customer_email || 'student@nextlevelcreators.in',
+              customer_email: orderData.customer_details?.customer_email || 'student@nextcreators.in',
               customer_name: orderData.customer_details?.customer_name || 'Student',
               course_name: 'AI Website Building — 3 Hour Complete Practical Class',
               status: 'active',
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
     }
     if (isFollowers) {
       const amountParam = orderData?.order_amount ? `&amount=${encodeURIComponent(String(orderData.order_amount))}` : '';
-      return NextResponse.redirect(new URL(`/followers/success?order_id=${encodeURIComponent(orderId)}${amountParam}&from=/followers`, baseUrl));
+      return NextResponse.redirect(new URL(`/portal/success?order_id=${encodeURIComponent(orderId)}${amountParam}&from=/portal`, baseUrl));
     }
     // Home or Default: Official Tax Invoice receipt
     const receiptUrl = `/receipt?order_id=${encodeURIComponent(orderId)}&payment_id=${encodeURIComponent(orderData.cf_order_id || '')}&name=${encodeURIComponent(cust.customer_name || 'Valued Customer')}&email=${encodeURIComponent(cust.customer_email || '')}&phone=${encodeURIComponent(cust.customer_phone || '')}&amount=${encodeURIComponent(String(orderData.order_amount || ''))}`;

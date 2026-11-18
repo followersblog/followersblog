@@ -114,12 +114,12 @@ export default function FollowersSuccessPage() {
           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center p-0.5 border border-zinc-200 shadow-xs overflow-hidden">
             <img 
               src="/logo.png" 
-              alt="Followers.blog Logo" 
+              alt="Next Creators Logo" 
               className="w-full h-full object-contain" 
             />
           </div>
           <span className="font-black text-lg text-zinc-950">
-            Followers<span className="text-pink-600">.blog</span>
+            Next <span className="text-blue-600">Creators</span>
           </span>
         </Link>
       </header>

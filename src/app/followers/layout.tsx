@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   referrer: 'origin',
-  title: 'Media Consultation & Growth Portal | Followers.blog',
+  title: 'Media Consultation & Growth Portal | Next Creators',
   robots: {
     index: false,
     follow: false,
