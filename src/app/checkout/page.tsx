@@ -20,7 +20,8 @@ import {
   Sparkles,
   AlertCircle,
   HelpCircle,
-  ChevronRight
+  ChevronRight,
+  Gift
 } from 'lucide-react';
 
 function ClothingCheckoutContent() {
@@ -30,7 +31,6 @@ function ClothingCheckoutContent() {
   const initialSize = searchParams.get('size') || '';
   const initialQty = parseInt(searchParams.get('qty') || '1', 10);
 
-  // Selected item state
   const product: ClothingProduct =
     CLOTHING_PRODUCTS.find((p) => p.id === productId) || CLOTHING_PRODUCTS[0];
 
@@ -58,24 +58,30 @@ function ClothingCheckoutContent() {
     loadRazorpayScript();
   }, []);
 
-  // Pricing calculations
   const singleItemPrice = product.discountPrice;
-  const subtotal = singleItemPrice * quantity;
+  const rawSubtotal = singleItemPrice * quantity;
 
-  // Auto discounts:
-  // 1. First order coupon WELCOME10 = Flat ₹100 OFF (if order >= 350) or 10%
-  const couponDiscount = couponApplied
-    ? subtotal >= 400
-      ? 100
-      : Math.round(subtotal * 0.15)
-    : 0;
+  // USER RULE 1: BUY 1 GET 1 FREE (BOGO)
+  // If user orders 2 hoodies, the 2nd one is 100% FREE (discount = singleItemPrice)!
+  // If user orders 4, 2 are free, etc.
+  const freeItemsCount = Math.floor(quantity / 2);
+  const bogoDiscount = freeItemsCount * singleItemPrice;
 
-  // 2. Buy 2 Get ₹150 OFF bundle offer
-  const bundleDiscount = quantity >= 2 ? 150 : 0;
+  // Subtotal after BOGO
+  const payableBeforeCoupon = rawSubtotal - bogoDiscount;
 
-  const totalDiscount = couponDiscount + bundleDiscount;
-  const shippingFee = 0; // FREE Express Delivery
-  const finalPayable = Math.max(1, subtotal - totalDiscount + shippingFee);
+  // USER RULE 2:
+  // "249 wale me 50 ka off lage 1st buying me and 499 wale me 100 ka"
+  let couponDiscount = 0;
+  if (couponApplied) {
+    if (singleItemPrice <= 300) {
+      couponDiscount = 50; // ₹50 OFF for ₹249 items
+    } else {
+      couponDiscount = 100; // ₹100 OFF for ₹499 items
+    }
+  }
+
+  const finalPayable = Math.max(1, payableBeforeCoupon - couponDiscount);
 
   const handleApplyCoupon = (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,7 +116,7 @@ function ClothingCheckoutContent() {
       const orderPayload = {
         amount: finalPayable,
         currency: 'INR',
-        productName: `${product.name} (Size: ${selectedSize}, Qty: ${quantity})`,
+        productName: `${product.name} (Size: ${selectedSize}, Qty: ${quantity}${freeItemsCount > 0 ? ` + ${freeItemsCount} FREE BOGO` : ''})`,
         customerName: fullName.trim(),
         customerEmail: email.trim() || `${phone.replace(/\D/g, '').slice(-10)}@nextcreators.in`,
         customerPhone: phone.replace(/\D/g, '').slice(-10),
@@ -130,7 +136,7 @@ function ClothingCheckoutContent() {
         throw new Error(orderData.error || 'Failed to initialize payment gateway.');
       }
 
-      // Check if Cashfree
+      // Cashfree
       if (orderData.gateway === 'cashfree') {
         if (!(window as any).Cashfree) {
           throw new Error('Cashfree payment SDK failed to load. Please refresh.');
@@ -187,62 +193,62 @@ function ClothingCheckoutContent() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 flex flex-col">
+    <div className="min-h-screen bg-zinc-50 text-zinc-950 flex flex-col">
       <Navbar />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-zinc-500 mb-6">
+        <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 mb-6">
           <Link href="/" className="hover:text-red-600">Home</Link>
-          <ChevronRight className="w-3 h-3" />
-          <span>Clothing Checkout</span>
-          <ChevronRight className="w-3 h-3" />
-          <span className="text-zinc-900 font-semibold">{product.name}</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <span>Checkout</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+          <span className="text-zinc-950 font-black">{product.name}</span>
         </div>
 
-        {/* High Conversion Banner */}
-        <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+        {/* High Conversion BOGO Banner */}
+        <div className="mb-8 p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-              <Flame className="w-6 h-6 text-yellow-300 animate-bounce" />
+            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+              <Gift className="w-6 h-6 text-yellow-300 animate-bounce" />
             </div>
             <div>
-              <p className="font-extrabold text-sm sm:text-base">
-                🔥 FLASH SALE ACTIVE: {STORE_PROMOS.firstOrderDiscountText}
+              <p className="font-black text-sm sm:text-base uppercase tracking-wider">
+                🎁 BUY 1 GET 1 FREE OFFER ACTIVE: Add 2 hoodies, 2nd one is 100% FREE!
               </p>
-              <p className="text-xs text-red-100">
-                100% Instant Refund on Cancellation + 3-5 Days Express Tracked Delivery
+              <p className="text-xs text-red-100 font-medium">
+                {singleItemPrice <= 300 ? '₹50 OFF Auto-Applied (₹249 Special)' : '₹100 OFF Auto-Applied (₹499 Drop)'} • 100% Instant Refund
               </p>
             </div>
           </div>
-          <div className="shrink-0 bg-black/40 px-3 py-1.5 rounded-lg text-xs font-mono font-bold border border-white/20">
-            AUTO COUPON APPLIED
+          <div className="shrink-0 bg-black/40 px-3.5 py-1.5 rounded-xl text-xs font-mono font-black border border-white/20">
+            CODE: WELCOME10
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Form: Delivery & Customer Info */}
+          {/* Shipping Form */}
           <div className="lg:col-span-7 space-y-6">
             <form onSubmit={handlePayment} className="space-y-6">
-              {/* Delivery Address Card */}
-              <div className="bg-white rounded-2xl p-6 sm:p-8 border border-zinc-200 shadow-xs">
+              
+              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-zinc-200 shadow-xs">
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-zinc-100">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm">
+                    <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-black text-sm">
                       1
                     </div>
-                    <h2 className="text-lg font-bold text-zinc-900">
-                      Shipping & Delivery Address
+                    <h2 className="text-lg font-black text-zinc-950">
+                      Delivery Address
                     </h2>
                   </div>
-                  <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100 flex items-center gap-1">
+                  <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 flex items-center gap-1">
                     <Truck className="w-3.5 h-3.5" /> 3-5 Days
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-black text-zinc-700 uppercase tracking-wider mb-1.5">
                       Full Name *
                     </label>
                     <input
@@ -251,13 +257,13 @@ function ClothingCheckoutContent() {
                       placeholder="e.g. Rahul Sharma"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">
-                      Phone Number (WhatsApp updates) *
+                    <label className="block text-xs font-black text-zinc-700 uppercase tracking-wider mb-1.5">
+                      Phone Number (WhatsApp Updates) *
                     </label>
                     <input
                       type="tel"
@@ -266,53 +272,53 @@ function ClothingCheckoutContent() {
                       placeholder="10-digit mobile number"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-black text-zinc-700 uppercase tracking-wider mb-1.5">
                       Email Address (Optional)
                     </label>
                     <input
                       type="email"
-                      placeholder="For invoice & tracking link"
+                      placeholder="For tracking receipt"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold"
                     />
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">
-                      Flat / House No. / Street / Area *
+                    <label className="block text-xs font-black text-zinc-700 uppercase tracking-wider mb-1.5">
+                      House / Flat / Area / Landmark *
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Flat 302, Green Avenue, Near Metro"
+                      placeholder="e.g. House No. 42, Street 3, Near Metro"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-black text-zinc-700 uppercase tracking-wider mb-1.5">
                       City *
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Mumbai / Delhi"
+                      placeholder="e.g. Delhi / Mumbai"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-black text-zinc-700 uppercase tracking-wider mb-1.5">
                       6-Digit PIN Code *
                     </label>
                     <input
@@ -322,27 +328,27 @@ function ClothingCheckoutContent() {
                       placeholder="e.g. 110001"
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium"
+                      className="w-full px-4 py-3 rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-semibold"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Trust & Guarantee Box */}
-              <div className="bg-emerald-50/60 rounded-2xl p-5 border border-emerald-200 flex items-start gap-4">
+              {/* Instant Refund Box */}
+              <div className="bg-emerald-50/70 rounded-3xl p-5 border border-emerald-200 flex items-start gap-4">
                 <RotateCcw className="w-6 h-6 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-sm font-bold text-emerald-900">
-                    100% Instant Refund on Cancellation
+                  <h4 className="text-sm font-black text-emerald-950">
+                    100% Instant Refund Policy
                   </h4>
-                  <p className="text-xs text-emerald-700 mt-1 leading-relaxed">
-                    Koi risk nahi! Agar dispatch se pehle aapka mind change ho jaye, toh 1-click me turant 100% refund aapke account me bhej diya jata hai.
+                  <p className="text-xs text-emerald-800 mt-1 leading-relaxed font-medium">
+                    Order dispatch hone se pehle agar aap cancel karte hain, toh turant 1-click me 100% full refund aapke account me credit ho jata hai. Zero questions asked.
                   </p>
                 </div>
               </div>
 
               {errorMessage && (
-                <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+                <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2 font-bold">
                   <AlertCircle className="w-5 h-5 shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
@@ -352,7 +358,7 @@ function ClothingCheckoutContent() {
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-red-600 via-red-500 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white font-extrabold text-lg shadow-lg shadow-red-500/20 transition-all transform active:scale-98 flex items-center justify-center gap-3 disabled:opacity-50"
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-700 hover:to-amber-700 text-white font-black text-lg uppercase tracking-wider shadow-xl shadow-red-500/20 transition-all transform active:scale-98 flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {isProcessing ? (
                   <>
@@ -368,30 +374,30 @@ function ClothingCheckoutContent() {
                 )}
               </button>
 
-              <div className="flex items-center justify-center gap-4 text-xs text-zinc-500">
+              <div className="flex items-center justify-center gap-4 text-xs text-zinc-500 font-semibold">
                 <span className="flex items-center gap-1">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
                   UPI, Cards & NetBanking Supported
                 </span>
                 <span>•</span>
-                <span>Encrypted 256-Bit Checkout</span>
+                <span>256-Bit Encrypted</span>
               </div>
             </form>
           </div>
 
-          {/* Right Summary: Product Card & Dynamic Pricing */}
+          {/* Right Summary */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-xs space-y-6">
-              <h3 className="text-base font-bold text-zinc-900 pb-3 border-b border-zinc-100 flex items-center justify-between">
+            <div className="bg-white rounded-3xl p-6 border border-zinc-200 shadow-xs space-y-6">
+              <h3 className="text-base font-black text-zinc-950 pb-3 border-b border-zinc-100 flex items-center justify-between">
                 <span>Order Summary</span>
-                <span className="text-xs text-red-600 font-extrabold bg-red-50 px-2 py-0.5 rounded">
-                  {product.badge || 'Trending Fit'}
+                <span className="text-xs text-red-600 font-black bg-red-50 px-2.5 py-1 rounded-md">
+                  {product.badge}
                 </span>
               </h3>
 
-              {/* Product Preview */}
+              {/* Product Info */}
               <div className="flex gap-4">
-                <div className="w-24 h-28 rounded-xl overflow-hidden bg-zinc-100 shrink-0 border border-zinc-200">
+                <div className="w-24 h-28 rounded-2xl overflow-hidden bg-zinc-100 shrink-0 border border-zinc-200">
                   <img
                     src={product.images[0]}
                     alt={product.name}
@@ -399,46 +405,38 @@ function ClothingCheckoutContent() {
                   />
                 </div>
                 <div className="flex-1 space-y-1">
-                  {product.isFirstCopy && (
-                    <span className="text-[10px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 uppercase">
-                      7A Quality / 1st Copy
-                    </span>
-                  )}
-                  <h4 className="text-sm font-bold text-zinc-900 line-clamp-2">
+                  <span className="text-[10px] font-mono font-bold text-red-600 uppercase">
+                    {product.brandTag}
+                  </span>
+                  <h4 className="text-sm font-black text-zinc-950 line-clamp-2">
                     {product.name}
                   </h4>
                   <div className="flex items-center gap-2 pt-1">
-                    <span className="text-lg font-extrabold text-red-600">
+                    <span className="text-lg font-black text-red-600">
                       ₹{product.discountPrice}
                     </span>
                     <span className="text-xs text-zinc-400 line-through">
                       ₹{product.originalPrice}
                     </span>
-                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">
-                      {Math.round(((product.originalPrice - product.discountPrice) / product.originalPrice) * 100)}% OFF
-                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Size & Quantity selector */}
+              {/* Size & Quantity + BOGO Trigger */}
               <div className="space-y-4 pt-3 border-t border-zinc-100">
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-bold text-zinc-700 uppercase">
-                      Select Size: <span className="text-red-600 font-black">{selectedSize}</span>
-                    </label>
-                    <span className="text-[11px] text-zinc-400">Regular Fit</span>
-                  </div>
+                  <label className="block text-xs font-black uppercase text-zinc-700 mb-1.5">
+                    Size: <span className="text-red-600">{selectedSize}</span>
+                  </label>
                   <div className="flex flex-wrap gap-2">
                     {product.sizes.map((sz) => (
                       <button
                         key={sz}
                         type="button"
                         onClick={() => setSelectedSize(sz)}
-                        className={`min-w-10 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${
+                        className={`min-w-10 px-3 py-1.5 text-xs font-black rounded-lg border transition-all ${
                           selectedSize === sz
-                            ? 'bg-zinc-900 text-white border-zinc-900 shadow-xs'
+                            ? 'bg-zinc-950 text-white border-zinc-950'
                             : 'bg-white text-zinc-700 border-zinc-200 hover:border-zinc-400'
                         }`}
                       >
@@ -448,41 +446,42 @@ function ClothingCheckoutContent() {
                   </div>
                 </div>
 
-                {/* Quantity + Bundle Trigger */}
+                {/* Quantity */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="text-xs font-bold text-zinc-700 uppercase">
+                    <label className="text-xs font-black uppercase text-zinc-700">
                       Quantity:
                     </label>
                     {quantity === 1 && (
-                      <span className="text-[11px] font-bold text-amber-600">
-                        ⚡ Add 1 more for extra ₹150 OFF!
+                      <span className="text-xs font-black text-amber-600 animate-pulse">
+                        🔥 Add 1 more to get it 100% FREE!
                       </span>
                     )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center border border-zinc-200 rounded-lg overflow-hidden">
+                    <div className="flex items-center border border-zinc-200 rounded-xl overflow-hidden bg-zinc-50">
                       <button
                         type="button"
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="px-3 py-1 bg-zinc-100 hover:bg-zinc-200 text-sm font-bold"
+                        className="px-3.5 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-sm font-black"
                       >
                         -
                       </button>
-                      <span className="px-4 py-1 text-sm font-bold text-zinc-900">
+                      <span className="px-4 py-1.5 text-sm font-black text-zinc-950">
                         {quantity}
                       </span>
                       <button
                         type="button"
                         onClick={() => setQuantity(quantity + 1)}
-                        className="px-3 py-1 bg-zinc-100 hover:bg-zinc-200 text-sm font-bold"
+                        className="px-3.5 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-sm font-black"
                       >
                         +
                       </button>
                     </div>
+
                     {quantity >= 2 && (
-                      <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                        🎉 Combo Applied: -₹150 OFF
+                      <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1">
+                        <Gift className="w-3.5 h-3.5" /> BOGO APPLIED: 1 FREE!
                       </span>
                     )}
                   </div>
@@ -496,64 +495,64 @@ function ClothingCheckoutContent() {
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    placeholder="Enter Coupon (e.g. WELCOME10)"
-                    className="flex-1 px-3 py-2 text-xs font-mono font-bold uppercase rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+                    placeholder="Coupon (e.g. WELCOME10)"
+                    className="flex-1 px-3 py-2 text-xs font-mono font-black uppercase rounded-xl border border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-500"
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 text-xs font-bold rounded-xl bg-zinc-900 text-white hover:bg-zinc-800"
+                    className="px-4 py-2 text-xs font-black rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 uppercase"
                   >
                     Apply
                   </button>
                 </form>
                 {couponApplied && (
-                  <p className="text-xs text-emerald-600 font-semibold mt-1.5 flex items-center gap-1">
+                  <p className="text-xs text-emerald-600 font-bold mt-1.5 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Coupon <span className="font-mono font-bold">WELCOME10</span> applied!
+                    Coupon <strong className="font-mono">WELCOME10</strong> applied (-₹{couponDiscount})
                   </p>
                 )}
               </div>
 
-              {/* Final Breakdown */}
-              <div className="space-y-2 pt-3 border-t border-zinc-100 text-sm">
+              {/* Pricing Breakdown */}
+              <div className="space-y-2 pt-3 border-t border-zinc-100 text-xs sm:text-sm">
                 <div className="flex justify-between text-zinc-600">
-                  <span>Price ({quantity} Item{quantity > 1 ? 's' : ''})</span>
-                  <span>₹{subtotal}</span>
+                  <span>Price ({quantity} Hoodie{quantity > 1 ? 's' : ''})</span>
+                  <span>₹{rawSubtotal}</span>
                 </div>
 
+                {bogoDiscount > 0 && (
+                  <div className="flex justify-between text-emerald-600 font-bold">
+                    <span>Buy 1 Get 1 Free (BOGO)</span>
+                    <span>-₹{bogoDiscount} (FREE)</span>
+                  </div>
+                )}
+
                 {couponDiscount > 0 && (
-                  <div className="flex justify-between text-emerald-600 font-medium">
-                    <span>First Order Coupon (WELCOME10)</span>
+                  <div className="flex justify-between text-emerald-600 font-bold">
+                    <span>First Order Special Discount</span>
                     <span>-₹{couponDiscount}</span>
                   </div>
                 )}
 
-                {bundleDiscount > 0 && (
-                  <div className="flex justify-between text-emerald-600 font-medium">
-                    <span>Buy 2 Combo Savings</span>
-                    <span>-₹{bundleDiscount}</span>
-                  </div>
-                )}
-
                 <div className="flex justify-between text-zinc-600">
-                  <span>Express 3-5 Days Delivery</span>
-                  <span className="text-emerald-600 font-bold uppercase text-xs">FREE</span>
+                  <span>Express Tracked Shipping (3-5 Days)</span>
+                  <span className="text-emerald-600 font-black uppercase text-xs">FREE</span>
                 </div>
 
-                <div className="flex justify-between text-base font-black text-zinc-900 pt-3 border-t border-zinc-200">
-                  <span>Total Payable:</span>
-                  <span className="text-xl text-red-600">₹{finalPayable}</span>
+                <div className="flex justify-between text-base font-black text-zinc-950 pt-3 border-t border-zinc-200">
+                  <span>Total Amount:</span>
+                  <span className="text-2xl text-red-600">₹{finalPayable}</span>
                 </div>
               </div>
             </div>
 
-            {/* Quick highlights */}
-            <div className="p-4 rounded-xl bg-white border border-zinc-200 space-y-2 text-xs text-zinc-600">
-              <p className="font-bold text-zinc-900">Why order from Next Creators Wear?</p>
-              <ul className="space-y-1.5 list-disc pl-4">
-                <li>Factory-direct pricing without middleman showroom margins</li>
-                <li>Real master replica details with premium cotton blends</li>
-                <li>Dispatched within 24 hours with SMS/WhatsApp live tracking</li>
+            {/* Quick Guarantees */}
+            <div className="p-5 rounded-2xl bg-white border border-zinc-200 text-xs text-zinc-600 space-y-2">
+              <p className="font-black text-zinc-950 uppercase">Why Buyers Love Next Creators:</p>
+              <ul className="space-y-1.5 list-disc pl-4 font-medium">
+                <li>Heavyweight 300+ GSM fleece fabrics tested for zero shrinkage</li>
+                <li>Shipped in sealed premium polybag with live WhatsApp tracking</li>
+                <li>100% money back if you cancel before dispatch</li>
               </ul>
             </div>
           </div>
