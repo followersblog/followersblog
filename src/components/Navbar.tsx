@@ -2,97 +2,138 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Sparkles, ShoppingBag, ShieldCheck, Flame, Tag, Truck } from 'lucide-react';
+import {
+  Menu,
+  X,
+  ShoppingBag,
+  Flame,
+  Tag,
+  Truck,
+  ShieldCheck,
+  ChevronDown,
+  Sparkles,
+  Percent
+} from 'lucide-react';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
-      {/* Top High-Sales Offer Ticker */}
-      <div className="bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white text-xs sm:text-sm font-bold py-2 px-3 text-center tracking-wide flex items-center justify-center gap-2 shadow-inner">
-        <Flame className="w-4 h-4 text-yellow-300 animate-pulse hidden sm:inline" />
-        <span>
-          ⚡ <span className="underline decoration-yellow-300 decoration-2 font-black">SALE ALERT:</span> FLAT ₹100 OFF AUTO-APPLIED ON FIRST ORDER + BUY 2 GET ₹150 OFF!
-        </span>
-        <span className="hidden md:inline bg-black/30 px-2 py-0.5 rounded text-[11px] font-mono border border-white/20">
-          CODE: WELCOME10
-        </span>
+      {/* Top High-Sales Global Offer Ticker */}
+      <div className="bg-black text-white text-[11px] sm:text-xs font-bold py-2 px-3 border-b border-zinc-800">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+            <span className="bg-red-600 text-white font-black px-2 py-0.5 rounded text-[10px] tracking-wider uppercase flex items-center gap-1">
+              <Flame className="w-3 h-3 fill-white" /> FLASH SALE
+            </span>
+            <span className="text-zinc-200">
+              FIRST ORDER FLAT ₹100 OFF AUTO-APPLIED + BUY 2 GET ₹150 OFF
+            </span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-4 text-zinc-400 text-[11px] shrink-0">
+            <span className="flex items-center gap-1 text-emerald-400">
+              <Truck className="w-3.5 h-3.5" /> 3-5 Days Delivery
+            </span>
+            <span>•</span>
+            <span className="text-zinc-300">100% Instant Refund</span>
+            <span>•</span>
+            <span className="font-mono text-amber-400 font-bold">CODE: WELCOME10</span>
+          </div>
+        </div>
       </div>
 
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-zinc-200">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-zinc-200 transition-all shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
+            
             {/* Brand Logo */}
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center p-1 border border-red-100 group-hover:scale-105 transition-transform overflow-hidden">
-                <ShoppingBag className="w-6 h-6 text-red-600" />
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-xl bg-zinc-950 text-white flex items-center justify-center font-black text-xl tracking-tighter group-hover:scale-105 transition-transform shadow-xs">
+                NC
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-zinc-900 group-hover:text-red-600 transition-colors">
-                  Next <span className="text-red-600">Creators</span> <span className="text-xs font-bold uppercase tracking-widest bg-zinc-900 text-white px-1.5 py-0.5 rounded ml-1">WEAR</span>
-                </span>
-                <span className="text-[10px] text-zinc-500 font-medium tracking-wider uppercase -mt-0.5">
-                  Trending Streetwear & Master Copies
+                <div className="flex items-center gap-1.5">
+                  <span className="font-black text-xl sm:text-2xl tracking-tight text-zinc-950 group-hover:text-red-600 transition-colors">
+                    NEXT CREATORS
+                  </span>
+                  <span className="text-[10px] font-black uppercase tracking-widest bg-zinc-950 text-white px-1.5 py-0.5 rounded">
+                    STUDIO
+                  </span>
+                </div>
+                <span className="text-[10px] text-zinc-500 font-semibold tracking-wider uppercase -mt-0.5">
+                  Streetwear & 1st Copy Archive
                 </span>
               </div>
             </Link>
 
-            {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center gap-7">
-              <Link 
-                href="/#shop-men" 
-                className="text-sm font-bold text-zinc-700 hover:text-red-600 transition-colors"
+            {/* Desktop Navigation Collections */}
+            <nav className="hidden lg:flex items-center gap-8 text-xs font-black tracking-wider uppercase text-zinc-800">
+              <Link
+                href="/collection/all"
+                className="hover:text-red-600 transition-colors"
+              >
+                All Drops
+              </Link>
+              <Link
+                href="/collection/bape"
+                className="hover:text-red-600 transition-colors flex items-center gap-1 text-red-600"
+              >
+                <Flame className="w-3.5 h-3.5 fill-red-600" />
+                BAPE (1st Copy)
+              </Link>
+              <Link
+                href="/collection/men"
+                className="hover:text-red-600 transition-colors"
               >
                 Men's Drips
               </Link>
-              <Link 
-                href="/#shop-women" 
-                className="text-sm font-bold text-zinc-700 hover:text-red-600 transition-colors"
+              <Link
+                href="/collection/women"
+                className="hover:text-red-600 transition-colors"
               >
                 Women's Fits
               </Link>
-              <Link 
-                href="/#bape-drop" 
-                className="text-sm font-black text-red-600 hover:text-red-700 transition-colors flex items-center gap-1 bg-red-50 px-2.5 py-1 rounded-full border border-red-200"
+              <Link
+                href="/collection/cargos"
+                className="hover:text-red-600 transition-colors"
               >
-                <Flame className="w-3.5 h-3.5 fill-red-600" />
-                BAPE Shark (1st Copy)
+                Cargos & Pants
               </Link>
-              <Link 
-                href="/#offers" 
-                className="text-sm font-bold text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1"
+              <Link
+                href="/collection/deals"
+                className="hover:text-amber-600 transition-colors text-amber-700 flex items-center gap-1"
               >
-                <Tag className="w-3.5 h-3.5 text-amber-600" />
-                BOGO Offers
-              </Link>
-              <Link 
-                href="/portal" 
-                className="text-xs font-semibold text-zinc-400 hover:text-zinc-600 transition-colors"
-              >
-                Creator SMM
+                <Percent className="w-3.5 h-3.5" />
+                Combos Under ₹599
               </Link>
             </nav>
 
-            {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
-                <Truck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>3-5 Days Delivery</span>
-              </div>
+            {/* Right Quick Action */}
+            <div className="hidden sm:flex items-center gap-4">
               <Link
-                href="/#all-products"
-                className="inline-flex items-center justify-center px-4 py-2 text-sm font-bold rounded-xl text-white bg-red-600 hover:bg-red-700 shadow-sm transition-all transform active:scale-95"
+                href="/portal"
+                className="text-xs font-semibold text-zinc-400 hover:text-zinc-600 transition-colors"
+                title="SMM & Creator Services"
               >
-                Explore Sale
+                Creator SMM →
+              </Link>
+
+              <Link
+                href="/collection/all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-950 hover:bg-red-600 text-white text-xs font-extrabold uppercase tracking-wider transition-all transform active:scale-95 shadow-xs"
+              >
+                <ShoppingBag className="w-4 h-4" />
+                <span>Shop Catalog</span>
               </Link>
             </div>
 
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-zinc-700 hover:bg-zinc-100 transition-colors"
-              aria-label="Toggle menu"
+              className="lg:hidden p-2 rounded-xl text-zinc-800 hover:bg-zinc-100 transition-colors"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -101,50 +142,70 @@ export default function Navbar() {
 
         {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-zinc-200 bg-white px-4 pt-3 pb-6 space-y-3">
-            <Link
-              href="/#shop-men"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-bold text-zinc-800 hover:text-red-600"
-            >
-              Men's Trending
-            </Link>
-            <Link
-              href="/#shop-women"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-bold text-zinc-800 hover:text-red-600"
-            >
-              Women's Trending
-            </Link>
-            <Link
-              href="/#bape-drop"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-black text-red-600"
-            >
-              🔥 BAPE Shark Jacket (1st Copy ₹489)
-            </Link>
-            <Link
-              href="/#offers"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-bold text-amber-700"
-            >
-              🏷️ Combo & BOGO Offers
-            </Link>
-            <div className="pt-2 border-t border-zinc-100 flex flex-col gap-2">
-              <div className="text-xs text-emerald-700 font-semibold flex items-center gap-1.5">
-                <Truck className="w-4 h-4 text-emerald-600" />
-                3-5 Days Fast Delivery across India
+          <div className="lg:hidden border-t border-zinc-200 bg-white px-4 pt-4 pb-6 space-y-4 shadow-xl">
+            <div className="grid grid-cols-2 gap-2 pb-3 border-b border-zinc-100 text-xs font-black uppercase">
+              <Link
+                href="/collection/bape"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-3 rounded-xl bg-red-50 text-red-600 border border-red-200 flex items-center gap-1.5"
+              >
+                <Flame className="w-4 h-4 fill-red-600" />
+                BAPE (1st Copy)
+              </Link>
+              <Link
+                href="/collection/deals"
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-3 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 flex items-center gap-1.5"
+              >
+                <Percent className="w-4 h-4" />
+                Combos ₹150 OFF
+              </Link>
+            </div>
+
+            <div className="space-y-2 text-sm font-bold text-zinc-800">
+              <Link
+                href="/collection/all"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-1.5 hover:text-red-600"
+              >
+                All Streetwear Drops (View All)
+              </Link>
+              <Link
+                href="/collection/men"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-1.5 hover:text-red-600"
+              >
+                Men's Oversized Tees & Shirts
+              </Link>
+              <Link
+                href="/collection/women"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-1.5 hover:text-red-600"
+              >
+                Women's Y2K Tops & Co-Ords
+              </Link>
+              <Link
+                href="/collection/cargos"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block py-1.5 hover:text-red-600"
+              >
+                Tactical Cargos & Wide Leg Trousers
+              </Link>
+            </div>
+
+            <div className="pt-3 border-t border-zinc-100 flex flex-col gap-2 text-xs">
+              <div className="flex items-center gap-2 text-emerald-600 font-semibold">
+                <Truck className="w-4 h-4" /> 3-5 Days Express Delivery across India
               </div>
-              <div className="text-xs text-zinc-500 font-medium flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-zinc-400" />
-                100% Instant Refund on Cancellation
+              <div className="flex items-center gap-2 text-zinc-600 font-semibold">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> 100% Instant Refund On Cancellation
               </div>
               <Link
                 href="/portal"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-xs text-zinc-400 py-1"
+                className="text-zinc-400 py-1"
               >
-                Go to Creator Media / SMM Portal →
+                Creator SMM / Marketing Portal →
               </Link>
             </div>
           </div>
