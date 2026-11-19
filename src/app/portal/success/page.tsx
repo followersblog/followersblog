@@ -31,13 +31,14 @@ function FollowersSuccessContent() {
 
   const activeAmount = paramAmount || (sessionOrder?.amount !== undefined ? String(sessionOrder.amount) : '1');
 
-  // Meta Pixel: Track 100% REAL Verified Purchase (Guard against duplicate firing on page refresh)
+  // Meta Pixel: Track ONLY 100% REAL Verified Purchase (Never on clicks, never on direct page visits, never on refresh)
   useEffect(() => {
-    if (typeof window !== 'undefined' && orderId) {
+    if (typeof window !== 'undefined' && orderId && orderId !== 'MED-2026-ACTIVE' && searchParams.get('order_id')) {
       const firedKey = `fb_purchase_fired_${orderId}`;
-      const alreadyFired = sessionStorage.getItem(firedKey);
+      const sessionFired = sessionStorage.getItem(firedKey);
+      const localFired = localStorage.getItem(firedKey);
 
-      if (!alreadyFired) {
+      if (!sessionFired && !localFired) {
         event('Purchase', {
           value: Number(activeAmount) || 49,
           currency: 'INR',
@@ -46,9 +47,12 @@ function FollowersSuccessContent() {
           order_id: orderId,
         });
         sessionStorage.setItem(firedKey, 'true');
+        try {
+          localStorage.setItem(firedKey, 'true');
+        } catch (e) {}
       }
     }
-  }, [orderId, activeAmount]);
+  }, [orderId, activeAmount, searchParams]);
 
   // Determine return URL: return to home if bought from home, else /portal
   const returnUrl = fromParam === 'home' || fromParam === '/' ? '/' : '/portal';

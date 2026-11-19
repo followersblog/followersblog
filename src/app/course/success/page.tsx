@@ -1,11 +1,12 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { COURSE_DETAILS } from '@/data/courses';
+import { event } from '@/lib/meta-pixel';
 import {
   CheckCircle2,
   Calendar,
@@ -21,6 +22,29 @@ import {
 function CourseSuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id') || 'CRS-2026-CONFIRMED';
+
+  // Meta Pixel: Track ONLY 100% REAL Verified Purchase (Never on clicks, never on direct page visits, never on refresh)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && orderId && orderId !== 'CRS-2026-CONFIRMED' && searchParams.get('order_id')) {
+      const firedKey = `fb_purchase_fired_${orderId}`;
+      const sessionFired = sessionStorage.getItem(firedKey);
+      const localFired = localStorage.getItem(firedKey);
+
+      if (!sessionFired && !localFired) {
+        event('Purchase', {
+          value: COURSE_DETAILS.price || 1499,
+          currency: 'INR',
+          content_name: COURSE_DETAILS.name,
+          content_type: 'product',
+          order_id: orderId,
+        });
+        sessionStorage.setItem(firedKey, 'true');
+        try {
+          localStorage.setItem(firedKey, 'true');
+        } catch (e) {}
+      }
+    }
+  }, [orderId, searchParams]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 text-center">
